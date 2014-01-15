@@ -16,6 +16,7 @@ import ca.nigelchan.operationbanana.data.WorldData;
 import ca.nigelchan.operationbanana.data.actors.PlayerData;
 import ca.nigelchan.operationbanana.data.layers.ActorLayerData;
 import ca.nigelchan.operationbanana.data.layers.FieldLayerData;
+import ca.nigelchan.operationbanana.data.layers.TileTemplate;
 import ca.nigelchan.operationbanana.managers.SceneManager;
 import ca.nigelchan.operationbanana.scenes.BaseScene;
 import ca.nigelchan.operationbanana.scenes.GameScene;
@@ -81,9 +82,14 @@ public class MainActivity extends BaseGameActivity {
 				// TODO Change to MainMenuScene
 				WorldData worldData = new WorldData(5, 5);
 				FieldLayerData fyd = new FieldLayerData(5, 5);
-				fyd.setID(0, 0, 1);
-				fyd.setID(0, 1, 5);
-				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(new Vector2(0, 0), 0, 1.5f));
+				TileTemplate thingy = new TileTemplate(1, true);
+				TileTemplate ground = new TileTemplate(0, false);
+				for (int i = 0; i < 5; ++i) {
+					for (int j = 0; j < 5; ++j)
+						fyd.setTile(i, j, ground);
+				}
+				fyd.setTile(2, 2, thingy);
+				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(new Vector2(0.5f, 0.5f), 0, 1.5f));
 				worldData.addLayer(fyd);
 				worldData.addLayer(ald);
 				manager.pushScene(new GameScene(manager, worldData));

@@ -11,7 +11,7 @@ public class Move extends Action {
 	@Override
 	public void onUpdate(float elapsedTime) {
 		actor.setRadianRotation(rotation);
-		actor.setPosition(actor.getPosition().add(unitVector.multiply(actor.getSpeed() * elapsedTime)));
+		actor.moveTo(actor.getPosition().add(unitVector.multiply(actor.getSpeed() * elapsedTime)));
 	}
 
 	// Setters

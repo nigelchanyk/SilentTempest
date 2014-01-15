@@ -35,8 +35,8 @@ public class Joystick implements IOnSceneTouchListener {
 		case TouchEvent.ACTION_MOVE:
 			now = new Vector2(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
 			float rotation = MathHelper.getRotation(start, now);
-			// snap to nearest pi/8
-			rotation = (float)Math.floor((rotation + MathHelper.PI_OVER_8 / 2) / MathHelper.PI_OVER_8) * MathHelper.PI_OVER_8;
+			// snap to nearest pi/4
+			rotation = (float)Math.floor((rotation + MathHelper.PI_OVER_8) / MathHelper.PI_OVER_4) * MathHelper.PI_OVER_4;
 			if (!active) {
 				active = start.distanceSquare(now) >= toleranceSq;
 				if (active) {

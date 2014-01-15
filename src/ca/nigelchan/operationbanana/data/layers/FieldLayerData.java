@@ -2,11 +2,11 @@ package ca.nigelchan.operationbanana.data.layers;
 
 public class FieldLayerData extends LayerData {
 
-	private int[][] grid;
+	private TileTemplate[][] grid;
 	
 	public FieldLayerData(int width, int height) {
 		super(width, height);
-		grid = new int[width][height];
+		grid = new TileTemplate[width][height];
 	}
 
 	@Override
@@ -15,12 +15,13 @@ public class FieldLayerData extends LayerData {
 	}
 
 	// Getters
-	public int getID(int row, int column) {
+	public TileTemplate getTile(int row, int column) {
 		return grid[row][column];
 	}
 
 	// Setters
-	public void setID(int row, int column, int id) {
-		grid[row][column] = id;
+	public void setTile(int row, int column, TileTemplate template) {
+		grid[row][column] = template;
 	}
+	
 }

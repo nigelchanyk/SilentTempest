@@ -7,9 +7,11 @@ import org.andengine.entity.Entity;
 import ca.nigelchan.operationbanana.data.actors.EnemyData;
 import ca.nigelchan.operationbanana.data.layers.ActorLayerData;
 import ca.nigelchan.operationbanana.objects.World;
+import ca.nigelchan.operationbanana.objects.actors.Actor;
 import ca.nigelchan.operationbanana.objects.actors.Enemy;
 import ca.nigelchan.operationbanana.objects.actors.Player;
 import ca.nigelchan.operationbanana.resources.GameResource;
+import ca.nigelchan.operationbanana.util.Vector2;
 
 public class ActorLayer extends Layer {
 	
@@ -41,7 +43,13 @@ public class ActorLayer extends Layer {
 		// Parent class will dispose of anything that is directly attached
 		super.dispose();
 	}
+
+	@Override
+	public boolean isValidPosition(Vector2 position, Actor actor) {
+		return true;
+	}
 	
+	// Getters
 	public Iterable<Enemy> getEnemies() {
 		return enemies;
 	}

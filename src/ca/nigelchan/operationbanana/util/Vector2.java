@@ -12,12 +12,16 @@ public class Vector2 {
 		_y = y;
 	}
 	
-	public float distanceSquare(Vector2 target) {
-		return (x() - target.x()) * (x() - target.x()) + (y() - target.y()) * (y() - target.y());
-	}
-	
 	public Vector2 add(Vector2 other) {
 		return new Vector2(x() + other.x(), y() + other.y());
+	}
+
+	public float distanceSquare(Vector2 target) {
+		return distanceSquare(target.x(), target.y());
+	}
+	
+	public float distanceSquare(float x, float y) {
+		return (x() - x) * (x() - x) + (y() - y) * (y() - y);
 	}
 	
 	public Vector2 minus(Vector2 other) {

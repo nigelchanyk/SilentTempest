@@ -28,6 +28,10 @@ public final class MathHelper {
 		ROTATION_MAPPER.put(Direction.WEST, THREE_PI_OVER_2);
 	}
 	
+	public static float clamp(float value, float min, float max) {
+		return Math.max(min, Math.min(max, value));
+	}
+	
 	public static Direction getDirection(Vector2 origin, Vector2 target) {
 		Vector2 v = target.minus(origin);
 		// Note that this angle is in polar coordinate [-pi, pi]

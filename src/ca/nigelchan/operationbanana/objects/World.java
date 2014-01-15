@@ -11,6 +11,7 @@ import ca.nigelchan.operationbanana.data.layers.ActorLayerData;
 import ca.nigelchan.operationbanana.data.layers.FieldLayerData;
 import ca.nigelchan.operationbanana.data.layers.ILayerDataVisitor;
 import ca.nigelchan.operationbanana.data.layers.LayerData;
+import ca.nigelchan.operationbanana.objects.actors.Actor;
 import ca.nigelchan.operationbanana.objects.actors.Player;
 import ca.nigelchan.operationbanana.objects.layers.ActorLayer;
 import ca.nigelchan.operationbanana.objects.layers.FieldLayer;
@@ -69,12 +70,17 @@ public class World extends Entity {
 		super.dispose();
 	}
 	
-	public boolean isValidPosition(Point position) {
-		if (position.x < 0 || position.x >= width)
+	public boolean isValidPosition(Vector2 position, Actor actor) {
+		float radius = actor.getRadius();
+		if (position.x() - radius < 0 || position.x() + radius >= width)
 			return false;
-		if (position.y < 0 || position.y >= height)
+		if (position.y() - radius < 0 || position.y() + radius >= height)
 			return false;
 		// TODO Check each layer
+		for (Layer layer : layers) {
+			if (!layer.isValidPosition(position, actor))
+				return false;
+		}
 		return true;
 	}
 

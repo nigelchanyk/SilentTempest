@@ -1,7 +1,5 @@
 package ca.nigelchan.operationbanana.objects;
 
-import org.andengine.entity.Entity;
-
 import ca.nigelchan.operationbanana.entity.CenteredEntity;
 import ca.nigelchan.operationbanana.util.MathHelper;
 import ca.nigelchan.operationbanana.util.Vector2;
@@ -54,6 +52,16 @@ public class WorldObject extends CenteredEntity {
 	@Override
 	public void setPosition(float pX, float pY) {
 		setPosition(new Vector2(pX, pY));
+	}
+	
+	@Override
+	public void setX(float pX) {
+		setPosition(new Vector2(pX, getY()));
+	}
+	
+	@Override
+	public void setY(float pY) {
+		setPosition(new Vector2(getX(), pY));
 	}
 
 	public void setRadianRotation(float rotation) {

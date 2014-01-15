@@ -3,6 +3,8 @@ package ca.nigelchan.operationbanana.objects.layers;
 import org.andengine.entity.Entity;
 
 import ca.nigelchan.operationbanana.data.layers.LayerData;
+import ca.nigelchan.operationbanana.objects.actors.Actor;
+import ca.nigelchan.operationbanana.util.Vector2;
 
 public abstract class Layer extends Entity {
 	
@@ -21,6 +23,8 @@ public abstract class Layer extends Entity {
 		}
 		super.dispose();
 	}
+	
+	public abstract boolean isValidPosition(Vector2 position, Actor actor);
 
 	// Getters
 	public int getHeight() {

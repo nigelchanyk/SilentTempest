@@ -49,6 +49,15 @@ public abstract class Actor extends WorldObject {
 		actions.add(action);
 	}
 	
+	public void moveTo(Vector2 position) {
+		if (world.isValidPosition(position, this)) {
+			setPosition(position);
+			return;
+		}
+		moveToX(position.x());
+		moveToY(position.y());
+	}
+	
 	public void removeAction(Action action) {
 		actions.remove(action);
 	}
@@ -63,6 +72,44 @@ public abstract class Actor extends WorldObject {
 			action.update(elapsedTime);
 	}
 	
+	private void moveToX(float x) {
+		if (world.isValidPosition(new Vector2(x, getY()), this)) {
+			setX(x);
+			return;
+		}
+
+		float minX = getX();
+		float maxX = x;
+		for (int i = 0; i < 4; ++i) {
+            float mid = (minX + maxX) * 0.5f;
+			if (world.isValidPosition(new Vector2(mid, getY()), this))
+				minX = mid;
+			else
+				maxX = mid;
+		}
+		
+		setX(minX);
+	}
+
+	private void moveToY(float y) {
+		if (world.isValidPosition(new Vector2(getX(), y), this)) {
+			setY(y);
+			return;
+		}
+
+		float minY = getY();
+		float maxY = y;
+		for (int i = 0; i < 4; ++i) {
+            float mid = (minY + maxY) * 0.5f;
+			if (world.isValidPosition(new Vector2(getX(), mid), this))
+				minY = mid;
+			else
+				maxY = mid;
+		}
+		
+		setY(minY);
+	}
+	
 	private int toGridCoordinate(float precise) {
 		return Math.round(precise);
 	}
@@ -70,6 +117,10 @@ public abstract class Actor extends WorldObject {
 	// Getters
 	public Point getGridPosition() {
 		return new Point(toGridCoordinate(getX()), toGridCoordinate(getY()));
+	}
+	
+	public float getRadius() {
+		return 0.4f;
 	}
 	
 	public float getSpeed() {
