@@ -1,15 +1,15 @@
 package ca.nigelchan.operationbanana.controllers;
 
 import ca.nigelchan.operationbanana.objects.actors.Actor;
-import ca.nigelchan.operationbanana.objects.actors.action.Move;
+import ca.nigelchan.operationbanana.objects.actors.controllers.FreeMove;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 public class ActorController implements Joystick.IListener {
 	
-	private Move move = new Move();
+	private FreeMove move;
 	
 	public ActorController(Actor actor) {
-		move.setActor(actor);
+		move = new FreeMove(actor);
 	}
 
 	@Override
@@ -33,9 +33,8 @@ public class ActorController implements Joystick.IListener {
 		
 	}
 	
-	// Setters
 	public void setActor(Actor actor) {
-		move.setActor(actor);
+		move = new FreeMove(actor);
 	}
 
 }

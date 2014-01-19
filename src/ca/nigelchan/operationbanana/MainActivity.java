@@ -13,16 +13,18 @@ import org.andengine.ui.activity.BaseGameActivity;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import ca.nigelchan.operationbanana.data.WorldData;
+import ca.nigelchan.operationbanana.data.actors.EnemyData;
 import ca.nigelchan.operationbanana.data.actors.PlayerData;
+import ca.nigelchan.operationbanana.data.actors.sequences.MoveData;
 import ca.nigelchan.operationbanana.data.layers.ActorLayerData;
 import ca.nigelchan.operationbanana.data.layers.FieldLayerData;
 import ca.nigelchan.operationbanana.data.layers.TileTemplate;
 import ca.nigelchan.operationbanana.managers.SceneManager;
 import ca.nigelchan.operationbanana.scenes.BaseScene;
 import ca.nigelchan.operationbanana.scenes.GameScene;
-import ca.nigelchan.operationbanana.scenes.MainMenuScene;
 import ca.nigelchan.operationbanana.scenes.SplashScene;
-import ca.nigelchan.operationbanana.util.Vector2;
+import ca.nigelchan.operationbanana.util.Coordinate;
+import ca.nigelchan.operationbanana.util.Direction;
 
 public class MainActivity extends BaseGameActivity {
 	
@@ -89,7 +91,18 @@ public class MainActivity extends BaseGameActivity {
 						fyd.setTile(i, j, ground);
 				}
 				fyd.setTile(2, 2, thingy);
-				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(new Vector2(0.5f, 0.5f), 0, 1.5f));
+				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(Coordinate.ZERO, 0, 1.5f));
+				EnemyData enemy = new EnemyData(new Coordinate(1, 1), 0, 1.5f);
+				enemy.addSequenceItem(new MoveData(Direction.EAST));
+				enemy.addSequenceItem(new MoveData(Direction.EAST));
+				enemy.addSequenceItem(new MoveData(Direction.SOUTH));
+				enemy.addSequenceItem(new MoveData(Direction.SOUTH));
+				enemy.addSequenceItem(new MoveData(Direction.WEST));
+				enemy.addSequenceItem(new MoveData(Direction.WEST));
+				enemy.addSequenceItem(new MoveData(Direction.NORTH));
+				enemy.addSequenceItem(new MoveData(Direction.NORTH));
+				ald.addEnemy(enemy);
+
 				worldData.addLayer(fyd);
 				worldData.addLayer(ald);
 				manager.pushScene(new GameScene(manager, worldData));

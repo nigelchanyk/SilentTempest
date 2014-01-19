@@ -32,6 +32,10 @@ public class WorldObject extends CenteredEntity {
 	public Vector2 getPosition() {
 		return position;
 	}
+	
+	public float getRadianRotation() {
+		return MathHelper.toRadians(getRotation());
+	}
 
 	@Override
 	public float getX() {

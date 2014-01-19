@@ -11,6 +11,7 @@ import ca.nigelchan.operationbanana.objects.actors.Actor;
 import ca.nigelchan.operationbanana.objects.actors.Enemy;
 import ca.nigelchan.operationbanana.objects.actors.Player;
 import ca.nigelchan.operationbanana.resources.GameResource;
+import ca.nigelchan.operationbanana.util.Coordinate;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 public class ActorLayer extends Layer {
@@ -23,7 +24,7 @@ public class ActorLayer extends Layer {
 	public ActorLayer(ActorLayerData data, World world, GameResource resource) {
 		super(data);
 		for (EnemyData enemyData : data.getEnemies()) {
-			Enemy enemy = new Enemy(enemyData, world);
+			Enemy enemy = new Enemy(enemyData, world, resource);
 			enemies.add(enemy);
 			enemyLayer.attachChild(enemy);
 		}
@@ -56,6 +57,11 @@ public class ActorLayer extends Layer {
 
 	public Player getPlayer() {
 		return player;
+	}
+
+	@Override
+	public boolean isWalkable(Coordinate position) {
+		return true;
 	}
 
 }

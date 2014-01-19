@@ -2,8 +2,6 @@ package ca.nigelchan.operationbanana.util;
 
 import java.util.EnumMap;
 
-import android.graphics.Point;
-
 public final class MathHelper {
 
 	public static final float PI = (float)Math.PI;
@@ -13,39 +11,31 @@ public final class MathHelper {
 	public static final float THREE_PI_OVER_2 = (float)Math.PI * 1.5f;
 	public static final float THREE_PI_OVER_4 = (float)Math.PI * 0.75f;
 	private static final EnumMap<Direction, Float> ROTATION_MAPPER = new EnumMap<Direction, Float>(Direction.class);
-	private static final EnumMap<Direction, Point> TRANSLATION_MAPPER = new EnumMap<Direction, Point>(Direction.class);
+	private static final EnumMap<Direction, Coordinate> TRANSLATION_MAPPER = new EnumMap<Direction, Coordinate>(Direction.class);
 	public static final float TWO_PI = (float)Math.PI * 2;
 	
 	static {
-		TRANSLATION_MAPPER.put(Direction.NORTH, new Point(0, -1));
-		TRANSLATION_MAPPER.put(Direction.EAST, new Point(1, 0));
-		TRANSLATION_MAPPER.put(Direction.SOUTH, new Point(0, 1));
-		TRANSLATION_MAPPER.put(Direction.WEST, new Point(-1, 0));
-
+		TRANSLATION_MAPPER.put(Direction.NORTH, new Coordinate(0, -1));
+		TRANSLATION_MAPPER.put(Direction.NORTHEAST, new Coordinate(1, -1));
+		TRANSLATION_MAPPER.put(Direction.EAST, new Coordinate(1, 0));
+		TRANSLATION_MAPPER.put(Direction.SOUTHEAST, new Coordinate(1, 1));
+		TRANSLATION_MAPPER.put(Direction.SOUTH, new Coordinate(0, 1));
+		TRANSLATION_MAPPER.put(Direction.SOUTHWEST, new Coordinate(1, 1));
+		TRANSLATION_MAPPER.put(Direction.WEST, new Coordinate(-1, 0));
+		TRANSLATION_MAPPER.put(Direction.NORTHWEST, new Coordinate(-1, -1));
+		
 		ROTATION_MAPPER.put(Direction.NORTH, 0f);
+		ROTATION_MAPPER.put(Direction.NORTHEAST, PI_OVER_4);
 		ROTATION_MAPPER.put(Direction.EAST, PI_OVER_2);
+		ROTATION_MAPPER.put(Direction.SOUTHEAST, THREE_PI_OVER_4);
 		ROTATION_MAPPER.put(Direction.SOUTH, PI);
+		ROTATION_MAPPER.put(Direction.SOUTHWEST, PI + PI_OVER_4);
 		ROTATION_MAPPER.put(Direction.WEST, THREE_PI_OVER_2);
+		ROTATION_MAPPER.put(Direction.NORTHWEST, PI + THREE_PI_OVER_4);
 	}
 	
 	public static float clamp(float value, float min, float max) {
 		return Math.max(min, Math.min(max, value));
-	}
-	
-	public static Direction getDirection(Vector2 origin, Vector2 target) {
-		Vector2 v = target.minus(origin);
-		// Note that this angle is in polar coordinate [-pi, pi]
-		float angle = (float)Math.atan2(v.y(), v.x());
-		if (angle < -THREE_PI_OVER_4)
-			return Direction.WEST;
-		if (angle < -PI_OVER_4)
-			return Direction.SOUTH;
-		if (angle < PI_OVER_4)
-			return Direction.EAST;
-		if (angle < THREE_PI_OVER_4)
-			return Direction.NORTH;
-		
-		return Direction.WEST;
 	}
 	
 	public static float getRotation(Direction direction) {
@@ -61,7 +51,7 @@ public final class MathHelper {
 		return (float)Math.atan2(v.y(), v.x()) + PI_OVER_2;
 	}
 	
-	public static Point getTranslation(Direction direction) {
+	public static Coordinate getTranslation(Direction direction) {
 		return TRANSLATION_MAPPER.get(direction);
 	}
 	
@@ -77,8 +67,16 @@ public final class MathHelper {
 		return value * value;
 	}
 	
+	public static float toRadians(float degrees) {
+		return (float)Math.toRadians(degrees);
+	}
+	
 	public static float toDegrees(float radians) {
 		return (float)Math.toDegrees(radians);
+	}
+	
+	public static float wrapAngle(float angle) {
+		return ((angle % TWO_PI) + TWO_PI) % TWO_PI;
 	}
 	
 	private MathHelper() {

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.andengine.entity.Entity;
 
-import android.graphics.Point;
 import ca.nigelchan.operationbanana.data.WorldData;
 import ca.nigelchan.operationbanana.data.layers.ActorLayerData;
 import ca.nigelchan.operationbanana.data.layers.FieldLayerData;
@@ -17,6 +16,7 @@ import ca.nigelchan.operationbanana.objects.layers.ActorLayer;
 import ca.nigelchan.operationbanana.objects.layers.FieldLayer;
 import ca.nigelchan.operationbanana.objects.layers.Layer;
 import ca.nigelchan.operationbanana.resources.GameResource;
+import ca.nigelchan.operationbanana.util.Coordinate;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 public class World extends Entity {
@@ -58,11 +58,6 @@ public class World extends Entity {
 			throw new IllegalArgumentException("Missing actor layer");
 	}
 	
-	public Vector2 convertPointToVector2(Point point) {
-		float half = getUnitScale() * 0.5f;
-		return new Vector2(point.x * getUnitScale() + half, point.y * getUnitScale() + half);
-	}
-	
 	@Override
 	public void dispose() {
 		for (int i = 0; i < getChildCount(); ++i)
@@ -79,6 +74,18 @@ public class World extends Entity {
 		// TODO Check each layer
 		for (Layer layer : layers) {
 			if (!layer.isValidPosition(position, actor))
+				return false;
+		}
+		return true;
+	}
+	
+	public boolean isWalkable(Coordinate position) {
+		if (position.x() < 0 || position.x() >= width)
+			return false;
+		if (position.y() < 0 || position.y() >= height)
+			return false;
+		for (Layer layer : layers) {
+			if (!layer.isWalkable(position))
 				return false;
 		}
 		return true;

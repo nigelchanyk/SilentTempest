@@ -1,12 +1,17 @@
-package ca.nigelchan.operationbanana.objects.actors.action;
+package ca.nigelchan.operationbanana.objects.actors.controllers;
 
+import ca.nigelchan.operationbanana.objects.actors.Actor;
 import ca.nigelchan.operationbanana.util.MathHelper;
 import ca.nigelchan.operationbanana.util.Vector2;
 
-public class Move extends Action {
-	
+public class FreeMove extends Controller {
+
 	private float rotation;
 	private Vector2 unitVector;
+	
+	public FreeMove(Actor actor) {
+		super(actor);
+	}
 
 	@Override
 	public void onUpdate(float elapsedTime) {

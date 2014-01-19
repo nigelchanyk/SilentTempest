@@ -13,7 +13,15 @@ public class Vector2 {
 	}
 	
 	public Vector2 add(Vector2 other) {
-		return new Vector2(x() + other.x(), y() + other.y());
+		return add(other.x(), other.y());
+	}
+	
+	public Vector2 add(float x, float y) {
+		return new Vector2(x() + x, y() + y);
+	}
+	
+	public float distance(Vector2 target) {
+		return (float)Math.sqrt(distanceSquare(target));
 	}
 
 	public float distanceSquare(Vector2 target) {
@@ -24,12 +32,25 @@ public class Vector2 {
 		return (x() - x) * (x() - x) + (y() - y) * (y() - y);
 	}
 	
+	public Vector2 floor() {
+		return new Vector2((float)Math.floor(x()), (float)Math.floor(y()));
+	}
+	
+	public float length() {
+		return (int)Math.sqrt(x() * x() + y() * y());
+	}
+	
 	public Vector2 minus(Vector2 other) {
 		return new Vector2(x() - other.x(), y() - other.y());
 	}
 	
 	public Vector2 multiply(float scalar) {
 		return new Vector2(x() * scalar, y() * scalar);
+	}
+	
+	public Vector2 normal() {
+		float len = length();
+		return new Vector2(x() / len, y() / len);
 	}
 
 	public float x() {

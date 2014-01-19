@@ -1,20 +1,20 @@
 package ca.nigelchan.operationbanana.data.actors;
 
-import ca.nigelchan.operationbanana.util.Vector2;
+import ca.nigelchan.operationbanana.util.Coordinate;
 
 public class ActorData {
 	
-	private Vector2 initPosition;
+	private Coordinate initPosition;
 	private float initRotation;
 	private float speed;
 	
-	public ActorData(Vector2 initPosition, float initRotation, float speed) {
+	public ActorData(Coordinate initPosition, float initRotation, float speed) {
 		this.initPosition = initPosition;
 		this.initRotation = initRotation;
 		this.speed = speed;
 	}
 
-	public Vector2 getInitialPosition() {
+	public Coordinate getInitialPosition() {
 		return initPosition;
 	}
 

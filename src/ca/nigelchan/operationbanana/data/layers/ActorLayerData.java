@@ -19,6 +19,10 @@ public class ActorLayerData extends LayerData {
 	public void accept(ILayerDataVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	public void addEnemy(EnemyData enemy) {
+		enemies.add(enemy);
+	}
 
 	// Getters
 	public Iterable<EnemyData> getEnemies() {

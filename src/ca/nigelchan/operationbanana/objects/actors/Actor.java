@@ -4,27 +4,20 @@ import java.util.ArrayList;
 
 import org.andengine.engine.handler.IUpdateHandler;
 
-import android.graphics.Point;
 import ca.nigelchan.operationbanana.data.actors.ActorData;
 import ca.nigelchan.operationbanana.objects.World;
 import ca.nigelchan.operationbanana.objects.WorldObject;
-import ca.nigelchan.operationbanana.objects.actors.action.Action;
+import ca.nigelchan.operationbanana.objects.actors.controllers.Controller;
+import ca.nigelchan.operationbanana.util.Coordinate;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 public abstract class Actor extends WorldObject {
-	
-	public enum Direction {
-		NORTH,
-		EAST,
-		SOUTH,
-		WEST
-	}
 
-	private ArrayList<Action> actions = new ArrayList<Action>(4);
+	private ArrayList<Controller> controllers = new ArrayList<Controller>(4);
 	private float speed;
 
 	public Actor(ActorData data, World world) {
-		super(data.getInitialPosition(), world);
+		super(data.getInitialPosition().toCenterVector2(), world);
 
 		setRotation(data.getInitialRotation());
 		speed = data.getSpeed();
@@ -43,10 +36,10 @@ public abstract class Actor extends WorldObject {
 		});
 	}
 	
-	public void addAction(Action action) {
-		if (actions.contains(action))
+	public void addController(Controller controller) {
+		if (controllers.contains(controller))
 			return;
-		actions.add(action);
+		controllers.add(controller);
 	}
 	
 	public void moveTo(Vector2 position) {
@@ -58,18 +51,13 @@ public abstract class Actor extends WorldObject {
 		moveToY(position.y());
 	}
 	
-	public void removeAction(Action action) {
-		actions.remove(action);
-	}
-	
-	public void snapToGrid() {
-		Vector2 pos = world.convertPointToVector2(getGridPosition());
-		setPosition(pos.x(), pos.y());
+	public void removeController(Controller controller) {
+		controllers.remove(controller);
 	}
 	
 	private void handleUpdate(float elapsedTime) {
-		for (Action action : actions)
-			action.update(elapsedTime);
+		for (Controller controller : controllers)
+			controller.update(elapsedTime);
 	}
 	
 	private void moveToX(float x) {
@@ -115,8 +103,8 @@ public abstract class Actor extends WorldObject {
 	}
 
 	// Getters
-	public Point getGridPosition() {
-		return new Point(toGridCoordinate(getX()), toGridCoordinate(getY()));
+	public Coordinate getGridPosition() {
+		return new Coordinate(toGridCoordinate(getX()), toGridCoordinate(getY()));
 	}
 	
 	public float getRadius() {

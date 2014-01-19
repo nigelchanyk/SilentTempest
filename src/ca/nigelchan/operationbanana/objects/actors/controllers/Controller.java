@@ -1,13 +1,18 @@
-package ca.nigelchan.operationbanana.objects.actors.action;
+package ca.nigelchan.operationbanana.objects.actors.controllers;
 
 import ca.nigelchan.operationbanana.objects.actors.Actor;
 
-public abstract class Action {
+public abstract class Controller {
 
 	protected Actor actor;
 	
 	private boolean enabled = false;
 	private boolean permitted = true;
+	
+	public Controller(Actor actor) {
+		this.actor = actor;
+		actor.addController(this);
+	}
 	
 	public void update(float elapsedTime) {
 		if (isActive())
@@ -26,15 +31,6 @@ public abstract class Action {
 	
 	public boolean isEnabled() {
 		return enabled;
-	}
-	
-	// Setters
-	public void setActor(Actor actor) {
-		if (this.actor != null) {
-			this.actor.removeAction(this);
-		}
-		this.actor = actor;
-		actor.addAction(this);
 	}
 	
 	public void setEnabled(boolean enabled) {

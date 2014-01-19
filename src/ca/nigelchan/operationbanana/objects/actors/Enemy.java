@@ -1,13 +1,26 @@
 package ca.nigelchan.operationbanana.objects.actors;
 
+import org.andengine.entity.sprite.Sprite;
+
 import ca.nigelchan.operationbanana.data.actors.EnemyData;
 import ca.nigelchan.operationbanana.objects.World;
+import ca.nigelchan.operationbanana.objects.actors.controllers.EnemyCore;
+import ca.nigelchan.operationbanana.resources.GameResource;
 
 public class Enemy extends Actor {
 
-	public Enemy(EnemyData data, World world) {
+	private Sprite sprite;
+	
+	public Enemy(EnemyData data, World world, GameResource resource) {
 		super(data, world);
-		// TODO Auto-generated constructor stub
+		addController(new EnemyCore(this, data));
+		sprite = new Sprite(0, 0, resource.getMonkeyBase(), resource.getVertexBufferObjectManager());
+		attachChild(sprite);
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+		sprite.dispose();
+	}
 }

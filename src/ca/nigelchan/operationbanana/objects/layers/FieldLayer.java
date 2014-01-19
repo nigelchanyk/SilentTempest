@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import ca.nigelchan.operationbanana.data.layers.FieldLayerData;
 import ca.nigelchan.operationbanana.objects.actors.Actor;
 import ca.nigelchan.operationbanana.resources.GameResource;
+import ca.nigelchan.operationbanana.util.Coordinate;
 import ca.nigelchan.operationbanana.util.MathHelper;
 import ca.nigelchan.operationbanana.util.Vector2;
 
@@ -56,6 +57,11 @@ public class FieldLayer extends Layer {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean isWalkable(Coordinate position) {
+		return !tiles.get(position.y()).get(position.x()).isObstacle();
 	}
 	
 }

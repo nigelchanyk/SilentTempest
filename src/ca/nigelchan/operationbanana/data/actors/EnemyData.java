@@ -1,11 +1,32 @@
 package ca.nigelchan.operationbanana.data.actors;
 
-import ca.nigelchan.operationbanana.util.Vector2;
+import java.util.ArrayList;
+
+import ca.nigelchan.operationbanana.data.actors.sequences.SequenceData;
+import ca.nigelchan.operationbanana.util.Coordinate;
 
 public class EnemyData extends ActorData {
+	
+	private Coordinate sequenceOffset = Coordinate.ZERO;
+	private ArrayList<SequenceData> sequence = new ArrayList<SequenceData>();
 
-	public EnemyData(Vector2 initPosition, float initRotation, float speed) {
+	public EnemyData(Coordinate initPosition, float initRotation, float speed) {
 		super(initPosition, initRotation, speed);
 	}
 
+	public void addSequenceItem(SequenceData sequenceItem) {
+		sequence.add(sequenceItem);
+		sequenceOffset = sequenceOffset.add(sequenceItem.getTranslation());
+	}
+	
+	// Getters
+	public Iterable<SequenceData> getSequence() {
+		if (sequenceOffset.x() != 0 || sequenceOffset.y() != 0)
+			throw new IllegalStateException("Enemy sequence is not repeatable.");
+		return sequence;
+	}
+	
+	public int getSequenceSize() {
+		return sequence.size();
+	}
 }
