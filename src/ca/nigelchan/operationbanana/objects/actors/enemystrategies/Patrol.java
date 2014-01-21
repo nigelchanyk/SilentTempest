@@ -10,6 +10,8 @@ import ca.nigelchan.operationbanana.objects.actors.enemystrategies.sequences.Seq
 import ca.nigelchan.operationbanana.util.Coordinate;
 
 public class Patrol extends EnemyStrategy {
+	
+	private static final float ALERT_REDUCTION_FACTOR = 0.2f;
 
 	private int current = 0;
 	private Sequence[] sequence;
@@ -32,6 +34,7 @@ public class Patrol extends EnemyStrategy {
 
 	@Override
 	public void onUpdate(float elapsedTime) {
+		core.setAlertLevel(core.getAlertLevel() - ALERT_REDUCTION_FACTOR * elapsedTime);
 		sequence[current].onUpdate(elapsedTime);
 		if (sequence[current].isCompleted()) {
 			current = next();

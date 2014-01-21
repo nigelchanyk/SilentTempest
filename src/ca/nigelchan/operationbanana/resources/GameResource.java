@@ -19,6 +19,7 @@ public class GameResource extends Resource {
 		super(activity);
 	}
 	
+	private ITextureRegion alertIndicator;
 	private int dpi;
 	private ITiledTextureRegion fieldTextureRegion;
 	private int fieldTileSize;
@@ -31,43 +32,10 @@ public class GameResource extends Resource {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		SVGBitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 
-		BuildableBitmapTextureAtlas fieldTextureAtlas = createBuildableAtlas(
-			FIELD_SPRITE_WIDTH,
-			FIELD_SPRITE_HEIGHT
-		);
-		BuildableBitmapTextureAtlas monkeyBaseTextureAtlas = createBuildableAtlas(1, 1);
-		BuildableBitmapTextureAtlas joystickAtlas = new BuildableBitmapTextureAtlas(
-			activity.getTextureManager(),
-			getTextureSize(dpi),
-			getTextureSize(dpi),
-			TextureOptions.DEFAULT
-		);
-		addAtlas(joystickAtlas);
-
-
-		fieldTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
-			fieldTextureAtlas,
-			activity,
-			"field.svg",
-			fieldTileSize * FIELD_SPRITE_WIDTH,
-			fieldTileSize * FIELD_SPRITE_HEIGHT,
-			5,
-			5
-		);
-		monkeyBaseTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
-			monkeyBaseTextureAtlas,
-			activity,
-			"monkey_base.svg",
-			fieldTileSize,
-			fieldTileSize
-        );
-		joystickDisplay = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
-			joystickAtlas,
-			activity,
-			"joystick.svg",
-			dpi,
-			dpi
-        );
+		createFieldTexture();
+		createMonkeyTexture();
+		createJoystickTexture();
+		createIndicatorTexture();
 	}
 	
 	private void computeSize(BaseGameActivity activity) {
@@ -90,6 +58,67 @@ public class GameResource extends Resource {
 		return atlas;
 	}
 	
+	private void createFieldTexture() {
+		BuildableBitmapTextureAtlas fieldTextureAtlas = createBuildableAtlas(
+			FIELD_SPRITE_WIDTH,
+			FIELD_SPRITE_HEIGHT
+		);
+		fieldTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+			fieldTextureAtlas,
+			activity,
+			"field.svg",
+			fieldTileSize * FIELD_SPRITE_WIDTH,
+			fieldTileSize * FIELD_SPRITE_HEIGHT,
+			5,
+			5
+		);
+	}
+	
+	private void createJoystickTexture() {
+		BuildableBitmapTextureAtlas joystickAtlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			getTextureSize(dpi),
+			getTextureSize(dpi),
+			TextureOptions.DEFAULT
+		);
+		addAtlas(joystickAtlas);
+		joystickDisplay = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			joystickAtlas,
+			activity,
+			"joystick.svg",
+			dpi,
+			dpi
+        );
+	}
+	
+	private void createIndicatorTexture() {
+		BuildableBitmapTextureAtlas indicatorAtlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			getTextureSize(fieldTileSize * 4),
+			getTextureSize(fieldTileSize * 2),
+			TextureOptions.DEFAULT
+		);
+		addAtlas(indicatorAtlas);
+		alertIndicator = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			indicatorAtlas,
+			activity,
+			"alert_indicator.svg",
+			fieldTileSize * 4,
+			fieldTileSize * 2
+		);
+	}
+	
+	private void createMonkeyTexture() {
+		BuildableBitmapTextureAtlas monkeyBaseTextureAtlas = createBuildableAtlas(1, 1);
+		monkeyBaseTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			monkeyBaseTextureAtlas,
+			activity,
+			"monkey_base.svg",
+			fieldTileSize,
+			fieldTileSize
+        );
+	}
+	
 	private int getTextureSize(int requiredSize) {
 		if (requiredSize > 8192)
 			throw new IllegalArgumentException("Seriously? You want texture size of " + requiredSize + "?");
@@ -101,6 +130,10 @@ public class GameResource extends Resource {
 	}
 
 	// Getters
+	public ITextureRegion getAlertIndicator() {
+		return alertIndicator;
+	}
+
 	public ITiledTextureRegion getFieldTextureRegion() {
 		return fieldTextureRegion;
 	}

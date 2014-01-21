@@ -9,11 +9,13 @@ import ca.nigelchan.operationbanana.resources.GameResource;
 
 public class Enemy extends Actor {
 
+	private EnemyCore core;
 	private Sprite sprite;
 	
 	public Enemy(EnemyData data, World world, GameResource resource) {
 		super(data, world);
-		addController(new EnemyCore(this, data));
+		core = new EnemyCore(this, data);
+		addController(core);
 		sprite = new Sprite(0, 0, resource.getMonkeyBase(), resource.getVertexBufferObjectManager());
 		attachChild(sprite);
 	}
@@ -23,4 +25,10 @@ public class Enemy extends Actor {
 		super.dispose();
 		sprite.dispose();
 	}
+
+	// Getters
+	public EnemyCore getCore() {
+		return core;
+	}
+
 }

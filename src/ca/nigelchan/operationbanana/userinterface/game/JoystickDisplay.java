@@ -1,23 +1,28 @@
-package ca.nigelchan.operationbanana.controllers;
+package ca.nigelchan.operationbanana.userinterface.game;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import org.andengine.entity.modifier.AlphaModifier;
 import org.andengine.entity.sprite.Sprite;
 
-import ca.nigelchan.operationbanana.entity.CenteredEntity;
+import ca.nigelchan.operationbanana.controllers.Joystick;
+import ca.nigelchan.operationbanana.entity.OffsetEntity;
 import ca.nigelchan.operationbanana.resources.GameResource;
 import ca.nigelchan.operationbanana.util.MathHelper;
 import ca.nigelchan.operationbanana.util.Vector2;
 
-public class JoystickDisplay extends CenteredEntity implements Joystick.IListener {
+public class JoystickDisplay extends OffsetEntity implements Joystick.IListener {
 	
 	private AlphaModifier alphaModifier;
 	private boolean firstMove = false;
 	private Sprite sprite;
 	
 	public JoystickDisplay(GameResource resource) {
-		super(resource.getJoystickDisplay().getWidth(), resource.getJoystickDisplay().getHeight());
+		super(
+			resource.getJoystickDisplay().getWidth(),
+			resource.getJoystickDisplay().getHeight(),
+			OffsetEntity.OffsetType.CENTER
+		);
 		sprite = new Sprite(0, 0, resource.getJoystickDisplay(), resource.getVertexBufferObjectManager());
 		sprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);;
 		attachChild(sprite);

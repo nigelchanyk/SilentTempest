@@ -1,7 +1,6 @@
 package ca.nigelchan.operationbanana.objects;
 
-import ca.nigelchan.operationbanana.entity.CenteredEntity;
-import ca.nigelchan.operationbanana.util.MathHelper;
+import ca.nigelchan.operationbanana.entity.OffsetEntity;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 /**
@@ -11,17 +10,17 @@ import ca.nigelchan.operationbanana.util.Vector2;
  * All position is in world grid unit.
  *
  */
-public class WorldObject extends CenteredEntity {
+public class WorldObject extends OffsetEntity {
 
 	protected World world;
 	
 	private Vector2 position;
 	
-	public WorldObject(Vector2 position, World world) {
-		super(world.getUnitScale(), world.getUnitScale());
+	public WorldObject(Vector2 position, OffsetEntity.OffsetType offsetType, World world) {
+		super(world.getUnitScale(), world.getUnitScale(), offsetType);
 		this.world = world;
-		setPosition(position);
-		setRotationCenter(world.getUnitScale() * 0.5f, world.getUnitScale() * 0.5f);
+		_setPosition(position);
+		super.setRotationCenter(world.getUnitScale() * 0.5f, world.getUnitScale() * 0.5f);
 	}
 	
 	// Getters
@@ -31,10 +30,6 @@ public class WorldObject extends CenteredEntity {
 	
 	public Vector2 getPosition() {
 		return position;
-	}
-	
-	public float getRadianRotation() {
-		return MathHelper.toRadians(getRotation());
 	}
 
 	@Override
@@ -49,8 +44,7 @@ public class WorldObject extends CenteredEntity {
 
 	// Setters
 	public void setPosition(Vector2 position) {
-		this.position = position;
-		super.setPosition(position.x() * world.getUnitScale(), position.y() * world.getUnitScale());
+		_setPosition(position);
 	}
 
 	@Override
@@ -68,8 +62,9 @@ public class WorldObject extends CenteredEntity {
 		setPosition(new Vector2(getX(), pY));
 	}
 
-	public void setRadianRotation(float rotation) {
-		super.setRotation(MathHelper.toDegrees(rotation));
+	// Encapsulated to prevent constructor calls being overridden
+	private void _setPosition(Vector2 position) {
+		this.position = position;
+		super.setPosition(position.x() * world.getUnitScale(), position.y() * world.getUnitScale());
 	}
-
 }

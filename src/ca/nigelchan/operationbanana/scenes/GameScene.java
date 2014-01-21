@@ -5,12 +5,13 @@ import org.andengine.entity.scene.background.Background;
 import org.andengine.util.color.Color;
 
 import ca.nigelchan.operationbanana.controllers.Joystick;
-import ca.nigelchan.operationbanana.controllers.JoystickDisplay;
 import ca.nigelchan.operationbanana.controllers.ActorController;
 import ca.nigelchan.operationbanana.data.WorldData;
+import ca.nigelchan.operationbanana.managers.EnemyManager;
 import ca.nigelchan.operationbanana.managers.SceneManager;
 import ca.nigelchan.operationbanana.objects.World;
 import ca.nigelchan.operationbanana.resources.GameResource;
+import ca.nigelchan.operationbanana.userinterface.game.JoystickDisplay;
 
 public class GameScene extends BaseScene {
 	
@@ -44,6 +45,7 @@ public class GameScene extends BaseScene {
 		attachChild(world);
 		controller = new ActorController(world.getPlayer());
 		joystick.subscribe(controller);
+		world.subscribe(new EnemyManager(world, resource));
 		
 		setHud(new HUD());
 		joystickDisplay = new JoystickDisplay(resource);
@@ -60,5 +62,6 @@ public class GameScene extends BaseScene {
 		world = new World(worldData, resource);
 		attachChild(world);
 		controller.setActor(world.getPlayer());
+		world.subscribe(new EnemyManager(world, resource));
 	}
 }

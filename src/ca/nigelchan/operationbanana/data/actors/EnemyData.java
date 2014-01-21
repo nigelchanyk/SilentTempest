@@ -9,9 +9,11 @@ public class EnemyData extends ActorData {
 	
 	private Coordinate sequenceOffset = Coordinate.ZERO;
 	private ArrayList<SequenceData> sequence = new ArrayList<SequenceData>();
+	private int visionRange;
 
-	public EnemyData(Coordinate initPosition, float initRotation, float speed) {
+	public EnemyData(Coordinate initPosition, float initRotation, float speed, int visionRange) {
 		super(initPosition, initRotation, speed);
+		this.visionRange = visionRange;
 	}
 
 	public void addSequenceItem(SequenceData sequenceItem) {
@@ -29,4 +31,9 @@ public class EnemyData extends ActorData {
 	public int getSequenceSize() {
 		return sequence.size();
 	}
+
+	public int getVisionRange() {
+		return visionRange;
+	}
+
 }

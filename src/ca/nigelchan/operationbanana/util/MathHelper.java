@@ -38,6 +38,14 @@ public final class MathHelper {
 		return Math.max(min, Math.min(max, value));
 	}
 	
+	public static float getAngleDifference(float a, float b) {
+		a = wrapAngle(a);
+		b = wrapAngle(b);
+		
+		float difference = Math.abs(a - b);
+		return difference > PI ? TWO_PI - difference : difference;
+	}
+	
 	public static float getRotation(Direction direction) {
 		return ROTATION_MAPPER.get(direction);
 	}

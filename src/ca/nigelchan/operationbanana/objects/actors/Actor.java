@@ -1,25 +1,26 @@
 package ca.nigelchan.operationbanana.objects.actors;
 
-import java.util.ArrayList;
-
 import org.andengine.engine.handler.IUpdateHandler;
 
 import ca.nigelchan.operationbanana.data.actors.ActorData;
+import ca.nigelchan.operationbanana.entity.OffsetEntity;
 import ca.nigelchan.operationbanana.objects.World;
 import ca.nigelchan.operationbanana.objects.WorldObject;
 import ca.nigelchan.operationbanana.objects.actors.controllers.Controller;
 import ca.nigelchan.operationbanana.util.Coordinate;
+import ca.nigelchan.operationbanana.util.PostponedList;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 public abstract class Actor extends WorldObject {
 
-	private ArrayList<Controller> controllers = new ArrayList<Controller>(4);
+	private PostponedList<Controller> controllers = new PostponedList<Controller>(4);
 	private float speed;
+	private PostponedList<IListener> subscribers = new PostponedList<Actor.IListener>(4);
 
 	public Actor(ActorData data, World world) {
-		super(data.getInitialPosition().toCenterVector2(), world);
+		super(data.getInitialPosition().toCenterVector2(), OffsetEntity.OffsetType.CENTER, world);
 
-		setRotation(data.getInitialRotation());
+		super.setRotation(data.getInitialRotation());
 		speed = data.getSpeed();
 
 		registerUpdateHandler(new IUpdateHandler() {
@@ -41,7 +42,7 @@ public abstract class Actor extends WorldObject {
 			return;
 		controllers.add(controller);
 	}
-	
+
 	public void moveTo(Vector2 position) {
 		if (world.isValidPosition(position, this)) {
 			setPosition(position);
@@ -53,6 +54,16 @@ public abstract class Actor extends WorldObject {
 	
 	public void removeController(Controller controller) {
 		controllers.remove(controller);
+	}
+	
+	public void subscribe(IListener subscriber) {
+		if (subscribers.contains(subscriber))
+			return;
+		subscribers.add(subscriber);
+	}
+	
+	public void unsubscribe(IListener subscriber) {
+		subscribers.remove(subscriber);
 	}
 	
 	private void handleUpdate(float elapsedTime) {
@@ -98,6 +109,18 @@ public abstract class Actor extends WorldObject {
 		setY(minY);
 	}
 	
+	private void notifyPositionChanged() {
+		Vector2 position = getPosition();
+		for (IListener subscriber : subscribers)
+			subscriber.onPositionChanged(position);
+	}
+	
+	private void notifyRotationChanged() {
+		float rotation = getRadianRotation();
+		for (IListener subscriber : subscribers)
+			subscriber.onRotationChanged(rotation);
+	}
+	
 	private int toGridCoordinate(float precise) {
 		return Math.round(precise);
 	}
@@ -110,12 +133,50 @@ public abstract class Actor extends WorldObject {
 	public float getRadius() {
 		return 0.4f;
 	}
-	
+
 	public float getSpeed() {
 		return speed;
 	}
 
 	public World getWorld() {
 		return world;
+	}
+	
+	// Setters
+	@Override
+	public void setPosition(Vector2 position) {
+		super.setPosition(position);
+		notifyPositionChanged();
+	}
+
+	@Override
+	public void setPosition(float pX, float pY) {
+		super.setPosition(pX, pY);
+		notifyPositionChanged();
+	}
+
+	@Override
+	public void setRadianRotation(float rotation) {
+		super.setRadianRotation(rotation);
+		notifyRotationChanged();
+	}
+
+	@Override
+	public void setX(float pX) {
+		super.setX(pX);
+		notifyPositionChanged();
+	}
+
+	@Override
+	public void setY(float pY) {
+		super.setY(pY);
+		notifyPositionChanged();
+	}
+
+	public static interface IListener {
+		
+		public void onPositionChanged(Vector2 position);
+		public void onRotationChanged(float rotation);
+
 	}
 }
