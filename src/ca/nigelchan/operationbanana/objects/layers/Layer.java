@@ -25,6 +25,7 @@ public abstract class Layer extends Entity {
 		super.dispose();
 	}
 	
+	public abstract boolean isHidingSpot(Coordinate position);
 	public abstract boolean isValidPosition(Vector2 position, Actor actor);
 	public abstract boolean isWalkable(Coordinate position);
 

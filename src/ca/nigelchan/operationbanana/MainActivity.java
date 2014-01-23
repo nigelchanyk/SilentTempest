@@ -84,13 +84,15 @@ public class MainActivity extends BaseGameActivity {
 				// TODO Change to MainMenuScene
 				WorldData worldData = new WorldData(5, 5);
 				FieldLayerData fyd = new FieldLayerData(5, 5);
-				TileTemplate thingy = new TileTemplate(1, true);
-				TileTemplate ground = new TileTemplate(0, false);
+				TileTemplate ground = new TileTemplate(0, TileTemplate.Attribute.NORMAL);
+				TileTemplate thingy = new TileTemplate(1, TileTemplate.Attribute.OBSTACLE);
+				TileTemplate hidingSpot = new TileTemplate(5, TileTemplate.Attribute.HIDING_SPOT);
 				for (int i = 0; i < 5; ++i) {
 					for (int j = 0; j < 5; ++j)
 						fyd.setTile(i, j, ground);
 				}
 				fyd.setTile(2, 2, thingy);
+				fyd.setTile(0, 1, hidingSpot);
 				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(Coordinate.ZERO, 0, 1.5f));
 				EnemyData enemy = new EnemyData(new Coordinate(1, 1), 0, 1.5f, 1);
 				enemy.addSequenceItem(new MoveData(Direction.EAST));

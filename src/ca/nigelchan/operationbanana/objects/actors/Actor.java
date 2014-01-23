@@ -120,14 +120,10 @@ public abstract class Actor extends WorldObject {
 		for (IListener subscriber : subscribers)
 			subscriber.onRotationChanged(rotation);
 	}
-	
-	private int toGridCoordinate(float precise) {
-		return Math.round(precise);
-	}
 
 	// Getters
 	public Coordinate getGridPosition() {
-		return new Coordinate(toGridCoordinate(getX()), toGridCoordinate(getY()));
+		return getPosition().toCoordinate();
 	}
 	
 	public float getRadius() {

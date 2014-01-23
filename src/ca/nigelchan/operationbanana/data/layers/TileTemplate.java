@@ -2,20 +2,30 @@ package ca.nigelchan.operationbanana.data.layers;
 
 public class TileTemplate {
 	
-	private int id;
-	private boolean obstacle;
+	public enum Attribute {
+		NORMAL,
+		OBSTACLE,
+		HIDING_SPOT
+	}
 	
-	public TileTemplate(int id, boolean obstacle) {
+	private Attribute attribute;
+	private int id;
+	
+	public TileTemplate(int id, Attribute attribute) {
 		this.id = id;
-		this.obstacle = obstacle;
+		this.attribute = attribute;
 	}
 
 	public int getId() {
 		return id;
 	}
+	
+	public boolean isHidingSpot() {
+		return attribute == Attribute.HIDING_SPOT;
+	}
 
 	public boolean isObstacle() {
-		return obstacle;
+		return attribute == Attribute.OBSTACLE;
 	}
 
 }

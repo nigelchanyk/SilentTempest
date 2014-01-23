@@ -52,6 +52,10 @@ public class Vector2 {
 		float len = length();
 		return new Vector2(x() / len, y() / len);
 	}
+	
+	public Coordinate toCoordinate() {
+		return new Coordinate((int)x(), (int)y());
+	}
 
 	public float x() {
 		return _x;

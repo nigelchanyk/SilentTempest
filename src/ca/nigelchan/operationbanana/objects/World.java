@@ -88,6 +88,14 @@ public class World extends Entity {
 		super.dispose();
 	}
 	
+	public boolean isHidingSpot(Coordinate position) {
+		for (Layer layer : layers) {
+			if (layer.isHidingSpot(position))
+				return true;
+		}
+		return false;
+	}
+	
 	public boolean isValidPath(Vector2 src, Vector2 dest) {
 		float x0 = src.x(), x1 = dest.x(), y0 = src.y(), y1 = dest.y();
         float dx = Math.abs(x1 - x0);

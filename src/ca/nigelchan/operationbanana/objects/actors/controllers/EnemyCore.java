@@ -2,6 +2,7 @@ package ca.nigelchan.operationbanana.objects.actors.controllers;
 
 import ca.nigelchan.operationbanana.data.actors.EnemyData;
 import ca.nigelchan.operationbanana.objects.actors.Enemy;
+import ca.nigelchan.operationbanana.objects.actors.Player;
 import ca.nigelchan.operationbanana.objects.actors.enemystrategies.EnemyStrategy;
 import ca.nigelchan.operationbanana.objects.actors.enemystrategies.Patrol;
 import ca.nigelchan.operationbanana.util.MathHelper;
@@ -54,7 +55,11 @@ public class EnemyCore extends Controller {
 	}
 	
 	private void computeAlertLevel(float elapsedTime) {
-		Vector2 target = actor.getWorld().getPlayer().getPosition();
+		Player player = actor.getWorld().getPlayer();
+		if (player.isHidden())
+			return;
+
+		Vector2 target = player.getPosition();
 		float angleDifference = MathHelper.getAngleDifference(
 			actor.getRadianRotation(),
 			MathHelper.getRotation(actor.getPosition(), target)

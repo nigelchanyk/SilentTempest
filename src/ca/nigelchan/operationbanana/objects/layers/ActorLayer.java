@@ -44,11 +44,6 @@ public class ActorLayer extends Layer {
 		// Parent class will dispose of anything that is directly attached
 		super.dispose();
 	}
-
-	@Override
-	public boolean isValidPosition(Vector2 position, Actor actor) {
-		return true;
-	}
 	
 	// Getters
 	public Iterable<Enemy> getEnemies() {
@@ -60,7 +55,17 @@ public class ActorLayer extends Layer {
 	}
 
 	@Override
+	public boolean isHidingSpot(Coordinate position) {
+		return false;
+	}
+
+	@Override
 	public boolean isWalkable(Coordinate position) {
+		return true;
+	}
+
+	@Override
+	public boolean isValidPosition(Vector2 position, Actor actor) {
 		return true;
 	}
 

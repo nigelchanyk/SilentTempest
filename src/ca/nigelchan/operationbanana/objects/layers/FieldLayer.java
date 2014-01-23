@@ -37,6 +37,11 @@ public class FieldLayer extends Layer {
 	}
 
 	@Override
+	public boolean isHidingSpot(Coordinate position) {
+		return tiles.get(position.y()).get(position.x()).isHidingSpot();
+	}
+
+	@Override
 	public boolean isValidPosition(Vector2 position, Actor actor) {
 		float radius = actor.getRadius();
 		float radiusSq = MathHelper.sq(radius);

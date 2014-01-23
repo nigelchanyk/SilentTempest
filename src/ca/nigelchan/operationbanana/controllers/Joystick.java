@@ -19,7 +19,7 @@ public class Joystick implements IOnSceneTouchListener {
 	private int toleranceSq;
 	
 	public Joystick(DisplayMetrics metrics) {
-		toleranceSq = MathHelper.sq(metrics.densityDpi / 4);
+		toleranceSq = MathHelper.sq(metrics.densityDpi / 8);
 	}
 
 	@Override

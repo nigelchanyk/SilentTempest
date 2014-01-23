@@ -16,6 +16,10 @@ public class Tile extends TiledSprite {
 	}
 
 	// Getters
+	public boolean isHidingSpot() {
+		return template.isHidingSpot();
+	}
+
 	public boolean isObstacle() {
 		return template.isObstacle();
 	}
