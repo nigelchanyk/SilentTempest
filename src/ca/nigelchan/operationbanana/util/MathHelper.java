@@ -1,5 +1,6 @@
 package ca.nigelchan.operationbanana.util;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 
 public final class MathHelper {
@@ -10,8 +11,11 @@ public final class MathHelper {
 	public static final float PI_OVER_8 = (float)Math.PI * 0.125f;
 	public static final float THREE_PI_OVER_2 = (float)Math.PI * 1.5f;
 	public static final float THREE_PI_OVER_4 = (float)Math.PI * 0.75f;
+	private static final EnumMap<Direction, Direction> REVERSE_MAPPER = new EnumMap<Direction, Direction>(Direction.class);
 	private static final EnumMap<Direction, Float> ROTATION_MAPPER = new EnumMap<Direction, Float>(Direction.class);
 	private static final EnumMap<Direction, Coordinate> TRANSLATION_MAPPER = new EnumMap<Direction, Coordinate>(Direction.class);
+	private static final ArrayList<Direction> DIAGONAL_DIRECTIONS = new ArrayList<Direction>();
+	private static final ArrayList<Direction> NON_DIAGONAL_DIRECTIONS = new ArrayList<Direction>();
 	public static final float TWO_PI = (float)Math.PI * 2;
 	
 	static {
@@ -32,6 +36,29 @@ public final class MathHelper {
 		ROTATION_MAPPER.put(Direction.SOUTHWEST, PI + PI_OVER_4);
 		ROTATION_MAPPER.put(Direction.WEST, THREE_PI_OVER_2);
 		ROTATION_MAPPER.put(Direction.NORTHWEST, PI + THREE_PI_OVER_4);
+		
+		REVERSE_MAPPER.put(Direction.NORTH, Direction.SOUTH);
+		REVERSE_MAPPER.put(Direction.NORTHEAST, Direction.SOUTHWEST);
+		REVERSE_MAPPER.put(Direction.EAST, Direction.WEST);
+		REVERSE_MAPPER.put(Direction.SOUTHEAST, Direction.NORTHWEST);
+		REVERSE_MAPPER.put(Direction.SOUTH, Direction.NORTH);
+		REVERSE_MAPPER.put(Direction.SOUTHWEST, Direction.NORTHEAST);
+		REVERSE_MAPPER.put(Direction.WEST, Direction.EAST);
+		REVERSE_MAPPER.put(Direction.NORTHWEST, Direction.SOUTHEAST);
+		
+		NON_DIAGONAL_DIRECTIONS.add(Direction.NORTH);
+		NON_DIAGONAL_DIRECTIONS.add(Direction.EAST);
+		NON_DIAGONAL_DIRECTIONS.add(Direction.SOUTH);
+		NON_DIAGONAL_DIRECTIONS.add(Direction.WEST);
+
+		DIAGONAL_DIRECTIONS.add(Direction.NORTHEAST);
+		DIAGONAL_DIRECTIONS.add(Direction.NORTHWEST);
+		DIAGONAL_DIRECTIONS.add(Direction.SOUTHEAST);
+		DIAGONAL_DIRECTIONS.add(Direction.SOUTHWEST);
+	}
+	
+	public static Coordinate abs(Coordinate coordinate) {
+		return new Coordinate(Math.abs(coordinate.x()), Math.abs(coordinate.y()));
 	}
 	
 	public static float clamp(float value, float min, float max) {
@@ -44,6 +71,14 @@ public final class MathHelper {
 		
 		float difference = Math.abs(a - b);
 		return difference > PI ? TWO_PI - difference : difference;
+	}
+	
+	public static Iterable<Direction> getDiagonalDirections() {
+		return DIAGONAL_DIRECTIONS;
+	}
+	
+	public static Iterable<Direction> getNonDiagonalDirections() {
+		return NON_DIAGONAL_DIRECTIONS;
 	}
 	
 	public static float getRotation(Direction direction) {
@@ -65,6 +100,23 @@ public final class MathHelper {
 	
 	public static Vector2 getUnitVector(float rotation) {
 		return new Vector2((float)Math.sin(rotation), (float)-Math.cos(rotation));
+	}
+	
+	public static float interpolateAngle(float src, float dest, float delta) {
+		src = wrapAngle(src);
+		dest = wrapAngle(dest);
+		if (Math.abs(src - dest) > MathHelper.PI)
+			src += dest < src ? -MathHelper.TWO_PI : MathHelper.TWO_PI;
+		if (src < dest)
+			src = Math.min(src + delta, dest);
+		else
+			src = Math.max(src - delta, dest);
+
+		return MathHelper.wrapAngle(src);
+	}
+	
+	public static Direction reverse(Direction direction) {
+		return REVERSE_MAPPER.get(direction);
 	}
 
 	public static int sq(int value) {

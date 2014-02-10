@@ -32,6 +32,10 @@ public class Vector2 {
 		return (x() - x) * (x() - x) + (y() - y) * (y() - y);
 	}
 	
+	public float dot(Vector2 other) {
+		return x() * other.x() + y() * other.y();
+	}
+	
 	public Vector2 floor() {
 		return new Vector2((float)Math.floor(x()), (float)Math.floor(y()));
 	}
@@ -55,6 +59,11 @@ public class Vector2 {
 	
 	public Coordinate toCoordinate() {
 		return new Coordinate((int)x(), (int)y());
+	}
+
+	@Override
+	public String toString() {
+		return "(" + x() + ", " + y() + ")";
 	}
 
 	public float x() {

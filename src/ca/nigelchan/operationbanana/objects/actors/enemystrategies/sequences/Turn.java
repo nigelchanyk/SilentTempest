@@ -8,8 +8,6 @@ import ca.nigelchan.operationbanana.util.Vector2;
 
 public class Turn extends Sequence {
 	
-	public static final float ROTATION_PER_SEC = MathHelper.TWO_PI * 2;
-	
 	private float angle;
 
 	public Turn(Actor actor, Coordinate initPosition, Direction direction) {
@@ -19,17 +17,18 @@ public class Turn extends Sequence {
 		angle = MathHelper.wrapAngle(MathHelper.getRotation(actor.getPosition(), dest));
 	}
 
+	public Turn(Actor actor, Coordinate initPosition, float angle) {
+		super(actor, initPosition);
+		this.angle = angle;
+	}
+
 	@Override
 	public void onUpdate(float elapsedTime) {
-		float current = MathHelper.wrapAngle(actor.getRadianRotation());
-		if (Math.abs(current - angle) > MathHelper.PI)
-			current += angle < current ? -MathHelper.TWO_PI : MathHelper.TWO_PI;
-		if (current < angle)
-			current = Math.min(current + elapsedTime * ROTATION_PER_SEC, angle);
-		else
-			current = Math.max(current - elapsedTime * ROTATION_PER_SEC, angle);
-
-		current = MathHelper.wrapAngle(current);
+		float current = MathHelper.interpolateAngle(
+            actor.getRadianRotation(),
+            angle,
+            elapsedTime * Actor.ROTATION_PER_SEC
+        );
 		if (Math.abs(current - angle) < 0.0001f) {
 			current = angle;
 			completed = true;

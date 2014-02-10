@@ -8,10 +8,13 @@ import ca.nigelchan.operationbanana.objects.World;
 import ca.nigelchan.operationbanana.objects.WorldObject;
 import ca.nigelchan.operationbanana.objects.actors.controllers.Controller;
 import ca.nigelchan.operationbanana.util.Coordinate;
+import ca.nigelchan.operationbanana.util.MathHelper;
 import ca.nigelchan.operationbanana.util.PostponedList;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 public abstract class Actor extends WorldObject {
+
+	public static final float ROTATION_PER_SEC = MathHelper.TWO_PI * 2;
 
 	private PostponedList<Controller> controllers = new PostponedList<Controller>(4);
 	private float speed;
@@ -141,6 +144,8 @@ public abstract class Actor extends WorldObject {
 	// Setters
 	@Override
 	public void setPosition(Vector2 position) {
+		if (getWorld().isOutOfBound(position.toCoordinate()))
+			throw new IllegalArgumentException("Invalid position: " + position.x() + ", " + position.y());
 		super.setPosition(position);
 		notifyPositionChanged();
 	}

@@ -2,6 +2,7 @@ package ca.nigelchan.operationbanana.objects;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
@@ -14,11 +15,14 @@ import ca.nigelchan.operationbanana.data.layers.LayerData;
 import ca.nigelchan.operationbanana.objects.actors.Actor;
 import ca.nigelchan.operationbanana.objects.actors.Enemy;
 import ca.nigelchan.operationbanana.objects.actors.Player;
+import ca.nigelchan.operationbanana.objects.actors.enemystrategies.sequences.Move;
 import ca.nigelchan.operationbanana.objects.layers.ActorLayer;
 import ca.nigelchan.operationbanana.objects.layers.FieldLayer;
 import ca.nigelchan.operationbanana.objects.layers.Layer;
 import ca.nigelchan.operationbanana.resources.GameResource;
 import ca.nigelchan.operationbanana.util.Coordinate;
+import ca.nigelchan.operationbanana.util.Direction;
+import ca.nigelchan.operationbanana.util.MathHelper;
 import ca.nigelchan.operationbanana.util.Vector2;
 
 public class World extends Entity {
@@ -88,11 +92,56 @@ public class World extends Entity {
 		super.dispose();
 	}
 	
+	public Iterable<Move> findPath(Actor actor, Coordinate dest) {
+		if (actor.getGridPosition().equals(dest)) {
+			return new ArrayList<Move>();
+		}
+		Direction[][] directions = new Direction[width][height];
+		LinkedList<Coordinate> queue = new LinkedList<Coordinate>();
+		Coordinate start = actor.getGridPosition();
+		queue.add(start);
+        Coordinate next = null;
+		while (!queue.isEmpty()) {
+			Coordinate current = queue.poll();
+			for (Direction direction : MathHelper.getNonDiagonalDirections()) {
+				Coordinate translation = MathHelper.getTranslation(direction);
+				next = current.add(translation);
+				if (!isWalkable(next))
+					continue;
+				if (directions[next.y()][next.x()] != null)
+					continue;
+				directions[next.y()][next.x()] = direction;
+				if (next.equals(dest)) {
+					current = next;
+                    LinkedList<Move> path = new LinkedList<Move>();
+					while (!current.equals(start)) {
+						direction = directions[current.y()][current.x()];
+						next = current.add(MathHelper.getTranslation(MathHelper.reverse(direction)));
+						path.addFirst(new Move(actor, next, direction));
+						current = next;
+					}
+					return path;
+				}
+				queue.push(next);
+			}
+		}
+		
+		return null;
+	}
+	
 	public boolean isHidingSpot(Coordinate position) {
 		for (Layer layer : layers) {
 			if (layer.isHidingSpot(position))
 				return true;
 		}
+		return false;
+	}
+	
+	public boolean isOutOfBound(Coordinate position) {
+		if (position.x() < 0 || position.x() >= width)
+			return true;
+		if (position.y() < 0 || position.y() >= height)
+			return true;
 		return false;
 	}
 	
@@ -170,9 +219,7 @@ public class World extends Entity {
 	}
 	
 	public boolean isWalkable(Coordinate position) {
-		if (position.x() < 0 || position.x() >= width)
-			return false;
-		if (position.y() < 0 || position.y() >= height)
+		if (isOutOfBound(position))
 			return false;
 		for (Layer layer : layers) {
 			if (!layer.isWalkable(position))

@@ -93,7 +93,7 @@ public class MainActivity extends BaseGameActivity {
 				}
 				fyd.setTile(2, 2, thingy);
 				fyd.setTile(0, 1, hidingSpot);
-				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(Coordinate.ZERO, 0, 1.5f));
+				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(Coordinate.ZERO, 0, 3f));
 				EnemyData enemy = new EnemyData(new Coordinate(1, 1), 0, 1.5f, 1);
 				enemy.addSequenceItem(new MoveData(Direction.EAST));
 				enemy.addSequenceItem(new MoveData(Direction.EAST));

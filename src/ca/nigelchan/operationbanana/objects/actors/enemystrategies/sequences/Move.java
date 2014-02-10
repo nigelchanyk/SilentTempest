@@ -47,4 +47,9 @@ public class Move extends Sequence {
 		actor.setPosition(actor.getPosition().add(unitVector.multiply(elapsedTime * actor.getSpeed())));
 	}
 
+	// Getters
+	public Direction getDirection() {
+		return direction;
+	}
+
 }

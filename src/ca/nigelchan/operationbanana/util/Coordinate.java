@@ -35,6 +35,11 @@ public class Coordinate {
 	public Vector2 toCenterVector2() {
 		return new Vector2(x() + 0.5f, y() + 0.5f);
 	}
+
+	@Override
+	public String toString() {
+		return "(" + x() + ", " + y() + ")";
+	}
 	
 	public Vector2 toVector2() {
 		return new Vector2(x(), y());

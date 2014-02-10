@@ -1,5 +1,6 @@
 package ca.nigelchan.operationbanana.objects.actors.controllers;
 
+import android.util.Log;
 import ca.nigelchan.operationbanana.data.actors.EnemyData;
 import ca.nigelchan.operationbanana.objects.actors.Enemy;
 import ca.nigelchan.operationbanana.objects.actors.Player;
@@ -11,21 +12,33 @@ import ca.nigelchan.operationbanana.util.Vector2;
 
 public class EnemyCore extends Controller {
 	
-	private static final float ALERT_ACCUMULATION_FACTOR = 2;
-	private static final float HALF_FIELD_OF_VIEW = MathHelper.toRadians(75);
+	public static final float ALERT_ACCUMULATION_FACTOR = 2;
+	public static final float HALF_FIELD_OF_VIEW = MathHelper.toRadians(75);
 
 	private float alertLevel = 0;
-	private Patrol patrol;
+	private EnemyData enemyData;
 	private EnemyStrategy strategy;
 	private PostponedList<IListener> subscribers = new PostponedList<IListener>(4);
 	private int visionRange;
 
 	public EnemyCore(Enemy actor, EnemyData data) {
 		super(actor);
-		patrol = new Patrol(actor, this, data);
-		strategy = patrol;
+		this.enemyData = data;
+		strategy = new Patrol(actor, this, data, true);
 		visionRange = data.getVisionRange();
 		setEnabled(true);
+	}
+
+	public boolean canSee(Vector2 target) {
+		float angleDifference = MathHelper.getAngleDifference(
+			actor.getRadianRotation(),
+			MathHelper.getRotation(actor.getPosition(), target)
+		);
+		if (angleDifference > HALF_FIELD_OF_VIEW)
+			return false;
+		if (!actor.getWorld().isValidPath(actor.getPosition(), target))
+			return false;
+		return true;
 	}
 
 	@Override
@@ -38,6 +51,7 @@ public class EnemyCore extends Controller {
 				strategy.onUpdate(elapsedTime);
 				return;
 			}
+			Log.i("STRATEGY", strategy.getClass().getSimpleName());
 			previous = strategy;
 		}
 
@@ -87,6 +101,10 @@ public class EnemyCore extends Controller {
 	// Getters
 	public float getAlertLevel() {
 		return alertLevel;
+	}
+	
+	public EnemyData getEnemyData() {
+		return enemyData;
 	}
 
 	public int getVisionRange() {
