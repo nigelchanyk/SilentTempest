@@ -28,9 +28,9 @@
      inkscape:window-height="774"
      id="namedview3048"
      showgrid="true"
-     inkscape:zoom="0.45254834"
-     inkscape:cx="634.97321"
-     inkscape:cy="433.91864"
+     inkscape:zoom="2.56"
+     inkscape:cx="390.2246"
+     inkscape:cy="731.86588"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -94,13 +94,10 @@
      height="600"
      x="0"
      y="400" />
-  <rect
+  <path
      style="fill:#ff00ff"
-     id="rect3043"
-     width="200"
-     height="800"
-     x="200"
-     y="200" />
+     d="M 200 200 L 200 1000 L 400 1000 L 400 200 L 200 200 z M 300 260 C 322.09139 260 340 277.90861 340 300 C 340 322.09139 322.09139 340 300 340 C 277.90861 340 260 322.09139 260 300 C 260 277.90861 277.90861 260 300 260 z "
+     id="rect3043" />
   <rect
      style="fill:#ff6600"
      id="rect3045"
