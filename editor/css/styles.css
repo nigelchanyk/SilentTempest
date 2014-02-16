@@ -10,6 +10,11 @@ body, html {
     overflow: scroll;
 }
 
+.control-group {
+    display: inline-block;
+    margin-left: 40px;
+}
+
 .editor {
     height: 100%;
     padding-top: 70px;
@@ -17,10 +22,6 @@ body, html {
 
 #field-sprite {
     display: none;
-}
-
-.file-control {
-    margin-left: 20px;
 }
 
 #file-open-modal .drop-zone {
@@ -42,9 +43,22 @@ body, html {
     vertical-align: middle;
 }
 
+html {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.layer-control {
+    display: inline-block;
+}
+
 #palette {
     margin: 20px auto 0 auto;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .palette-wrapper {

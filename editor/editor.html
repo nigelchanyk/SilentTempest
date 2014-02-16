@@ -10,10 +10,31 @@
 </head>
 <body>
     <div class="toolbar">
-        <div class="btn-group file-control">
+        <div class="btn-group control-group">
             <button id="btn-new" title="New Level" type="button" class="btn btn-default"><span class="glyphicon glyphicon-file"></span></button>
             <button id="btn-open" title="Open Level" type="button" class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span></button>
             <button id="btn-save" title="Save Level" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+        </div>
+        <div id="layer-manager" class="control-group">
+            <div class="btn-group group-control">
+                <button title="Ground Layer" type="button" class="btn btn-default btn-ground disabled"><span class="glyphicon glyphicon-road"></span></button>
+                <button title="Object Layer" type="button" class="btn btn-default btn-object"><span class="glyphicon glyphicon-tree-conifer"></span></button>
+                <button title="Events" type="button" class="btn btn-default btn-event"><span class="glyphicon glyphicon-user"></span></button>
+            </div>
+            <div class="layer-control">
+                <div class="btn-group dropdown">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        Layer <span class="selected-layer">0</span> <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li class="dropdown-item-layer" data-layer="0"><a href="#">Layer 0</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button title="Add Layer" type="button" class="btn btn-default btn-add-layer"><span class="glyphicon glyphicon-plus"></span></button>
+                    <button title="Remove Layer" type="button" class="btn btn-default btn-remove-layer disabled"><span class="glyphicon glyphicon-minus"></span></button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -64,6 +85,25 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal fade" id="confirm-modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" data-target="#message-modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"></h4>
+          </div>
+          <div class="modal-body">
+            <span class="modal-message"></span>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-primary btn-confirm" data-dismiss="modal">Yes</button>
           </div>
         </div>
       </div>

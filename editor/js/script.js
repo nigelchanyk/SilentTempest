@@ -7,12 +7,20 @@ Core = function(canvas) {
     this.canvas = canvas;
     this.subscribers = {
         onCellChanged: Array(),
+        onLayerChanged: Array(),
+        onLayerCountChanged: Array(),
+        onLayerGroupChanged: Array(),
         onLevelReset: Array(),
         onPaletteAreaChanged: Array()
     };
     this.setLevel(new Level(1, 1, 15, 20));
     this.setPaletteArea(new Area(0, 0, 1, 1));
 };
+
+Core.LayerGroup = {};
+Core.LayerGroup.GROUND = 0;
+Core.LayerGroup.OBJECT = 1;
+Core.LayerGroup.EVENT = 2;
 
 Core.prototype.bind = function(evt, callback) {
     this.subscribers[evt].push(callback);
@@ -30,6 +38,7 @@ Core.prototype.notify = function(evt, change) {
 
 Core.prototype.setLevel = function(level) {
     this.level = level;
+    this.setLayerGroup(Core.LayerGroup.GROUND);
     this.notify('onLevelReset', level);
 };
 
@@ -40,6 +49,49 @@ Core.prototype.getPaletteArea = function() {
 Core.prototype.setPaletteArea = function(area) {
     this.paletteArea = area;
     this.notify('onPaletteAreaChanged', area);
+};
+
+Core.prototype.setLayer = function(layer) {
+    this.layer = layer;
+    this.notify('onLayerChanged', layer);
+};
+
+Core.prototype.setLayerGroup = function(layerGroup) {
+    this.setLayer(0);
+    this.layerGroup = layerGroup;
+    this.notify('onLayerGroupChanged', layerGroup);
+};
+
+Core.prototype.addLayer = function() {
+    var count = 0;
+    if (this.layerGroup === Core.LayerGroup.GROUND) {
+        this.level.addGroundLayer();
+        count = this.level.getGroundDepthCount();
+    }
+    else if (this.layerGroup === Core.LayerGroup.OBJECT) {
+        this.level.addTopLayer();
+        count = this.level.getTopDepthCount();
+    }
+    this.notify('onLayerCountChanged', count);
+    this.setLayer(count - 1);
+};
+
+Core.prototype.removeLayer = function() {
+    var count = 0;
+    if (this.layerGroup === Core.LayerGroup.GROUND) {
+        if (this.level.getGroundDepthCount() === 1)
+            return;
+        this.level.removeGroundLayer(this.layer);
+        count = this.level.getGroundDepthCount();
+    }
+    else if (this.layerGroup === Core.LayerGroup.OBJECT) {
+        if (this.level.getTopDepthCount() === 1)
+            return;
+        this.level.removeTopLayer(this.layer);
+        count = this.level.getTopDepthCount();
+    }
+    this.notify('onLayerCountChanged', count);
+    this.setLayer(this.layer);
 };
 
 // Class Area {
@@ -88,7 +140,7 @@ Palette = function(core, palette, fieldSprite) {
     $(palette).bind('mousemove', function(evt) {
         _this.onMouseMove(evt);
     });
-    $(palette).bind('mouseup mouseexit', function(evt) {
+    $(palette).bind('mouseup mouseleave', function(evt) {
         _this.onMouseUp(evt);
     });
     core.bind('onPaletteAreaChanged', function(area) {
@@ -103,9 +155,10 @@ Palette = function(core, palette, fieldSprite) {
 
 Palette.prototype.onMouseDown = function(evt) {
     var viewportOffset = $(palette)[0].getBoundingClientRect();
-    this.startX = evt.clientX - viewportOffset.left;
-    this.startY = evt.clientY - viewportOffset.top;
+    this.startX = this.endX = evt.clientX - viewportOffset.left;
+    this.startY = this.endY = evt.clientY - viewportOffset.top;
     this.dragging = true;
+    this.changeArea();
 };
 
 Palette.prototype.onMouseMove = function(evt) {
@@ -128,10 +181,12 @@ Palette.prototype.onMouseUp = function(evt) {
 };
 
 Palette.prototype.changeArea = function() {
-    var startX = ~~(this.startX / 32);
-    var startY = ~~(this.startY / 32);
-    var endX = ~~(this.endX / 32);
-    var endY = ~~(this.endY / 32);
+    var maxX = $(this.palette).width() - 1;
+    var maxY = $(this.palette).height() - 1;
+    var startX = ~~(Math.min(this.startX, maxX) / 32);
+    var startY = ~~(Math.min(this.startY, maxY) / 32);
+    var endX = ~~(Math.min(this.endX, maxX) / 32);
+    var endY = ~~(Math.min(this.endY, maxY) / 32);
     this.core.setPaletteArea(
         new Area(
             Math.min(startY, endY),
@@ -142,6 +197,85 @@ Palette.prototype.changeArea = function() {
     );
 };
 
+// Class LayerManager
+LayerManager = function(core, layerManager) {
+    this.core = core;
+    this.layerManager = layerManager;
+    var _this = this;
+    $('.btn-ground', layerManager).bind('click', function() {
+        _this.core.setLayerGroup(Core.LayerGroup.GROUND);
+    });
+    $('.btn-object', layerManager).bind('click', function() {
+        _this.core.setLayerGroup(Core.LayerGroup.OBJECT);
+    });
+    $('.btn-event', layerManager).bind('click', function() {
+        _this.core.setLayerGroup(Core.LayerGroup.EVENT);
+    });
+    $('.btn-add-layer', layerManager).bind('click', function() {
+        _this.core.addLayer();
+    });
+    $('.btn-remove-layer', layerManager).bind('click', function() {
+        window.showConfirmDialog('Are you sure you want to remove this layer?', 'Remove Layer', function() {
+            _this.core.removeLayer();
+        });
+    });
+    core.bind('onLayerChanged', function(layer) {
+        $('.selected-layer', _this.layerManager).text(layer);
+    });
+    core.bind('onLayerGroupChanged', function(layerGroup) {
+        _this.onLayerGroupChanged(layerGroup);
+    });
+    core.bind('onLayerCountChanged', function(count) {
+        _this.onLayerCountChanged(count);
+    });
+};
+
+LayerManager.prototype.onLayerGroupChanged = function(layerGroup) {
+    $('.dropdown', this.layerManager).removeClass('open');
+    $('.dropdown-item-layer', this.layerManager).remove();
+    $('.group-control button', this.layerManager).removeClass('disabled');
+    $('.layer-control', this.layerManager).css('visibility', layerGroup === Core.LayerGroup.EVENT ? 'hidden' : 'visible');
+    switch (layerGroup) {
+        case Core.LayerGroup.GROUND:
+            this.createDropdownLayer(this.core.getLevel().getGroundDepthCount());
+            $('.btn-ground', this.layerManager).addClass('disabled');
+            return;
+        case Core.LayerGroup.OBJECT:
+            this.createDropdownLayer(this.core.getLevel().getTopDepthCount());
+            $('.btn-object', this.layerManager).addClass('disabled');
+            return;
+        case Core.LayerGroup.EVENT:
+            $('.btn-event', this.layerManager).addClass('disabled');
+            return;
+    }
+};
+
+LayerManager.prototype.createDropdownLayer = function(count) {
+    var dropdown = $('.layer-control .dropdown-menu', this.groupControl)[0];
+    for (var i = count - 1; i >= 0; i--) {
+        var a = document.createElement('a');
+        a.setAttribute('href' , '#');
+        a.innerHTML = i + '';
+        var li = document.createElement('li');
+        li.setAttribute('class', 'dropdown-item-layer');
+        li.setAttribute('data-layer', i + '');
+        li.appendChild(a);
+        dropdown.appendChild(li);
+    }
+    var _this = this;
+    $('.dropdown-item-layer', this.layerManager).bind('click', function() {
+        _this.core.setLayer($(this).data('layer'));
+    });
+};
+
+LayerManager.prototype.onLayerCountChanged = function(count) {
+    $('.dropdown-item-layer', this.layerManager).remove();
+    this.createDropdownLayer(count);
+    if (count > 1)
+        $('.btn-remove-layer', this.layerManager).removeClass('disabled');
+    else
+        $('.btn-remove-layer', this.layerManager).addClass('disabled');
+};
 
 // Class Canvas
 Canvas = function(core, canvas, fieldSprite) {
@@ -195,41 +329,69 @@ Level = function(groundDepth, topDepth, row, column) {
 
 Level.prototype.createArray = function(row, column, depth) {
     var layers = new Array(depth);
-    for (var i = 0; i < depth; ++i) {
-        layers[i] = new Array(row);
-        for (var j = 0; j < row; ++j) {
-            layers[i][j] = new Array(column);
-            for (var k = 0; k < column; ++k) {
-                layers[i][j][k] = 0;
-            }
-        }
-    }
+    for (var i = 0; i < depth; ++i)
+        layers[i] = this.createLayer(row, column);
     return layers;
 }
 
+Level.prototype.createLayer = function(row, column) {
+    layer = new Array(row);
+    for (var j = 0; j < row; ++j) {
+        layer[j] = new Array(column);
+        for (var k = 0; k < column; ++k) {
+            layer[j][k] = 0;
+        }
+    }
+    return layer;
+};
+
 Level.prototype.getRowCount = function() {
     return this.row;
-}
+};
 
 Level.prototype.getColumnCount = function() {
     return this.column;
-}
+};
 
 Level.prototype.getGroundDepthCount = function() {
     return this.groundDepth;
-}
+};
 
 Level.prototype.getTopDepthCount = function() {
-    return this.getTopDepthCount;
-}
+    return this.topDepth;
+};
 
 Level.prototype.getGroundGrid = function(depth, row, column) {
     return this.groundLayers[depth][row][column];
-}
+};
 
 Level.prototype.getTopGrid = function(depth, row, column) {
     return this.topLayers[depth][row][column];
-}
+};
+
+Level.prototype.addGroundLayer = function() {
+    this.groundLayers.push(this.createLayer(this.row, this.column));
+    this.groundDepth++;
+};
+
+Level.prototype.addTopLayer = function() {
+    this.topLayers.push(this.createLayer(this.row, this.column));
+    this.topDepth++;
+};
+
+Level.prototype.removeGroundLayer = function(index) {
+    if (this.groundDepth === 1)
+        return;
+    this.groundLayers.splice(index, 1);
+    this.groundDepth--;
+};
+
+Level.prototype.removeTopLayer = function(index) {
+    if (this.topDepth === 1)
+        return;
+    this.topLayers.splice(index, 1);
+    this.topDepth--;
+};
 
 Level.fromJSON = function(json) {
 };
@@ -344,12 +506,26 @@ window.showMessage = function(message, title) {
     $('#message-modal .modal-title').text(title);
     $('#message-modal .modal-message').text(message);
     $('#message-modal').modal('show');
-}
+};
+
+window.confirmDialog = {};
+window.confirmDialog.acceptCallback = null;
+
+window.showConfirmDialog = function(message, title, acceptCallback) {
+    $('#confirm-modal .modal-title').text(title);
+    $('#confirm-modal .modal-message').text(message);
+    window.confirmDialog.acceptCallback = acceptCallback;
+    $('#confirm-modal').modal('show');
+};
 
 $(document).on('ready', function() {
+    $('#confirm-modal .btn-confirm').bind('click', function() {
+        window.confirmDialog.acceptCallback();
+    });
     var core = new Core();
     var levelImporter = new LevelImporter(core);
     var palette = new Palette(core, '#palette', '#field-sprite');
     var canvas = new Canvas(core, '#canvas', '#field-sprite');
+    var layerManager = new LayerManager(core, '#layer-manager');
     var fileSelector = new FileSelector(levelImporter, '#btn-open', '#file-open-modal');
 });
