@@ -22,18 +22,21 @@ Core.LayerGroup.GROUND = 0;
 Core.LayerGroup.OBJECT = 1;
 Core.LayerGroup.EVENT = 2;
 
-Core.prototype.bind = function(evt, callback) {
-    this.subscribers[evt].push(callback);
+Core.prototype.bind = function(evts, callback) {
+    var evts = evts.split(' ');
+    for (var i = 0; i < evts.length; ++i)
+        this.subscribers[evts[i]].push(callback);
 }
 
 Core.prototype.getLevel = function(level) {
     return this.level;
 };
 
-Core.prototype.notify = function(evt, change) {
+Core.prototype.notify = function(evt) {
+    var args = Array.prototype.slice.call(arguments, 1);
     var subscribers = this.subscribers[evt];
     for (var i = 0; i < subscribers.length; ++i)
-        subscribers[i](change);
+        subscribers[i].apply(this, args);
 };
 
 Core.prototype.setLevel = function(level) {
@@ -51,15 +54,53 @@ Core.prototype.setPaletteArea = function(area) {
     this.notify('onPaletteAreaChanged', area);
 };
 
+Core.prototype.getPaletteWidth = function() {
+    return this.paletteWidth;
+};
+
+Core.prototype.setPaletteWidth = function(width) {
+    if (width % 1 !== 0)
+        throw 'Palette width is not % 32';
+    this.paletteWidth = width;
+};
+
+Core.prototype.getPaletteHeight = function() {
+    return this.paletteHeight;
+};
+
+Core.prototype.setPaletteHeight = function(height) {
+    if (height % 1 !== 0)
+        throw 'Palette height is not % 32';
+    this.paletteHeight = height;
+};
+
+Core.prototype.getLayer = function() {
+    return this.layer;
+};
+
 Core.prototype.setLayer = function(layer) {
     this.layer = layer;
     this.notify('onLayerChanged', layer);
+};
+
+Core.prototype.getLayerGroup = function(layerGroup) {
+    return this.layerGroup;
 };
 
 Core.prototype.setLayerGroup = function(layerGroup) {
     this.setLayer(0);
     this.layerGroup = layerGroup;
     this.notify('onLayerGroupChanged', layerGroup);
+};
+
+Core.prototype.paint = function(changes) {
+    for (var i = 0; i < changes.length; ++i) {
+        if (this.layerGroup === Core.LayerGroup.GROUND)
+            this.level.setGroundGrid(this.layer, changes[i]['row'], changes[i]['column'], changes[i]['index']);
+        else
+            this.level.setTopGrid(this.layer, changes[i]['row'], changes[i]['column'], changes[i]['index']);
+        this.notify('onCellChanged', changes[i]['row'], changes[i]['column']);
+    }
 };
 
 Core.prototype.addLayer = function() {
@@ -118,6 +159,55 @@ Area.prototype.getHeight = function() {
     return this.height;
 };
 
+Area.prototype.distinct = function(other) {
+    var coordinates = {};
+    Area._setMinus(this, other, coordinates);
+    Area._setMinus(other, this, coordinates);
+    var result = Array();
+    for (var r in coordinates) {
+        for (var c in coordinates[r]) {
+            result.push({
+                row: r,
+                column: c
+            });
+        }
+    }
+    return result;
+};
+
+Area.prototype.encloses = function(row, column) {
+    return row >= this.row && row < this.row + this.height && column >= this.column && column < this.column + this.width;
+};
+
+Area.fromDisplayCoordinate = function(startX, startY, endX, endY, width, height) {
+    var maxX = width - 1;
+    var maxY = height - 1;
+    startX = ~~(Math.min(startX, maxX) / 32);
+    startY = ~~(Math.min(startY, maxY) / 32);
+    endX = ~~(Math.min(endX, maxX) / 32);
+    endY = ~~(Math.min(endY, maxY) / 32);
+    return new Area(
+        Math.min(startY, endY),
+        Math.min(startX, endX),
+        Math.abs(endX - startX) + 1,
+        Math.abs(endY - startY) + 1
+    );
+};
+
+Area._setMinus = function(a, b, coordinates) {
+    for (var r = 0; r < a.height; ++r) {
+        for (var c = 0; c < a.width; ++c) {
+            var row = r + a.row;
+            var col = c + a.column;
+            if (row < b.row || row >= b.row + b.height || col < b.column || col >= b.column + b.width) {
+                if (coordinates[row] === undefined)
+                    coordinates[row] = {};
+                coordinates[row][col] = true;
+            }
+        }
+    }
+}
+
 // Class Palette
 Palette = function(core, palette, fieldSprite) {
     this.core = core;
@@ -128,6 +218,8 @@ Palette = function(core, palette, fieldSprite) {
     this.endX = 0;
     this.endY = 0;
     this.dragging = false;
+    this.core.setPaletteWidth(this.fieldSprite.width / 32);
+    this.core.setPaletteHeight(this.fieldSprite.height / 32);
     $(palette).css({
         background: 'url(' + this.fieldSprite.src + ') 0 0',
         width: this.fieldSprite.width,
@@ -181,20 +273,7 @@ Palette.prototype.onMouseUp = function(evt) {
 };
 
 Palette.prototype.changeArea = function() {
-    var maxX = $(this.palette).width() - 1;
-    var maxY = $(this.palette).height() - 1;
-    var startX = ~~(Math.min(this.startX, maxX) / 32);
-    var startY = ~~(Math.min(this.startY, maxY) / 32);
-    var endX = ~~(Math.min(this.endX, maxX) / 32);
-    var endY = ~~(Math.min(this.endY, maxY) / 32);
-    this.core.setPaletteArea(
-        new Area(
-            Math.min(startY, endY),
-            Math.min(startX, endX),
-            Math.abs(endX - startX) + 1,
-            Math.abs(endY - startY) + 1
-        )
-    );
+    this.core.setPaletteArea(Area.fromDisplayCoordinate(this.startX, this.startY, this.endX, this.endY, $(this.palette).width(), $(this.palette).height()));
 };
 
 // Class LayerManager
@@ -283,17 +362,92 @@ Canvas = function(core, canvas, fieldSprite) {
     this.canvas = canvas;
     this.fieldSprite = $(fieldSprite)[0];
     this.ctx = $(canvas)[0].getContext('2d');
+    this.startX = 0;
+    this.startY = 0;
+    this.endX = 0;
+    this.endY = 0;
+    this.dragging = false;
+    this.previewArea = null;
     var _this = this;
-    core.bind('onLevelReset', function(level) {
-        _this.repaint(level);
+    $(canvas).bind('mousedown', function(evt) {
+        _this.onMouseDown(evt);
+    });
+    $(canvas).bind('mousemove', function(evt) {
+        _this.onMouseMove(evt);
+    });
+    $(canvas).bind('mouseup mouseleave', function(evt) {
+        _this.onMouseUp(evt);
+    });
+    core.bind('onLevelReset onLayerChanged onLayerGroupChanged', function() {
+        _this.repaint();
+    });
+    core.bind('onCellChanged', function(row, column) {
+        _this.paintCell(row, column);
     });
     this.repaint(core.getLevel());
 };
 
-Canvas.prototype.repaint = function(level) {
+Canvas.prototype.onMouseDown = function(evt) {
+    this.startX = this.endX = evt.offsetX;
+    this.startY = this.endY = evt.offsetY;
+    this.dragging = true;
+    this.previewArea = null;
+    this.paintPreview();
+};
+
+Canvas.prototype.onMouseMove = function(evt) {
+    if (!this.dragging)
+        return;
+    this.endX = evt.offsetX;
+    this.endY = evt.offsetY;
+    this.paintPreview();
+};
+
+Canvas.prototype.onMouseUp = function(evt) {
+    if (!this.dragging)
+        return;
+    this.endX = evt.offsetX;
+    this.endY = evt.offsetY;
+    this.dragging = false;
+    var newArea = Area.fromDisplayCoordinate(this.startX, this.startY, this.endX, this.endY, this.width, this.height);
+    var changes = Array();
+    for (var r = newArea.getRow(); r < newArea.getRow() + newArea.getHeight(); ++r) {
+        for (var c = newArea.getColumn(); c < newArea.getColumn() + newArea.getWidth(); ++c) {
+            changes.push({
+                row: r,
+                column: c,
+                index: this.getPaintIndex(r, c)
+            });
+        }
+    }
+    this.core.paint(changes);
+};
+
+Canvas.prototype.paintPreview = function() {
+    if (this.previewArea === null) {
+        var a = this.previewArea = Area.fromDisplayCoordinate(this.startX, this.startY, this.endX, this.endY, this.width, this.height);
+        this.startRow = this.previewArea.getRow();
+        this.startColumn = this.previewArea.getColumn();
+        for (var r = a.getRow(); r < a.getRow() + a.getHeight(); ++r) {
+            for (var c = a.getColumn(); c < a.getColumn() + a.getWidth(); ++c) {
+                this.paintCell(r, c);
+            }
+        }
+    } else {
+        var newArea = Area.fromDisplayCoordinate(this.startX, this.startY, this.endX, this.endY, this.width, this.height);
+        var distinct = newArea.distinct(this.previewArea);
+        this.previewArea = newArea;
+        for (var i = 0; i < distinct.length; ++i)
+            this.paintCell(distinct[i]['row'], distinct[i]['column']);
+    }
+};
+
+Canvas.prototype.repaint = function() {
+    this.width = this.core.getLevel().getColumnCount() * 32;
+    this.height = this.core.getLevel().getRowCount() * 32;
     $(this.canvas).attr({
-        width: level.getColumnCount() * 32,
-        height: level.getRowCount() * 32
+        width: this.width,
+        height: this.height
     });
     var rows = this.core.getLevel().getRowCount();
     var cols = this.core.getLevel().getColumnCount();
@@ -304,16 +458,46 @@ Canvas.prototype.repaint = function(level) {
 };
 
 Canvas.prototype.paintCell = function(row, column) {
+    this.ctx.fillStyle = 'rgb(255,255,255)';
+    this.ctx.fillRect(column * 32, row * 32, 32, 32);
     var groundDepth = this.core.getLevel().getGroundDepthCount();
     for (var i = 0; i < groundDepth; ++i) {
-        var index = this.core.getLevel().getGroundGrid(i, row, column);
-        this.ctx.drawImage(this.fieldSprite, (index % 5) * 32, (~~(index / 5)) * 32, 32, 32, column * 32, row * 32, 32, 32);
+        this.ctx.globalAlpha = this.core.getLayerGroup() === Core.LayerGroup.GROUND && this.core.getLayer() === i ? 1 : 0.3;
+        var index = this.isPreviewCellLayer(row, column, i, Core.LayerGroup.GROUND)
+            ? this.getPaintIndex(row, column)
+            : this.core.getLevel().getGroundGrid(i, row, column);
+        this.paintCellLayer(row, column, index);
     }
     var topDepth = this.core.getLevel().getTopDepthCount();
     for (var i = 0; i < topDepth; ++i) {
-        var index = this.core.getLevel().getTopGrid(i, row, column);
-        this.ctx.drawImage(this.fieldSprite, (index % 5) * 32, (~~(index / 5)) * 32, 32, 32, column * 32, row * 32, 32, 32);
+        this.ctx.globalAlpha = this.core.getLayerGroup() === Core.LayerGroup.OBJECT && this.core.getLayer() === i ? 1 : 0.3;
+        var index = this.isPreviewCellLayer(row, column, i, Core.LayerGroup.OBJECT)
+            ? this.getPaintIndex(row, column)
+            : this.core.getLevel().getTopGrid(i, row, column);
+        this.paintCellLayer(row, column, index);
     }
+    this.ctx.globalAlpha = 1;
+};
+
+Canvas.prototype.paintCellLayer = function(row, column, index) {
+    if (index < 0)
+        return;
+    this.ctx.drawImage(this.fieldSprite, (index % 5) * 32, (~~(index / 5)) * 32, 32, 32, column * 32, row * 32, 32, 32);
+};
+
+Canvas.prototype.isPreviewCellLayer = function(row, column, layer, layerGroup) {
+    return this.dragging &&
+        this.previewArea !== null &&
+        this.previewArea.encloses(row, column) &&
+        this.core.getLayerGroup() === layerGroup &&
+        this.core.getLayer() === layer;
+};
+
+Canvas.prototype.getPaintIndex = function(row, column) {
+    var palette = this.core.getPaletteArea();
+    var offsetRow = ((row - this.startRow) % palette.getHeight() + palette.getHeight()) % palette.getHeight() + palette.getRow();
+    var offsetCol = ((column - this.startColumn) % palette.getWidth() + palette.getWidth()) % palette.getWidth() + palette.getColumn();
+    return offsetRow * this.core.getPaletteWidth() + offsetCol;
 };
 
 // Class Level
@@ -339,7 +523,7 @@ Level.prototype.createLayer = function(row, column) {
     for (var j = 0; j < row; ++j) {
         layer[j] = new Array(column);
         for (var k = 0; k < column; ++k) {
-            layer[j][k] = 0;
+            layer[j][k] = -1;
         }
     }
     return layer;
@@ -365,8 +549,16 @@ Level.prototype.getGroundGrid = function(depth, row, column) {
     return this.groundLayers[depth][row][column];
 };
 
+Level.prototype.setGroundGrid = function(depth, row, column, index) {
+    this.groundLayers[depth][row][column] = index;
+};
+
 Level.prototype.getTopGrid = function(depth, row, column) {
     return this.topLayers[depth][row][column];
+};
+
+Level.prototype.setTopGrid = function(depth, row, column, index) {
+    this.topLayers[depth][row][column] = index;
 };
 
 Level.prototype.addGroundLayer = function() {
