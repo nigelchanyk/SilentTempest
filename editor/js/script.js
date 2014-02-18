@@ -23,10 +23,10 @@ Core.LayerGroup.OBJECT = 1;
 Core.LayerGroup.EVENT = 2;
 
 Core.prototype.bind = function(evts, callback) {
-    var evts = evts.split(' ');
-    for (var i = 0; i < evts.length; ++i)
-        this.subscribers[evts[i]].push(callback);
-}
+    var evtTokens = evts.split(' ');
+    for (var i = 0; i < evtTokens.length; ++i)
+        this.subscribers[evtTokens[i]].push(callback);
+};
 
 Core.prototype.getLevel = function(level) {
     return this.level;
@@ -553,6 +553,10 @@ Level.prototype.setGroundGrid = function(depth, row, column, index) {
     this.groundLayers[depth][row][column] = index;
 };
 
+Level.prototype.getGrid = function(layerGroup, depth, row, column) {
+    return (layerGroup === Core.LayerGroup.GROUND ? this.groundLayers : this.topLayers)[depth][row][column];
+};
+
 Level.prototype.getTopGrid = function(depth, row, column) {
     return this.topLayers[depth][row][column];
 };
@@ -640,6 +644,77 @@ LevelImporter.prototype.getExtension = function() {
     return '.stl';
 };
 
+LevelExporter = function(level) {
+    this.json = {};
+    this.transformLevel(level);
+};
+
+LevelExporter.prototype.transformLevel = function(level) {
+    this.json['rows'] = level.getRowCount();
+    this.json['columns'] = level.getColumnCount();
+    this.json['ground'] = [];
+    for (var i = 0; i < level.getGroundDepthCount(); ++i)
+        this.json['ground'].push(this.transformLayer(level, Core.LayerGroup.GROUND, i));
+    this.json['top'] = [];
+    for (var i = 0; i < level.getTopDepthCount(); ++i)
+        this.json['top'].push(this.transformLayer(level, Core.LayerGroup.OBJECT, i));
+};
+
+LevelExporter.prototype.toJSON = function() {
+    return JSON.stringify(this.json);
+};
+
+LevelExporter.prototype.save = function(filename) {
+    var blob = new Blob([this.toJSON()], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, filename);
+};
+
+LevelExporter.prototype.transformLayer = function(level, layerGroup, layer) {
+    var rows = level.getRowCount();
+    var columns = level.getColumnCount();
+    var result = [];
+    var last = 0;
+    var repeat = 0;
+    var repeatedIndex = -1;
+    for (var r = 0; r < rows; ++r) {
+        for (var c = 0; c < columns; ++c) {
+            var index = level.getGrid(layerGroup, layer, r, c);
+            var current = r * columns + c;
+            if (index < 0) {
+                repeatedIndex = -1;
+                repeat = 0;
+                continue;
+            }
+            if (repeatedIndex === index) {
+                repeat++;
+                if (repeat === 1) {
+                    result.push(':');
+                    result.push(repeat.toString(36));
+                } else {
+                    result[result.length - 1] = repeat.toString(36);
+                }
+                last = current;
+                continue;
+            }
+            if (current - last <= 3) {
+                while (last < current) {
+                    result.push(';');
+                    last++;
+                }
+            } else {
+                result.push(';');
+                result.push((current - last - 1).toString(36));
+                result.push('>');
+            }
+            result.push(index.toString(36));
+            repeatedIndex = index;
+            last = current;
+            repeat = 0;
+        }
+    }
+    return result.join('');
+};
+
 // Class FileSelector
 FileSelector = function(loader, btn, dialog) {
     this.loader = loader;
@@ -714,10 +789,11 @@ $(document).on('ready', function() {
     $('#confirm-modal .btn-confirm').bind('click', function() {
         window.confirmDialog.acceptCallback();
     });
-    var core = new Core();
-    var levelImporter = new LevelImporter(core);
-    var palette = new Palette(core, '#palette', '#field-sprite');
-    var canvas = new Canvas(core, '#canvas', '#field-sprite');
-    var layerManager = new LayerManager(core, '#layer-manager');
-    var fileSelector = new FileSelector(levelImporter, '#btn-open', '#file-open-modal');
+    window.app = {};
+    window.app.core = new Core();
+    window.app.levelImporter = new LevelImporter(window.app.core);
+    window.app.palette = new Palette(window.app.core, '#palette', '#field-sprite');
+    window.app.canvas = new Canvas(window.app.core, '#canvas', '#field-sprite');
+    window.app.layerManager = new LayerManager(window.app.core, '#layer-manager');
+    window.app.fileSelector = new FileSelector(window.app.levelImporter, '#btn-open', '#file-open-modal');
 });
