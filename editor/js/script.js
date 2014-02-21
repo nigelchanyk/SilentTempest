@@ -6,10 +6,12 @@ String.prototype.endsWith = function(suffix) {
 Core = function(canvas) {
     this.canvas = canvas;
     this.subscribers = {
+        onBeforeCellsChanged: Array(),
         onCellChanged: Array(),
         onLayerChanged: Array(),
         onLayerCountChanged: Array(),
         onLayerGroupChanged: Array(),
+        onLayerRemoved: Array(),
         onLevelReset: Array(),
         onPaletteAreaChanged: Array()
     };
@@ -94,6 +96,7 @@ Core.prototype.setLayerGroup = function(layerGroup) {
 };
 
 Core.prototype.paint = function(changes) {
+    this.notify('onBeforeCellsChanged', changes);
     for (var i = 0; i < changes.length; ++i) {
         if (this.layerGroup === Core.LayerGroup.GROUND)
             this.level.setGroundGrid(this.layer, changes[i]['row'], changes[i]['column'], changes[i]['index']);
@@ -132,6 +135,7 @@ Core.prototype.removeLayer = function() {
         count = this.level.getTopDepthCount();
     }
     this.notify('onLayerCountChanged', count);
+    this.notify('onLayerRemoved');
     this.setLayer(this.layer);
 };
 
@@ -206,7 +210,105 @@ Area._setMinus = function(a, b, coordinates) {
             }
         }
     }
-}
+};
+
+// Class HistoryManager
+HistoryManager = function(core, btnGroup) {
+    this.core = core;
+    this.btnGroup = btnGroup;
+    this.ignoreSignal = false;
+    this.undoStack = new Array();
+    this.redoStack = new Array();
+    var _this = this;
+    $('.btn-undo', btnGroup).bind('click', function() {
+        _this.onUndo();
+    });
+    $('.btn-redo', btnGroup).bind('click', function() {
+        _this.onRedo();
+    });
+    core.bind('onBeforeCellsChanged', function(changes) {
+        _this.onBeforeCellsChanged(changes);
+    });
+    core.bind('onLayerRemoved onLevelReset', function() {
+        _this.reset();
+    });
+};
+
+HistoryManager.prototype.onBeforeCellsChanged = function(changes) {
+    if (this.ignoreSignal)
+        return;
+    this.redoStack.length = 0;
+    if (this.undoStack.length === 100)
+        this.undoStack.shift();
+    this.undoStack.push(this.getSnapshot({
+        'layer': this.core.getLayer(),
+        'layerGroup': this.core.getLayerGroup(),
+        'changes': changes
+    }));
+    this.changeUIState();
+};
+
+HistoryManager.prototype.changeUIState = function() {
+    if (this.undoStack.length === 0)
+        $('.btn-undo', this.btnGroup).addClass('disabled');
+    else
+        $('.btn-undo', this.btnGroup).removeClass('disabled');
+    if (this.redoStack.length === 0)
+        $('.btn-redo', this.btnGroup).addClass('disabled');
+    else
+        $('.btn-redo', this.btnGroup).removeClass('disabled');
+};
+
+HistoryManager.prototype.onUndo = function() {
+    if (this.undoStack.length === 0)
+        return;
+    var state = this.undoStack.pop();
+    this.redoStack.push(this.getSnapshot(state));
+    this.ignoreSignal = true;
+    this.core.setLayerGroup(state['layerGroup']);
+    this.core.setLayer(state['layer']);
+    this.core.paint(state['changes']);
+    this.ignoreSignal = false;
+    this.changeUIState();
+};
+
+HistoryManager.prototype.onRedo = function() {
+    if (this.redoStack.length === 0)
+        return;
+    var state = this.redoStack.pop();
+    this.undoStack.push(this.getSnapshot(state));
+    this.ignoreSignal = true;
+    this.core.setLayerGroup(state['layerGroup']);
+    this.core.setLayer(state['layer']);
+    this.core.paint(state['changes']);
+    this.ignoreSignal = false;
+    this.changeUIState();
+};
+
+HistoryManager.prototype.getSnapshot = function(state) {
+    var reverseChanges = new Array();
+    var layer = state['layer'];
+    var layerGroup = state['layerGroup'];
+    var changes = state['changes'];
+    for (var i = 0; i < changes.length; ++i) {
+        var change = changes[i];
+        reverseChanges.push({
+            row: change['row'],
+            column: change['column'],
+            index: this.core.getLevel().getGrid(layerGroup, layer, change['row'], change['column'])
+        });
+    }
+    return {
+        'layer': layer,
+        'layerGroup': layerGroup,
+        'changes': reverseChanges
+    };
+};
+
+HistoryManager.prototype.reset = function() {
+    this.undoStack.length = 0;
+    this.redoStack.length = 0;
+};
 
 // Class Palette
 Palette = function(core, palette, fieldSprite) {
@@ -375,8 +477,14 @@ Canvas = function(core, canvas, fieldSprite) {
     $(canvas).bind('mousemove', function(evt) {
         _this.onMouseMove(evt);
     });
-    $(canvas).bind('mouseup mouseleave', function(evt) {
+    $(canvas).bind('mouseup', function(evt) {
         _this.onMouseUp(evt);
+    });
+    $(canvas).bind('mouseleave', function() {
+        _this.onBlur();
+    });
+    $(window).bind('blur', function() {
+        _this.onBlur();
     });
     core.bind('onLevelReset onLayerChanged onLayerGroupChanged', function() {
         _this.repaint();
@@ -421,6 +529,13 @@ Canvas.prototype.onMouseUp = function(evt) {
         }
     }
     this.core.paint(changes);
+};
+
+Canvas.prototype.onBlur = function() {
+    if (!this.dragging)
+        return;
+    this.dragging = false;
+    this.repaint();
 };
 
 Canvas.prototype.paintPreview = function() {
@@ -842,6 +957,7 @@ $(document).on('ready', function() {
     });
     window.app = {};
     window.app.core = new Core();
+    window.app.historyManager = new HistoryManager(window.app.core);
     window.app.levelImporter = new LevelImporter(window.app.core);
     window.app.levelExporter = new LevelExporter(window.app.core);
     window.app.palette = new Palette(window.app.core, '#palette', '#field-sprite');
