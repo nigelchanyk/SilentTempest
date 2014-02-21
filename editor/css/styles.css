@@ -52,6 +52,10 @@ html {
     user-select: none;
 }
 
+#input-filename {
+    width: 250px;
+}
+
 .layer-control {
     display: inline-block;
 }

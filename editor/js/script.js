@@ -557,6 +557,10 @@ Level.prototype.getGrid = function(layerGroup, depth, row, column) {
     return (layerGroup === Core.LayerGroup.GROUND ? this.groundLayers : this.topLayers)[depth][row][column];
 };
 
+Level.prototype.setGrid = function(layerGroup, depth, row, column, index) {
+    (layerGroup === Core.LayerGroup.GROUND ? this.groundLayers : this.topLayers)[depth][row][column] = index;
+};
+
 Level.prototype.getTopGrid = function(depth, row, column) {
     return this.topLayers[depth][row][column];
 };
@@ -589,9 +593,6 @@ Level.prototype.removeTopLayer = function(index) {
     this.topDepth--;
 };
 
-Level.fromJSON = function(json) {
-};
-
 // Class LevelImporter
 LevelImporter = function(core) {
     this.core = core;
@@ -603,24 +604,24 @@ LevelImporter.Errors.FileNotReadable = 'Unable to read the file.';
 LevelImporter.Errors.FileLocked = 'Read permission denied. The file is locked.';
 LevelImporter.Errors.GenericError = 'An error occurred while reading the file.';
 LevelImporter.Errors.SyntaxError = 'The file contains malformed JSON.';
+LevelImporter.REGEX = /^(?:(?:([a-z0-9]+)>)|())([a-z0-9]*)(?:(?:\:([a-z0-9]+))|())$/;
 
 LevelImporter.prototype.load = function(file, errorCallback) {
     var reader = new window.FileReader();
     var _this = this;
     reader.onload = function(evt) {
-        try {
-            var level = Level.fromJSON($.parseJSON(evt.target.result));
+        //try {
+            var level = _this.parseLevel($.parseJSON(evt.target.result));
             _this.core.setLevel(level);
-        } catch (e) {
+        /*} catch (e) {
             switch (e.name) {
                 case 'SyntaxError':
                     errorCallback(LevelImporter.Errors.SyntaxError);
                     break;
                 default:
                     errorCallback(LevelImporter.Errors.GenericError);
-
             }
-        }
+        }*/
     };
     reader.onerror = function(evt) {
         switch (evt.target.error) {
@@ -644,29 +645,51 @@ LevelImporter.prototype.getExtension = function() {
     return '.stl';
 };
 
-LevelExporter = function(level) {
-    this.json = {};
-    this.transformLevel(level);
+LevelImporter.prototype.parseLevel = function(json) {
+    var rows = json['rows'];
+    var columns = json['columns'];
+    var groundLevels = json['ground'];
+    var topLevels = json['top'];
+    var level = new Level(groundLevels.length, topLevels.length, rows, columns);
+    for (var i = 0; i < level.getGroundDepthCount(); ++i)
+        this.parseLayer(level, Core.LayerGroup.GROUND, i, json['ground'][i]);
+    for (var i = 0; i < level.getTopDepthCount(); ++i)
+        this.parseLayer(level, Core.LayerGroup.OBJECT, i, json['top'][i]);
+
+    return level;
+};
+
+LevelImporter.prototype.parseLayer = function(level, layerGroup, layer, data) {
+    var rows = level.getRowCount();
+    var columns = level.getColumnCount();
+    var total = rows * columns;
+    var tuples = data.split(';');
+    for (var i = 0, j = 0; i < tuples.length && j < total; ++i) {
+        var matches = tuples[i].match(LevelImporter.REGEX);
+        var skip = parseInt(matches[1] || matches[2] || '0', 36);
+        var index = parseInt(matches[3] || '-1', 36);
+        var repeat = parseInt(matches[4] || matches[5] || '0', 36);
+        j += skip;
+        for (var r = 0; r <= repeat && j < total; ++r, ++j)
+            level.setGrid(layerGroup, layer, ~~(j / columns), j % columns, index);
+    }
+};
+
+LevelExporter = function(core) {
+    this.core = core;
 };
 
 LevelExporter.prototype.transformLevel = function(level) {
-    this.json['rows'] = level.getRowCount();
-    this.json['columns'] = level.getColumnCount();
-    this.json['ground'] = [];
+    var json = {};
+    json['rows'] = level.getRowCount();
+    json['columns'] = level.getColumnCount();
+    json['ground'] = [];
     for (var i = 0; i < level.getGroundDepthCount(); ++i)
-        this.json['ground'].push(this.transformLayer(level, Core.LayerGroup.GROUND, i));
-    this.json['top'] = [];
+        json['ground'].push(this.transformLayer(level, Core.LayerGroup.GROUND, i));
+    json['top'] = [];
     for (var i = 0; i < level.getTopDepthCount(); ++i)
-        this.json['top'].push(this.transformLayer(level, Core.LayerGroup.OBJECT, i));
-};
-
-LevelExporter.prototype.toJSON = function() {
-    return JSON.stringify(this.json);
-};
-
-LevelExporter.prototype.save = function(filename) {
-    var blob = new Blob([this.toJSON()], {type: "text/plain;charset=utf-8"});
-    saveAs(blob, filename);
+        json['top'].push(this.transformLayer(level, Core.LayerGroup.OBJECT, i));
+    return json;
 };
 
 LevelExporter.prototype.transformLayer = function(level, layerGroup, layer) {
@@ -715,6 +738,15 @@ LevelExporter.prototype.transformLayer = function(level, layerGroup, layer) {
     return result.join('');
 };
 
+LevelExporter.prototype.toJSON = function() {
+    return JSON.stringify(this.transformLevel(this.core.getLevel()));
+};
+
+LevelExporter.prototype.save = function(filename) {
+    var blob = new Blob([this.toJSON()], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, filename);
+};
+
 // Class FileSelector
 FileSelector = function(loader, btn, dialog) {
     this.loader = loader;
@@ -737,7 +769,7 @@ FileSelector = function(loader, btn, dialog) {
         return _this.onDrop(e);
     }
     $('.btn-confirm', this.dialog).bind('click', function() {
-        return _this.onConfirm(e);
+        return _this.onConfirm();
     });
 };
 
@@ -762,11 +794,30 @@ FileSelector.prototype.onConfirm = function() {
     if (!this.file) {
         return false;
     }
-    $(dialog).modal('close');
+    $(this.dialog).modal('hide');
     var _this = this;
     this.loader.load(this.file, function(message) {
         window.showMessage(message, 'Error');
     });
+};
+
+FileSaver = function(exporter, btn, filenameInput) {
+    this.exporter = exporter;
+    this.filenameInput = filenameInput;
+    var _this = this;
+    $(btn).bind('click', function() {
+        _this.onClick();
+    });
+};
+
+FileSaver.prototype.onClick = function() {
+    var filename = $(this.filenameInput).val();
+    filename = filename.replace(' ', '_');
+    if (filename === '')
+        filename = 'output.stl';
+    if (!filename.toLowerCase().endsWith('.stl'))
+        filename = filename + '.stl';
+    this.exporter.save(filename);
 };
 
 window.showMessage = function(message, title) {
@@ -792,8 +843,10 @@ $(document).on('ready', function() {
     window.app = {};
     window.app.core = new Core();
     window.app.levelImporter = new LevelImporter(window.app.core);
+    window.app.levelExporter = new LevelExporter(window.app.core);
     window.app.palette = new Palette(window.app.core, '#palette', '#field-sprite');
     window.app.canvas = new Canvas(window.app.core, '#canvas', '#field-sprite');
     window.app.layerManager = new LayerManager(window.app.core, '#layer-manager');
     window.app.fileSelector = new FileSelector(window.app.levelImporter, '#btn-open', '#file-open-modal');
+    window.app.fileSaver = new FileSaver(window.app.levelExporter, '#btn-save', '#input-filename');
 });
