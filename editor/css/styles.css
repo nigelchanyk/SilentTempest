@@ -3,6 +3,10 @@ body, html {
     position: relative;
 }
 
+#canvas {
+    cursor: default;
+}
+
 .canvas-wrapper {
     margin-left: 300px;
     background-color: #eee;

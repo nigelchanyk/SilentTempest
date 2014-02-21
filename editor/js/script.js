@@ -459,9 +459,10 @@ LayerManager.prototype.onLayerCountChanged = function(count) {
 };
 
 // Class Canvas
-Canvas = function(core, canvas, fieldSprite) {
+Canvas = function(core, canvas, btnGroup, fieldSprite) {
     this.core = core;
     this.canvas = canvas;
+    this.btnGroup = btnGroup;
     this.fieldSprite = $(fieldSprite)[0];
     this.ctx = $(canvas)[0].getContext('2d');
     this.startX = 0;
@@ -470,7 +471,14 @@ Canvas = function(core, canvas, fieldSprite) {
     this.endY = 0;
     this.dragging = false;
     this.previewArea = null;
+    this.mode = Canvas.Mode.DRAW;
     var _this = this;
+    $('.btn-draw', btnGroup).bind('click', function() {
+        _this.onChangeMode(Canvas.Mode.DRAW);
+    });
+    $('.btn-erase', btnGroup).bind('click', function() {
+        _this.onChangeMode(Canvas.Mode.ERASE);
+    });
     $(canvas).bind('mousedown', function(evt) {
         _this.onMouseDown(evt);
     });
@@ -493,6 +501,24 @@ Canvas = function(core, canvas, fieldSprite) {
         _this.paintCell(row, column);
     });
     this.repaint(core.getLevel());
+};
+
+Canvas.Mode = {};
+Canvas.Mode.DRAW = 0;
+Canvas.Mode.ERASE = 1;
+
+Canvas.prototype.onChangeMode = function(mode) {
+    this.mode = mode;
+    if (mode === Canvas.Mode.DRAW) {
+        $('.btn-draw', this.btnGroup).addClass('disabled');
+        $('.btn-erase', this.btnGroup).removeClass('disabled');
+        $(this.canvas).css('cursor', 'default');
+    }
+    else if (mode === Canvas.Mode.ERASE) {
+        $('.btn-draw', this.btnGroup).removeClass('disabled');
+        $('.btn-erase', this.btnGroup).addClass('disabled');
+        $(this.canvas).css('cursor', 'crosshair');
+    }
 };
 
 Canvas.prototype.onMouseDown = function(evt) {
@@ -524,7 +550,7 @@ Canvas.prototype.onMouseUp = function(evt) {
             changes.push({
                 row: r,
                 column: c,
-                index: this.getPaintIndex(r, c)
+                index: this.mode === Canvas.Mode.DRAW ? this.getPaintIndex(r, c) : -1
             });
         }
     }
@@ -609,6 +635,8 @@ Canvas.prototype.isPreviewCellLayer = function(row, column, layer, layerGroup) {
 };
 
 Canvas.prototype.getPaintIndex = function(row, column) {
+    if (this.mode === Canvas.Mode.ERASE)
+        return -1;
     var palette = this.core.getPaletteArea();
     var offsetRow = ((row - this.startRow) % palette.getHeight() + palette.getHeight()) % palette.getHeight() + palette.getRow();
     var offsetCol = ((column - this.startColumn) % palette.getWidth() + palette.getWidth()) % palette.getWidth() + palette.getColumn();
@@ -961,7 +989,7 @@ $(document).on('ready', function() {
     window.app.levelImporter = new LevelImporter(window.app.core);
     window.app.levelExporter = new LevelExporter(window.app.core);
     window.app.palette = new Palette(window.app.core, '#palette', '#field-sprite');
-    window.app.canvas = new Canvas(window.app.core, '#canvas', '#field-sprite');
+    window.app.canvas = new Canvas(window.app.core, '#canvas', '#canvas-mode-control', '#field-sprite');
     window.app.layerManager = new LayerManager(window.app.core, '#layer-manager');
     window.app.fileSelector = new FileSelector(window.app.levelImporter, '#btn-open', '#file-open-modal');
     window.app.fileSaver = new FileSaver(window.app.levelExporter, '#btn-save', '#input-filename');
