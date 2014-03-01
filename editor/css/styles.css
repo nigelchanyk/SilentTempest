@@ -64,17 +64,13 @@ html {
     display: inline-block;
 }
 
+#level-size-control input {
+    width: 50px;
+}
+
 #palette {
     margin: 20px auto 0 auto;
     overflow: hidden;
-}
-
-.palette-wrapper {
-    width: 300px;
-    height: 100%;
-    float: left;
-    background: #bbb;
-    border-right: 1px #777 solid;
 }
 
 .selector {
@@ -82,6 +78,14 @@ html {
     box-shadow: 0 0 10px #C6DEF7;
     width: 32px;
     height: 32px;
+}
+
+.side-pane {
+    width: 300px;
+    height: 100%;
+    float: left;
+    background: #bbb;
+    border-right: 1px #777 solid;
 }
 
 .toolbar {
@@ -92,5 +96,6 @@ html {
     top: 0;
     left: 0;
     width: 100%;
+    min-width: 1300px;
     height: 70px;
 }

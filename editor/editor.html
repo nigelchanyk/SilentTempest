@@ -11,9 +11,12 @@
 <body>
     <div class="toolbar">
         <div class="btn-group control-group">
-            <button id="btn-new" title="New Level" type="button" class="btn btn-default"><span class="glyphicon glyphicon-file"></span></button>
             <button id="btn-open" title="Open Level" type="button" class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span></button>
             <button id="btn-save" title="Save Level" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+        </div>
+        <div id="level-size-control" class="control-group">
+            <input type="number" min="20" max="100" value="20" class="width-control">
+            <input type="number" min="15" max="100" value="15" class="height-control">
         </div>
         <div id="history-manager" class="btn-group control-group">
             <button title="Undo" type="button" class="btn btn-default btn-undo disabled"><span class="glyphicon glyphicon-arrow-left"></span></button>
@@ -51,7 +54,7 @@
 
     <div class="editor">
         <img id="field-sprite" src="field.png" />
-        <div class="palette-wrapper">
+        <div class="side-pane">
             <div id="palette">
                 <div class="selector">
                 </div>

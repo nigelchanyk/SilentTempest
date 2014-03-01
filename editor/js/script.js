@@ -13,6 +13,7 @@ Core = function(canvas) {
         onLayerGroupChanged: Array(),
         onLayerRemoved: Array(),
         onLevelReset: Array(),
+        onResize: Array(),
         onPaletteAreaChanged: Array()
     };
     this.setLevel(new Level(1, 1, 15, 20));
@@ -137,6 +138,16 @@ Core.prototype.removeLayer = function() {
     this.notify('onLayerCountChanged', count);
     this.notify('onLayerRemoved');
     this.setLayer(this.layer);
+};
+
+Core.prototype.setWidth = function(width) {
+    this.level.setWidth(width);
+    this.notify('onResize', width);
+};
+
+Core.prototype.setHeight = function(height) {
+    this.level.setHeight(height);
+    this.notify('onResize', height);
 };
 
 // Class Area {
@@ -494,7 +505,7 @@ Canvas = function(core, canvas, btnGroup, fieldSprite) {
     $(window).bind('blur', function() {
         _this.onBlur();
     });
-    core.bind('onLevelReset onLayerChanged onLayerGroupChanged', function() {
+    core.bind('onLevelReset onLayerChanged onLayerGroupChanged onResize', function() {
         _this.repaint();
     });
     core.bind('onCellChanged', function(row, column) {
@@ -522,6 +533,8 @@ Canvas.prototype.onChangeMode = function(mode) {
 };
 
 Canvas.prototype.onMouseDown = function(evt) {
+    if (this.core.getLayerGroup() === Core.LayerGroup.EVENT)
+        return;
     this.startX = this.endX = evt.offsetX;
     this.startY = this.endY = evt.offsetY;
     this.dragging = true;
@@ -654,6 +667,14 @@ Level = function(groundDepth, topDepth, row, column) {
     this.topLayers = this.createArray(row, column, topDepth);
 };
 
+Level.prototype.setWidth = function(width) {
+    this.column = width;
+};
+
+Level.prototype.setHeight = function(height) {
+    this.row = height;
+};
+
 Level.prototype.createArray = function(row, column, depth) {
     var layers = new Array(depth);
     for (var i = 0; i < depth; ++i)
@@ -663,9 +684,9 @@ Level.prototype.createArray = function(row, column, depth) {
 
 Level.prototype.createLayer = function(row, column) {
     layer = new Array(row);
-    for (var j = 0; j < row; ++j) {
+    for (var j = 0; j < 100; ++j) {
         layer[j] = new Array(column);
-        for (var k = 0; k < column; ++k) {
+        for (var k = 0; k < 100; ++k) {
             layer[j][k] = -1;
         }
     }
@@ -963,6 +984,44 @@ FileSaver.prototype.onClick = function() {
     this.exporter.save(filename);
 };
 
+// Class Side Pane
+SidePane = function(core) {
+    core.bind('onLayerGroupChanged', function(layerGroup) {
+        if (layerGroup === Core.LayerGroup.EVENT) {
+            $('#event-controller').show();
+            $('#palette').hide();
+        }
+        else {
+            $('#palette').show();
+            $('#event-controller').hide();
+        }
+    });
+};
+
+// Class LevelResizer
+LevelResizer = function(core, container) {
+    $('.width-control', container).bind('change', function() {
+        var val = this.valueAsNumber;
+        if (val === core.getLevel().getColumnCount())
+            return;
+        if (val >= 20 && val <= 100 && val % 1 === 0)
+            core.setWidth(val);
+        $(this).val(core.getLevel().getColumnCount());
+    });
+    $('.height-control', container).bind('change', function() {
+        if (val === core.getLevel().getRowCount())
+            return;
+        var val = this.valueAsNumber;
+        if (val >= 15 && val <= 100 && val % 1 === 0)
+            core.setHeight(val);
+        $(this).val(core.getLevel().getRowCount());
+    });
+    core.bind('onLevelReset', function() {
+        $('.width-control', container).val(20);
+        $('.height-control', container).val(15);
+    });
+};
+
 window.showMessage = function(message, title) {
     $('#message-modal .modal-title').text(title);
     $('#message-modal .modal-message').text(message);
@@ -993,4 +1052,6 @@ $(document).on('ready', function() {
     window.app.layerManager = new LayerManager(window.app.core, '#layer-manager');
     window.app.fileSelector = new FileSelector(window.app.levelImporter, '#btn-open', '#file-open-modal');
     window.app.fileSaver = new FileSaver(window.app.levelExporter, '#btn-save', '#input-filename');
+    window.app.sidePane = new SidePane(window.app.core);
+    window.app.levelResizer = new LevelResizer(window.app.core, '#level-size-control');
 });
