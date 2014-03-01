@@ -8,6 +8,7 @@ Core = function(canvas) {
     this.subscribers = {
         onBeforeCellsChanged: Array(),
         onCellChanged: Array(),
+        onMouseCoordinateChanged: Array(),
         onLayerChanged: Array(),
         onLayerCountChanged: Array(),
         onLayerGroupChanged: Array(),
@@ -150,6 +151,10 @@ Core.prototype.setHeight = function(height) {
     this.notify('onResize', height);
 };
 
+Core.prototype.mouseCoordinateChanged = function(x, y) {
+    this.notify('onMouseCoordinateChanged', x, y);
+};
+
 // Class Area {
 Area = function(row, column, width, height) {
     this.row = row;
@@ -197,10 +202,10 @@ Area.prototype.encloses = function(row, column) {
 Area.fromDisplayCoordinate = function(startX, startY, endX, endY, width, height) {
     var maxX = width - 1;
     var maxY = height - 1;
-    startX = ~~(Math.min(startX, maxX) / 32);
-    startY = ~~(Math.min(startY, maxY) / 32);
-    endX = ~~(Math.min(endX, maxX) / 32);
-    endY = ~~(Math.min(endY, maxY) / 32);
+    startX = ~~(Math.min(startX, maxX) / 33);
+    startY = ~~(Math.min(startY, maxY) / 33);
+    endX = ~~(Math.min(endX, maxX) / 33);
+    endY = ~~(Math.min(endY, maxY) / 33);
     return new Area(
         Math.min(startY, endY),
         Math.min(startX, endX),
@@ -543,6 +548,7 @@ Canvas.prototype.onMouseDown = function(evt) {
 };
 
 Canvas.prototype.onMouseMove = function(evt) {
+    this.core.mouseCoordinateChanged(~~(evt.offsetX / 33), ~~(evt.offsetY / 33));
     if (!this.dragging)
         return;
     this.endX = evt.offsetX;
@@ -597,8 +603,8 @@ Canvas.prototype.paintPreview = function() {
 };
 
 Canvas.prototype.repaint = function() {
-    this.width = this.core.getLevel().getColumnCount() * 32;
-    this.height = this.core.getLevel().getRowCount() * 32;
+    this.width = this.core.getLevel().getColumnCount() * 33;
+    this.height = this.core.getLevel().getRowCount() * 33;
     $(this.canvas).attr({
         width: this.width,
         height: this.height
@@ -613,7 +619,7 @@ Canvas.prototype.repaint = function() {
 
 Canvas.prototype.paintCell = function(row, column) {
     this.ctx.fillStyle = 'rgb(255,255,255)';
-    this.ctx.fillRect(column * 32, row * 32, 32, 32);
+    this.ctx.fillRect(column * 33, row * 33, 32, 32);
     var groundDepth = this.core.getLevel().getGroundDepthCount();
     for (var i = 0; i < groundDepth; ++i) {
         this.ctx.globalAlpha = this.core.getLayerGroup() === Core.LayerGroup.GROUND && this.core.getLayer() === i ? 1 : 0.3;
@@ -636,7 +642,7 @@ Canvas.prototype.paintCell = function(row, column) {
 Canvas.prototype.paintCellLayer = function(row, column, index) {
     if (index < 0)
         return;
-    this.ctx.drawImage(this.fieldSprite, (index % 5) * 32, (~~(index / 5)) * 32, 32, 32, column * 32, row * 32, 32, 32);
+    this.ctx.drawImage(this.fieldSprite, (index % 5) * 32, (~~(index / 5)) * 32, 32, 32, column * 33, row * 33, 32, 32);
 };
 
 Canvas.prototype.isPreviewCellLayer = function(row, column, layer, layerGroup) {
@@ -1022,6 +1028,13 @@ LevelResizer = function(core, container) {
     });
 };
 
+CoordinateDisplay = function(core, display) {
+    core.bind('onMouseCoordinateChanged', function(x, y) {
+        $('.x-value', display).text(x);
+        $('.y-value', display).text(y);
+    });
+};
+
 window.showMessage = function(message, title) {
     $('#message-modal .modal-title').text(title);
     $('#message-modal .modal-message').text(message);
@@ -1054,4 +1067,5 @@ $(document).on('ready', function() {
     window.app.fileSaver = new FileSaver(window.app.levelExporter, '#btn-save', '#input-filename');
     window.app.sidePane = new SidePane(window.app.core);
     window.app.levelResizer = new LevelResizer(window.app.core, '#level-size-control');
+    window.app.coordinateDisplay = new CoordinateDisplay(window.app.core, '.coordinate-display');
 });
