@@ -167,7 +167,7 @@ public class Seek extends EnemyStrategy {
 				if (suspicionLevel[next.y()][next.x()] <= 0)
 					continue;
 				suspicionLevel[next.y()][next.x()] = nextSuspicionLevel;
-				queue.push(next);
+				queue.addLast(next);
 			}
 		}
 	}

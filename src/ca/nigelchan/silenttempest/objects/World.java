@@ -123,8 +123,9 @@ public class World extends Entity {
 			for (Direction direction : MathHelper.getNonDiagonalDirections()) {
 				Coordinate translation = MathHelper.getTranslation(direction);
 				next = current.add(translation);
-				if (!isWalkable(next))
+				if (!isWalkable(next)) {
 					continue;
+				}
 				if (directions[next.y()][next.x()] != null)
 					continue;
 				directions[next.y()][next.x()] = direction;
@@ -139,7 +140,7 @@ public class World extends Entity {
 					}
 					return path;
 				}
-				queue.push(next);
+				queue.addLast(next);
 			}
 		}
 		

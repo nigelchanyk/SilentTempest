@@ -119,7 +119,7 @@ public class Approach extends EnemyStrategy {
 					}
 					return path;
 				}
-				queue.push(next);
+				queue.addLast(next);
 			}
 		}
 		
