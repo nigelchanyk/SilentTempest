@@ -15,7 +15,7 @@ import ca.nigelchan.silenttempest.userinterface.game.JoystickDisplay;
 
 public class GameScene extends BaseScene {
 	
-	private ActorController controller;
+	private ActorController controller = new ActorController();
 	private Joystick joystick;
 	private JoystickDisplay joystickDisplay;
 	private GameResource resource;
@@ -41,14 +41,10 @@ public class GameScene extends BaseScene {
 
 	@Override
 	protected void createScene() {
-		world = new World(worldData, resource);
-		attachChild(world);
-		controller = new ActorController(world.getPlayer());
-		joystick.subscribe(controller);
-		world.subscribe(new EnemyManager(world, resource));
-		
+		setWorldData(worldData);
 		setHud(new HUD());
 		joystickDisplay = new JoystickDisplay(resource);
+		joystick.subscribe(controller);
 		joystick.subscribe(joystickDisplay);
 		getHud().attachChild(joystickDisplay);
 	}
@@ -59,9 +55,11 @@ public class GameScene extends BaseScene {
 			world.detachSelf();
 			world.dispose();
 		}
+		this.worldData = worldData;
 		world = new World(worldData, resource);
 		attachChild(world);
 		controller.setActor(world.getPlayer());
 		world.subscribe(new EnemyManager(world, resource));
 	}
+	
 }

@@ -75,16 +75,16 @@ public abstract class Actor extends WorldObject {
 	}
 	
 	private void moveToX(float x) {
-		if (world.isValidPosition(new Vector2(x, getY()), this)) {
+		if (world.isValidPosition(new Vector2(x, getPosition().y()), this)) {
 			setX(x);
 			return;
 		}
 
-		float minX = getX();
+		float minX = getPosition().x();
 		float maxX = x;
 		for (int i = 0; i < 4; ++i) {
             float mid = (minX + maxX) * 0.5f;
-			if (world.isValidPosition(new Vector2(mid, getY()), this))
+			if (world.isValidPosition(new Vector2(mid, getPosition().y()), this))
 				minX = mid;
 			else
 				maxX = mid;
@@ -94,16 +94,16 @@ public abstract class Actor extends WorldObject {
 	}
 
 	private void moveToY(float y) {
-		if (world.isValidPosition(new Vector2(getX(), y), this)) {
+		if (world.isValidPosition(new Vector2(getPosition().x(), y), this)) {
 			setY(y);
 			return;
 		}
 
-		float minY = getY();
+		float minY = getPosition().y();
 		float maxY = y;
 		for (int i = 0; i < 4; ++i) {
             float mid = (minY + maxY) * 0.5f;
-			if (world.isValidPosition(new Vector2(getX(), mid), this))
+			if (world.isValidPosition(new Vector2(getPosition().x(), mid), this))
 				minY = mid;
 			else
 				maxY = mid;

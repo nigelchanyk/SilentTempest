@@ -32,16 +32,6 @@ public class WorldObject extends OffsetEntity {
 		return position;
 	}
 
-	@Override
-	public float getX() {
-		return position.x();
-	}
-
-	@Override
-	public float getY() {
-		return position.y();
-	}
-
 	// Setters
 	public void setPosition(Vector2 position) {
 		_setPosition(position);
@@ -54,12 +44,12 @@ public class WorldObject extends OffsetEntity {
 	
 	@Override
 	public void setX(float pX) {
-		setPosition(new Vector2(pX, getY()));
+		setPosition(new Vector2(pX, getPosition().y()));
 	}
 	
 	@Override
 	public void setY(float pY) {
-		setPosition(new Vector2(getX(), pY));
+		setPosition(new Vector2(getPosition().x(), pY));
 	}
 
 	// Encapsulated to prevent constructor calls being overridden

@@ -6,24 +6,26 @@ import ca.nigelchan.silenttempest.util.Vector2;
 
 public class ActorController implements Joystick.IListener {
 	
-	private FreeMove move;
-	
-	public ActorController(Actor actor) {
-		move = new FreeMove(actor);
-	}
+	private FreeMove move = null;
 
 	@Override
 	public void onAccept() {
+		if (move == null)
+			return;
 		move.setEnabled(true);
 	}
 
 	@Override
 	public void onMove(float rotation) {
+		if (move == null)
+			return;
         move.setRotation(rotation);
 	}
 
 	@Override
 	public void onRelease() {
+		if (move == null)
+			return;
     	move.setEnabled(false);
 	}
 

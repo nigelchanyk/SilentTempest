@@ -4,6 +4,7 @@ package ca.nigelchan.silenttempest.objects;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
 
@@ -69,6 +70,22 @@ public class World extends Entity {
 		
 		// Must be last child
 		attachChild(alwaysVisibleLayer);
+		
+		registerUpdateHandler(new IUpdateHandler() {
+			
+			@Override
+			public void reset() {
+			}
+			
+			@Override
+			public void onUpdate(float pSecondsElapsed) {
+				Player player = actorLayer.getPlayer();
+				if (player == null)
+					return;
+				// Round to nearest integer to avoid gaps in between grid
+				setPosition(World.this.resource.getScreenWidth() / 2 - (int)player.getX(), World.this.resource.getScreenHeight() / 2 - (int)player.getY());
+			}
+		});
 	}
 	
 	public void attachAlwaysVisibleChild(IEntity pEntity) {

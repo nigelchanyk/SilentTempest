@@ -4,7 +4,6 @@ package ca.nigelchan.silenttempest.objects.actors.enemystrategies;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import android.util.Log;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.objects.actors.controllers.EnemyCore;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Move;
@@ -174,12 +173,6 @@ public class Seek extends EnemyStrategy {
 	}
 	
 	private Coordinate getSuspicionPeak() {
-		for (int y = 0; y < suspicionLevel.length; ++y) {
-			String s = "";
-			for (int x = 0; x < suspicionLevel[0].length; ++x)
-				s += (suspicionLevel[y][x] < 10 ? "0" : "") + suspicionLevel[y][x] + ",";
-			Log.i("map", s);
-		}
 		Coordinate position = actor.getGridPosition();
 		Coordinate peak = position;
 		int bestDistance = 0;
@@ -194,8 +187,6 @@ public class Seek extends EnemyStrategy {
 				}
 			}
 		}
-		Log.i("map", "From " + position.toString() + " to "+ peak.toString());
-		Log.i("map", "----------");
 		return peak;
 	}
 	
@@ -224,15 +215,8 @@ public class Seek extends EnemyStrategy {
 	private boolean startNewPath() {
 		path = null;
         Coordinate peak = getSuspicionPeak();
-        // Rarely happens
+        // Should not happen
         if (peak.equals(actor.getGridPosition())) {
-        	for (int y = 0; y < suspicionLevel.length; ++y) {
-        		String s = "";
-        		for (int x = 0; x < suspicionLevel.length; ++ x) {
-        			s += x + ",";
-        		}
-        		Log.i("map", s);
-        	}
         	throw new IllegalArgumentException();
         }
         Iterable<Move> movement = actor.getWorld().findPath(actor, peak);

@@ -10,15 +10,19 @@ import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import android.util.DisplayMetrics;
+
 public abstract class Resource {
 	
 	protected BaseGameActivity activity;
 	
 	private ArrayList<BitmapTextureAtlas> atlases = new ArrayList<BitmapTextureAtlas>(5);
 	private ArrayList<BuildableBitmapTextureAtlas> buildableAtlases = new ArrayList<BuildableBitmapTextureAtlas>(5);
+	private DisplayMetrics metrics;
 	
 	public Resource(BaseGameActivity activity) {
 		this.activity = activity;
+		metrics = activity.getResources().getDisplayMetrics();
 	}
 
 	public final void load() {
@@ -53,6 +57,14 @@ public abstract class Resource {
 	protected abstract void onLoad();
 
 	// Getters
+	public int getScreenHeight() {
+		return metrics.heightPixels;
+	}
+
+	public int getScreenWidth() {
+		return metrics.widthPixels;
+	}
+
 	public VertexBufferObjectManager getVertexBufferObjectManager() {
 		return activity.getVertexBufferObjectManager();
 	}

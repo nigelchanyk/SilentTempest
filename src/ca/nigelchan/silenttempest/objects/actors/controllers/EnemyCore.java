@@ -1,6 +1,5 @@
 package ca.nigelchan.silenttempest.objects.actors.controllers;
 
-import android.util.Log;
 import ca.nigelchan.silenttempest.data.actors.EnemyData;
 import ca.nigelchan.silenttempest.objects.actors.Enemy;
 import ca.nigelchan.silenttempest.objects.actors.Player;
@@ -51,7 +50,6 @@ public class EnemyCore extends Controller {
 				strategy.onUpdate(elapsedTime);
 				return;
 			}
-			Log.i("STRATEGY", strategy.getClass().getSimpleName());
 			previous = strategy;
 		}
 
