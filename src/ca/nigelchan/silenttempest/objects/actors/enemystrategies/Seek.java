@@ -27,7 +27,7 @@ public class Seek extends EnemyStrategy {
 
 	public Seek(Actor actor, EnemyCore core, Coordinate lastSeenPosition) {
 		super(actor, core);
-		suspicionLevel = new int[actor.getWorld().getWidth()][actor.getWorld().getHeight()];
+		suspicionLevel = new int[actor.getWorld().getHeight()][actor.getWorld().getWidth()];
 		for (int y = 0; y < suspicionLevel.length; ++y) {
 			for (int x = 0; x <suspicionLevel[0].length; ++x) {
 				suspicionLevel[y][x] = 1;
@@ -151,7 +151,7 @@ public class Seek extends EnemyStrategy {
 	}
 	
 	private void fillSuspicion(Coordinate peak) {
-		boolean[][] visited = new boolean[actor.getWorld().getWidth()][actor.getWorld().getHeight()];
+		boolean[][] visited = new boolean[actor.getWorld().getHeight()][actor.getWorld().getWidth()];
 		LinkedList<Coordinate> queue = new LinkedList<Coordinate>();
 		queue.add(peak);
 		suspicionLevel[peak.y()][peak.x()] = actor.getWorld().getWidth() * actor.getWorld().getHeight();

@@ -1,5 +1,8 @@
 package ca.nigelchan.silenttempest.util;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Coordinate {
 	
 	public static final Coordinate ZERO = new Coordinate(0, 0);
@@ -51,6 +54,10 @@ public class Coordinate {
 	
 	public int y() {
 		return _y;
+	}
+	
+	public static Coordinate fromJSONObject(JSONObject obj) throws JSONException {
+		return new Coordinate(obj.getInt("x"), obj.getInt("y"));
 	}
 
 }

@@ -96,7 +96,7 @@ public class World extends Entity {
 		if (actor.getGridPosition().equals(dest)) {
 			return new ArrayList<Move>();
 		}
-		Direction[][] directions = new Direction[width][height];
+		Direction[][] directions = new Direction[height][width];
 		LinkedList<Coordinate> queue = new LinkedList<Coordinate>();
 		Coordinate start = actor.getGridPosition();
 		queue.add(start);

@@ -92,7 +92,7 @@ public class Approach extends EnemyStrategy {
 		if (sequenceSet.contains(actor.getGridPosition())) {
 			return new ArrayList<Move>();
 		}
-		Direction[][] directions = new Direction[actor.getWorld().getWidth()][actor.getWorld().getHeight()];
+		Direction[][] directions = new Direction[actor.getWorld().getHeight()][actor.getWorld().getWidth()];
 		LinkedList<Coordinate> queue = new LinkedList<Coordinate>();
 		Coordinate start = actor.getGridPosition();
 		queue.add(start);

@@ -38,7 +38,10 @@ public class FieldLayer extends Layer {
 
 	@Override
 	public boolean isHidingSpot(Coordinate position) {
-		return tiles.get(position.y()).get(position.x()).isHidingSpot();
+		Tile tile = tiles.get(position.y()).get(position.x());
+		if (tile == null)
+			return false;
+		return tile.isHidingSpot();
 	}
 
 	@Override
@@ -66,7 +69,10 @@ public class FieldLayer extends Layer {
 
 	@Override
 	public boolean isWalkable(Coordinate position) {
-		return !tiles.get(position.y()).get(position.x()).isObstacle();
+		Tile tile = tiles.get(position.y()).get(position.x());
+		if (tile == null)
+			return true;
+		return !tile.isObstacle();
 	}
 	
 }

@@ -16,12 +16,12 @@ public class FieldLayerData extends LayerData {
 
 	// Getters
 	public TileTemplate getTile(int row, int column) {
-		return grid[row][column];
+		return grid[column][row];
 	}
 
 	// Setters
 	public void setTile(int row, int column, TileTemplate template) {
-		grid[row][column] = template;
+		grid[column][row] = template;
 	}
 	
 }

@@ -909,7 +909,7 @@ LevelExporter.prototype.transformLayer = function(level, layerGroup, layer) {
 };
 
 LevelExporter.prototype.toJSON = function() {
-    return JSON.stringify(this.transformLevel(this.core.getLevel()));
+    return JSON.stringify(this.transformLevel(this.core.getLevel()), undefined, 2);
 };
 
 LevelExporter.prototype.save = function(filename) {

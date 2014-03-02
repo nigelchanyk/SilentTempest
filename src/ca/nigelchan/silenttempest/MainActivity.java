@@ -1,5 +1,7 @@
 package ca.nigelchan.silenttempest;
 
+import java.io.IOException;
+
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
@@ -9,22 +11,17 @@ import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.BaseGameActivity;
+import org.json.JSONException;
 
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import ca.nigelchan.silenttempest.data.WorldData;
-import ca.nigelchan.silenttempest.data.actors.EnemyData;
-import ca.nigelchan.silenttempest.data.actors.PlayerData;
-import ca.nigelchan.silenttempest.data.actors.sequences.MoveData;
-import ca.nigelchan.silenttempest.data.layers.ActorLayerData;
-import ca.nigelchan.silenttempest.data.layers.FieldLayerData;
-import ca.nigelchan.silenttempest.data.layers.TileTemplate;
+import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
+import ca.nigelchan.silenttempest.importer.WorldImporter;
 import ca.nigelchan.silenttempest.managers.SceneManager;
 import ca.nigelchan.silenttempest.scenes.BaseScene;
 import ca.nigelchan.silenttempest.scenes.GameScene;
 import ca.nigelchan.silenttempest.scenes.SplashScene;
-import ca.nigelchan.silenttempest.util.Coordinate;
-import ca.nigelchan.silenttempest.util.Direction;
 
 public class MainActivity extends BaseGameActivity {
 	
@@ -82,32 +79,19 @@ public class MainActivity extends BaseGameActivity {
 				mEngine.unregisterUpdateHandler(pTimerHandler);
 				manager.popScene();
 				// TODO Change to MainMenuScene
-				WorldData worldData = new WorldData(5, 5);
-				FieldLayerData fyd = new FieldLayerData(5, 5);
-				TileTemplate ground = new TileTemplate(0, TileTemplate.Attribute.NORMAL);
-				TileTemplate thingy = new TileTemplate(1, TileTemplate.Attribute.OBSTACLE);
-				TileTemplate hidingSpot = new TileTemplate(5, TileTemplate.Attribute.HIDING_SPOT);
-				for (int i = 0; i < 5; ++i) {
-					for (int j = 0; j < 5; ++j)
-						fyd.setTile(i, j, ground);
+				ActorConfiguration actorConfiguration = new ActorConfiguration();
+				try {
+					WorldData worldData = WorldImporter.load("levels/sample.stl", MainActivity.this, actorConfiguration);
+                    manager.pushScene(new GameScene(manager, worldData));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					finish();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					finish();
 				}
-				fyd.setTile(2, 2, thingy);
-				fyd.setTile(0, 1, hidingSpot);
-				ActorLayerData ald = new ActorLayerData(5, 5, new PlayerData(Coordinate.ZERO, 0, 3f));
-				EnemyData enemy = new EnemyData(new Coordinate(1, 1), 0, 1.5f, 1);
-				enemy.addSequenceItem(new MoveData(Direction.EAST));
-				enemy.addSequenceItem(new MoveData(Direction.EAST));
-				enemy.addSequenceItem(new MoveData(Direction.SOUTH));
-				enemy.addSequenceItem(new MoveData(Direction.SOUTH));
-				enemy.addSequenceItem(new MoveData(Direction.WEST));
-				enemy.addSequenceItem(new MoveData(Direction.WEST));
-				enemy.addSequenceItem(new MoveData(Direction.NORTH));
-				enemy.addSequenceItem(new MoveData(Direction.NORTH));
-				ald.addEnemy(enemy);
-
-				worldData.addLayer(fyd);
-				worldData.addLayer(ald);
-				manager.pushScene(new GameScene(manager, worldData));
 			}
 
 		}));

@@ -1,28 +1,44 @@
 package ca.nigelchan.silenttempest.data.layers;
 
-import java.util.TreeMap;
+import ca.nigelchan.silenttempest.data.layers.TileTemplate.Attribute;
 
 public final class TileTemplateCollection {
 	
-	private TileTemplate defaultTemplate;
+	private static TileTemplateCollection collection = null;
+	private static final TileTemplate.Attribute H = Attribute.HIDING_SPOT;
+	private static final TileTemplate.Attribute N = Attribute.NORMAL;
+	private static final TileTemplate.Attribute O = Attribute.OBSTACLE;
 	
-	private TreeMap<Integer, TileTemplate> templateMapper = new TreeMap<Integer, TileTemplate>();
+	private TileTemplate[] templates;
 	
-	public TileTemplateCollection(TileTemplate defaultTemplate) {
-		this.defaultTemplate = defaultTemplate;
-		add(defaultTemplate);
+	private TileTemplateCollection(int size) {
+		templates = new TileTemplate[size];
 	}
 	
-	public void add(TileTemplate template) {
-		templateMapper.put(template.getId(), template);
+	private void add(TileTemplate template) {
+		templates[template.getId()] = template;
 	}
 	
 	public TileTemplate get(int id) {
-		return templateMapper.get(id);
+		if (id < 0)
+			return null;
+		return templates[id];
 	}
 	
-	public TileTemplate getDefault() {
-		return defaultTemplate;
+	public static TileTemplateCollection instance() {
+		if (collection == null) {
+			TileTemplate.Attribute[] attrs = {
+				N, N, N, N, N,
+				O, N, N, N, N,
+				N, N, N, N, N,
+				N, N, N, N, N,
+				N, N, N, N, N,
+			};
+			collection = new TileTemplateCollection(attrs.length);
+			for (int i = 0; i < attrs.length; ++i)
+				collection.add(new TileTemplate(i, attrs[i]));
+		}
+		return collection;
 	}
 
 }
