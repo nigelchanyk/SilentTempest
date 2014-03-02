@@ -16,7 +16,7 @@ public class FreeMove extends Controller {
 	@Override
 	public void onUpdate(float elapsedTime) {
 		actor.setRadianRotation(rotation);
-		actor.moveTo(actor.getPosition().add(unitVector.multiply(actor.getSpeed() * elapsedTime)));
+		actor.move(unitVector.multiply(actor.getSpeed() * elapsedTime));
 	}
 
 	// Setters

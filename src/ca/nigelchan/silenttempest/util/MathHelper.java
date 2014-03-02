@@ -61,6 +61,10 @@ public final class MathHelper {
 		return new Coordinate(Math.abs(coordinate.x()), Math.abs(coordinate.y()));
 	}
 	
+	public static Vector2 abs(Vector2 vector) {
+		return new Vector2(Math.abs(vector.x()), Math.abs(vector.y()));
+	}
+	
 	public static float clamp(float value, float min, float max) {
 		return Math.max(min, Math.min(max, value));
 	}

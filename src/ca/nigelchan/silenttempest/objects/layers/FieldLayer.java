@@ -47,19 +47,16 @@ public class FieldLayer extends Layer {
 	@Override
 	public boolean isValidPosition(Vector2 position, Actor actor) {
 		float radius = actor.getRadius();
-		float radiusSq = MathHelper.sq(radius);
 		for (int x = (int)(position.x() - radius); x <= position.x() + radius; ++x) {
 			for (int y = (int)(position.y() - radius); y <= position.y() + radius; ++y) {
 				Tile tile = tiles.get(y).get(x);
 				if (tile == null)
 					continue;
 				if (tile.isObstacle()) {
-					// Square-circle collision detection
-					Vector2 closest = new Vector2(
-						MathHelper.clamp(position.x(), x, x + 1),
-						MathHelper.clamp(position.y(), y, y + 1)
-					);
-					if (closest.distanceSquare(position) < radiusSq)
+					// AABB collision detection
+					Vector2 tileCenter = new Vector2(x + 0.5f, y + 0.5f);
+					Vector2 dist = MathHelper.abs(position.minus(tileCenter));
+					if (dist.x() < radius + 0.5f && dist.y() < radius + 0.5f)
 						return false;
 				}
 			}
