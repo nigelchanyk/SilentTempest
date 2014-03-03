@@ -28,10 +28,10 @@ public final class TileTemplateCollection {
 	public static TileTemplateCollection instance() {
 		if (collection == null) {
 			TileTemplate.Attribute[] attrs = {
-				N, N, N, N, N,
+				N, O, N, N, N,
+				O, N, N, N, O,
+				O, O, O, N, N,
 				O, N, N, N, N,
-				N, N, N, N, N,
-				N, N, N, N, N,
 				N, N, N, N, N,
 			};
 			collection = new TileTemplateCollection(attrs.length);
