@@ -19,7 +19,7 @@ public class Turn extends Sequence {
 
 	public Turn(Actor actor, Coordinate initPosition, float angle) {
 		super(actor, initPosition);
-		this.angle = angle;
+		this.angle = MathHelper.wrapAngle(angle);
 	}
 
 	@Override

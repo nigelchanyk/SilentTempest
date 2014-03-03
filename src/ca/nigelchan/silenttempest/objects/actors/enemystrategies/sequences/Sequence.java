@@ -20,7 +20,6 @@ public abstract class Sequence {
 	
 	public void onStart() {
 		completed = false;
-		actor.setPosition(initPosition.toCenterVector2());
 	}
 	
 	public abstract void onUpdate(float elapsedTime);

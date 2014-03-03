@@ -2,7 +2,6 @@ package ca.nigelchan.silenttempest.objects.actors;
 
 import org.andengine.engine.handler.IUpdateHandler;
 
-import android.util.Log;
 import ca.nigelchan.silenttempest.data.actors.ActorData;
 import ca.nigelchan.silenttempest.entity.OffsetEntity;
 import ca.nigelchan.silenttempest.objects.World;

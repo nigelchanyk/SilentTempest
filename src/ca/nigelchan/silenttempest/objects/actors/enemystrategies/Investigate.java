@@ -10,15 +10,18 @@ import ca.nigelchan.silenttempest.util.Vector2;
 public class Investigate extends EnemyStrategy {
 	
 	private Coordinate lastSeenPosition;
+	private float lastSeenRotation;
 	
 	public Investigate(Actor actor, EnemyCore core) {
 		super(actor, core);
-		this.lastSeenPosition = actor.getWorld().getPlayer().getGridPosition();
+		lastSeenPosition = actor.getWorld().getPlayer().getGridPosition();
+		lastSeenRotation = actor.getWorld().getPlayer().getRadianRotation();
 	}
 
 	@Override
 	public void onUpdate(float elapsedTime) {
         lastSeenPosition = actor.getWorld().getPlayer().getGridPosition();
+        lastSeenRotation = actor.getWorld().getPlayer().getRadianRotation();
         Player player = actor.getWorld().getPlayer();
         float angle = MathHelper.getRotation(actor.getPosition(), player.getPosition());
         actor.setRadianRotation(
@@ -39,7 +42,7 @@ public class Investigate extends EnemyStrategy {
 	public EnemyStrategy nextMove() {
 		Player player = actor.getWorld().getPlayer();
 		if (!actor.getWorld().isValidPath(actor.getPosition(), player.getPosition())) {
-            return new Seek(actor, core, lastSeenPosition);
+            return new Seek(actor, core, lastSeenPosition, lastSeenRotation);
 		}
 		return this;
 	}

@@ -4,6 +4,8 @@ package ca.nigelchan.silenttempest.objects.actors.enemystrategies;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import android.util.Log;
+import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.objects.actors.controllers.EnemyCore;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Move;
@@ -15,16 +17,15 @@ import ca.nigelchan.silenttempest.util.Vector2;
 public class Seek extends EnemyStrategy {
 	
 	private static final float MAX_SEEK_TIME = 20;
-	public static final int SCAN_RADIUS = 10;
+	public static final int SCAN_RADIUS = 20;
 	
 	private Move currentSequence;
 	private Iterator<Move> path = null;
-	private Snap snap;
 	private int[][] suspicionLevel;
 	private float timeSinceLastSuspicionIncrement = 0;
 	private float totalSeekTime = 0;
 
-	public Seek(Actor actor, EnemyCore core, Coordinate lastSeenPosition) {
+	public Seek(Actor actor, EnemyCore core, Coordinate lastSeenPosition, float lastSeenRotation) {
 		super(actor, core);
 		suspicionLevel = new int[actor.getWorld().getHeight()][actor.getWorld().getWidth()];
 		for (int y = 0; y < suspicionLevel.length; ++y) {
@@ -33,8 +34,7 @@ public class Seek extends EnemyStrategy {
 			}
 		}
 		raytraceVisibleGrids();
-		fillSuspicion(lastSeenPosition);
-		snap = new Snap(actor, core, actor.getGridPosition(), this);
+		fillSuspicion(lastSeenPosition, lastSeenRotation);
 	}
 	
 	@Override
@@ -47,8 +47,9 @@ public class Seek extends EnemyStrategy {
 		}
 		if (path == null) {
             raytraceVisibleGrids();
-            if (!startNewPath())
+            if (!startNewPath()) {
             	return;
+            }
 			currentSequence.onStart();
 		}
 		
@@ -57,8 +58,9 @@ public class Seek extends EnemyStrategy {
             raytraceVisibleGrids();
 			if (path.hasNext())
 				currentSequence = path.next();
-			else if (!startNewPath())
+			else if (!startNewPath()) {
 				return;
+			}
 			currentSequence.onStart();
 		}
 	}
@@ -69,11 +71,6 @@ public class Seek extends EnemyStrategy {
 			return new Investigate(actor, core);
 		if (totalSeekTime >= MAX_SEEK_TIME)
 			return new Patrol(actor, core, core.getEnemyData(), false);
-		if (snap != null) {
-			Snap next = snap;
-			snap = null;
-			return next;
-		}
 		return this;
 	}
 	
@@ -149,11 +146,29 @@ public class Seek extends EnemyStrategy {
 	    }
 	}
 	
-	private void fillSuspicion(Coordinate peak) {
-		boolean[][] visited = new boolean[actor.getWorld().getHeight()][actor.getWorld().getWidth()];
+	private void fillSuspicion(Coordinate peak, float lastSeenRotation) {
+		World world = actor.getWorld();
+		boolean[][] visited = new boolean[world.getHeight()][world.getWidth()];
 		LinkedList<Coordinate> queue = new LinkedList<Coordinate>();
+		int max = world.getWidth() * world.getHeight();
+		Vector2 predictedDelta = MathHelper.getUnitVector(lastSeenRotation);
+		suspicionLevel[peak.y()][peak.x()] = max;
+		visited[peak.y()][peak.x()] = true;
 		queue.add(peak);
-		suspicionLevel[peak.y()][peak.x()] = actor.getWorld().getWidth() * actor.getWorld().getHeight();
+		Coordinate predicted = new Coordinate(predictedDelta.x() > 0 ? 1 : -1, peak.y());
+		if (Math.abs(predictedDelta.x()) > 0.5f && world.isWalkable(predicted)) {
+			suspicionLevel[predicted.y()][predicted.x()] = max;
+			visited[predicted.y()][predicted.x()] = true;
+			queue.add(predicted);
+		}
+		else {
+			predicted = new Coordinate(peak.x(), predictedDelta.y() > 0 ? 1 : -1);
+			if (Math.abs(predictedDelta.y()) > 0.5f && world.isWalkable(predicted)) {
+				suspicionLevel[predicted.y()][predicted.x()] = max;
+				visited[predicted.y()][predicted.x()] = true;
+				queue.add(predicted);
+			}
+		}
 		while (!queue.isEmpty()) {
 			Coordinate current = queue.poll();
 			int nextSuspicionLevel = suspicionLevel[current.y()][current.x()] - 1;
@@ -178,6 +193,8 @@ public class Seek extends EnemyStrategy {
 		int bestDistance = 0;
 		for (int y = 0; y < suspicionLevel.length; ++y) {
 			for (int x = 0; x < suspicionLevel[0].length; ++x) {
+				if (!actor.getWorld().isWalkable(new Coordinate(x, y)))
+					continue;
                 int distance = Math.abs(x - position.x()) + Math.abs(y - position.y());
 				if (suspicionLevel[y][x] > suspicionLevel[peak.y()][peak.x()]
 						|| (suspicionLevel[y][x] == suspicionLevel[peak.y()][peak.x()]
@@ -221,12 +238,15 @@ public class Seek extends EnemyStrategy {
         }
         Iterable<Move> movement = actor.getWorld().findPath(actor, peak);
         // Not supposed to happen
-        if (movement == null)
+        if (movement == null) {
+        	Log.i("FUCK", actor.getGridPosition().toString() + " " + peak.toString());
             return false;
+        }
         path = movement.iterator();
         // Not supposed to happen
-        if (!path.hasNext())
+        if (!path.hasNext()) {
             return false;
+        }
         currentSequence = path.next();
 		return true;
 	}

@@ -41,7 +41,7 @@ public class Vector2 {
 	}
 	
 	public float length() {
-		return (int)Math.sqrt(x() * x() + y() * y());
+		return (float)Math.sqrt(x() * x() + y() * y());
 	}
 	
 	public Vector2 minus(Vector2 other) {
@@ -54,6 +54,8 @@ public class Vector2 {
 	
 	public Vector2 normal() {
 		float len = length();
+		if (len == 0)
+			return Vector2.ZERO;
 		return new Vector2(x() / len, y() / len);
 	}
 	

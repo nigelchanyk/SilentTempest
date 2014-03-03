@@ -11,13 +11,11 @@ public class Move extends Sequence {
 	private Vector2 dest;
 	private Direction direction;
 	private Turn turn;
-	private Vector2 unitVector;
 
 	public Move(Actor actor, Coordinate initPosition, Direction direction) {
 		super(actor, initPosition);
 		this.direction = direction;
 		dest = initPosition.add(MathHelper.getTranslation(direction)).toCenterVector2();
-		unitVector = MathHelper.getTranslation(direction).toVector2().normal();
 	}
 
 	@Override
@@ -28,7 +26,7 @@ public class Move extends Sequence {
 	@Override
 	public void onStart() {
 		super.onStart();
-		turn = new Turn(actor, getInitialPosition(), direction);
+		turn = new Turn(actor, getInitialPosition(), MathHelper.getRotation(actor.getPosition(), dest));
 	}
 
 	@Override
@@ -44,6 +42,7 @@ public class Move extends Sequence {
 			completed = true;
 		}
 
+		Vector2 unitVector = dest.minus(actor.getPosition()).normal();
 		actor.setPosition(actor.getPosition().add(unitVector.multiply(elapsedTime * actor.getSpeed())));
 	}
 
