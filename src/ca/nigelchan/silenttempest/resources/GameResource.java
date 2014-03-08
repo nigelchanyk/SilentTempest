@@ -20,7 +20,6 @@ public class GameResource extends Resource {
 	}
 	
 	private ITextureRegion alertIndicator;
-	private int dpi;
 	private ITiledTextureRegion fieldTextureRegion;
 	private int fieldTileSize;
 	private ITextureRegion joystickDisplay;
@@ -43,7 +42,6 @@ public class GameResource extends Resource {
 		// Be able to see 5 tiles above/below
 		// Therefore, 2 * 5 + 1
 		fieldTileSize = metrics.heightPixels / 11;
-		dpi = metrics.densityDpi;
 	}
 	
 	// Create buildable bitmap texture atlas by grid width and height
@@ -77,8 +75,8 @@ public class GameResource extends Resource {
 	private void createJoystickTexture() {
 		BuildableBitmapTextureAtlas joystickAtlas = new BuildableBitmapTextureAtlas(
 			activity.getTextureManager(),
-			getTextureSize(dpi),
-			getTextureSize(dpi),
+			getTextureSize(getDPI()),
+			getTextureSize(getDPI()),
 			TextureOptions.DEFAULT
 		);
 		addAtlas(joystickAtlas);
@@ -86,8 +84,8 @@ public class GameResource extends Resource {
 			joystickAtlas,
 			activity,
 			"joystick.svg",
-			dpi,
-			dpi
+			getDPI(),
+			getDPI()
         );
 	}
 	
@@ -117,16 +115,6 @@ public class GameResource extends Resource {
 			fieldTileSize,
 			fieldTileSize
         );
-	}
-	
-	private int getTextureSize(int requiredSize) {
-		if (requiredSize > 8192)
-			throw new IllegalArgumentException("Seriously? You want texture size of " + requiredSize + "?");
-
-		for (int i = 2; ; i *= 2) {
-			if (i >= requiredSize)
-				return i;
-		}
 	}
 
 	// Getters

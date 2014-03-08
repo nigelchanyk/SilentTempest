@@ -1,10 +1,8 @@
 package ca.nigelchan.silenttempest.scenes;
 
-import java.util.LinkedList;
-
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.camera.hud.HUD;
+import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.BaseGameActivity;
@@ -28,45 +26,44 @@ public abstract class BaseScene extends Scene {
 	protected boolean inactiveResourceAllowed = true;
 	protected boolean resourceLoaded = false;
 	
-	private LinkedList<IEntity> autoReleaseEntities = new LinkedList<IEntity>();
 	private PopOperation defualtPopOperation = PopOperation.NONE;
-	private HUD hud = null; // Nullable
 	private Resource resource;
+	private Entity objectLayer = new Entity();
 	private boolean sceneCreated = false;
+	private Entity uiLayer = new Entity();
 	
 	public BaseScene(SceneManager manager) {
 		this.manager = manager;
 		this.activity = manager.getActivity();
 		this.camera = manager.getCamera();
 		this.engine = manager.getEngine();
+		super.attachChild(objectLayer);
+		super.attachChild(uiLayer);
 	}
-	
+
 	@Override
 	public void attachChild(final IEntity entity) {
-		attachChild(entity, true);
+		objectLayer.attachChild(entity);
 	}
 	
-	public void attachChild(final IEntity entity, boolean autoRelease) {
-		super.attachChild(entity);
-		if (autoRelease)
-			autoReleaseEntities.add(entity);
+	public void attachUI(IEntity entity) {
+		uiLayer.attachChild(entity);
+	}
+	
+	public void detachUI(IEntity entity) {
+		uiLayer.detachChild(entity);
 	}
 
 	public void disposeScene() {
 		detachChildren();
-		for (IEntity entity : autoReleaseEntities)
-			entity.dispose();
-		autoReleaseEntities.clear();
-		dispose();
-		
-		if (hud != null) {
-			if (hud == camera.getHUD())
-				camera.setHUD(null);
+		for (int i = 0; i < objectLayer.getChildCount(); ++i)
+			objectLayer.getChildByIndex(i).dispose();
+		for (int i = 0; i < uiLayer.getChildCount(); ++i)
+			uiLayer.getChildByIndex(i).dispose();
 
-			for (int i = 0; i < hud.getChildCount(); ++i)
-				hud.getChildByIndex(i).dispose();
-			hud.dispose();
-		}
+		objectLayer.dispose();
+		uiLayer.dispose();
+		dispose();
 		
 		unloadResources();
 	}
@@ -76,7 +73,6 @@ public abstract class BaseScene extends Scene {
 		if (!sceneCreated)
 			createScene();
 		sceneCreated = true;
-		camera.setHUD(hud);
 	}
 	
 	public void unloadResources() {
@@ -116,17 +112,9 @@ public abstract class BaseScene extends Scene {
 		return resourceLoaded;
 	}
 
-	protected HUD getHud() {
-		return hud;
-	}
-
 	// Setters
 	public void setDefualtPopOperation(PopOperation defualtPopOperation) {
 		this.defualtPopOperation = defualtPopOperation;
-	}
-
-	protected void setHud(HUD hud) {
-		this.hud = hud;
 	}
 
 	protected void setResource(Resource resource) {

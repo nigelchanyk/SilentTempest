@@ -14,11 +14,11 @@ import org.andengine.ui.activity.BaseGameActivity;
 import org.json.JSONException;
 
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import ca.nigelchan.silenttempest.data.WorldData;
 import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
 import ca.nigelchan.silenttempest.importer.WorldImporter;
 import ca.nigelchan.silenttempest.managers.SceneManager;
+import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.scenes.BaseScene;
 import ca.nigelchan.silenttempest.scenes.GameScene;
 import ca.nigelchan.silenttempest.scenes.SplashScene;
@@ -27,6 +27,11 @@ public class MainActivity extends BaseGameActivity {
 	
 	private Camera camera;
 	private SceneManager manager;
+
+	@Override
+	public void onBackPressed() {
+		manager.onBackKeyDown();
+	}
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -63,13 +68,6 @@ public class MainActivity extends BaseGameActivity {
 	}
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK)
-			manager.onBackKeyDown();
-		return false;
-	}
-
-	@Override
 	public void onPopulateScene(Scene pScene,
 			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception {
 		mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback() {
@@ -82,7 +80,9 @@ public class MainActivity extends BaseGameActivity {
 				ActorConfiguration actorConfiguration = new ActorConfiguration();
 				try {
 					WorldData worldData = WorldImporter.load("levels/sample.stl", MainActivity.this, actorConfiguration);
-                    manager.pushScene(new GameScene(manager, worldData));
+					CommonResource resource = new CommonResource(MainActivity.this);
+					resource.load();
+                    manager.pushScene(new GameScene(manager, resource, worldData));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
