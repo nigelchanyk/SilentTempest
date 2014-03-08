@@ -48,8 +48,8 @@ public class GameResource extends Resource {
 	private BuildableBitmapTextureAtlas createBuildableAtlas(int width, int height) {
 		BuildableBitmapTextureAtlas atlas = new BuildableBitmapTextureAtlas(
 			activity.getTextureManager(),
-			getTextureSize(fieldTileSize * width),
-			getTextureSize(fieldTileSize * height),
+			fieldTileSize * width,
+			fieldTileSize * height,
 			TextureOptions.DEFAULT
 		);
 		addAtlas(atlas);
@@ -75,8 +75,8 @@ public class GameResource extends Resource {
 	private void createJoystickTexture() {
 		BuildableBitmapTextureAtlas joystickAtlas = new BuildableBitmapTextureAtlas(
 			activity.getTextureManager(),
-			getTextureSize(getDPI()),
-			getTextureSize(getDPI()),
+			getDPI(),
+			getDPI(),
 			TextureOptions.DEFAULT
 		);
 		addAtlas(joystickAtlas);
@@ -92,8 +92,8 @@ public class GameResource extends Resource {
 	private void createIndicatorTexture() {
 		BuildableBitmapTextureAtlas indicatorAtlas = new BuildableBitmapTextureAtlas(
 			activity.getTextureManager(),
-			getTextureSize(fieldTileSize * 4),
-			getTextureSize(fieldTileSize * 2),
+			fieldTileSize * 4,
+			fieldTileSize * 2,
 			TextureOptions.DEFAULT
 		);
 		addAtlas(indicatorAtlas);

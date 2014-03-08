@@ -49,10 +49,14 @@ public class GameScene extends BaseScene {
 
 	@Override
 	public void onBackKeyPressed() {
-		if (gameInterface.isActive())
+		if (gameInterface.isActive()) {
 			subsceneManager.activate(gameMenu);
-		else
+			world.setIgnoreUpdate(true);
+		}
+		else {
 			subsceneManager.activate(gameInterface);
+			world.setIgnoreUpdate(false);
+		}
 	}
 
 	@Override

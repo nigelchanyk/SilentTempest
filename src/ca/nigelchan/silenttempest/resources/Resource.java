@@ -54,16 +54,6 @@ public abstract class Resource {
 		buildableAtlases.add(atlas);
 	}
 	
-	protected int getTextureSize(int requiredSize) {
-		if (requiredSize > 8192)
-			throw new IllegalArgumentException("Seriously? You want texture size of " + requiredSize + "?");
-
-		for (int i = 2; ; i *= 2) {
-			if (i >= requiredSize)
-				return i;
-		}
-	}
-	
 	protected abstract void onLoad();
 
 	// Getters

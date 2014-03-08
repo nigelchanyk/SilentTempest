@@ -1,13 +1,19 @@
 package ca.nigelchan.silenttempest.scenes.subscenes;
 
+import org.andengine.entity.primitive.Rectangle;
+import org.andengine.util.color.Color;
+
 import ca.nigelchan.silenttempest.resources.CommonResource;
-import ca.nigelchan.silenttempest.userinterface.game.DialogBox;
+import ca.nigelchan.silenttempest.userinterface.game.Header;
 import ca.nigelchan.silenttempest.util.PositionHelper;
 
 public class GameMenu extends Subscene {
 	
+	private static final Color BACKGROUND_COLOR = new Color(0, 0, 0, 0.9f);
+	
+	private Rectangle background;
+	private Header header;
 	private CommonResource resource;
-	private DialogBox dialog;
 	
 	public GameMenu(CommonResource resource) {
 		this.resource = resource;
@@ -27,14 +33,18 @@ public class GameMenu extends Subscene {
 
 	@Override
 	protected void onLoad() {
-		// TODO Auto-generated method stub
+		background = new Rectangle(0, 0, resource.getScreenWidth(), resource.getScreenHeight(), resource.getVertexBufferObjectManager());
+		background.setColor(BACKGROUND_COLOR);
+		getHUD().attachChild(background);
+
 		PositionHelper pos = new PositionHelper(resource.getScreenWidth(), resource.getScreenHeight())
 			.setAnchorX(PositionHelper.AnchorX.CENTER)
-			.setAnchorY(PositionHelper.AnchorY.BOTTOM)
-			.setWidth(resource.getDPI() * 3)
-			.setHeight(resource.getDPI());
-		dialog = new DialogBox(resource, pos);
-		getHUD().attachChild(dialog);
+			.setAnchorY(PositionHelper.AnchorY.CENTER)
+			.setWidth(0.8f)
+			.setHeight(0.8f);
+
+		header = new Header("Paused", pos.getPosition(), pos.getDimension().x(), resource);
+		getHUD().attachChild(header);
 	}
 
 }
