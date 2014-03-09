@@ -13,7 +13,21 @@ import org.andengine.ui.activity.BaseGameActivity;
 import android.graphics.Color;
 
 public class CommonResource extends Resource {
+	
+	public static final int BUTTON_CANCEL = 2;
+	public static final int BUTTON_CANCEL_ACTIVE = 3;
+	public static final int BUTTON_OK = 0;
+	public static final int BUTTON_OK_ACTIVE = 1;
+	public static final int BUTTON_EXIT = 8;
+	public static final int BUTTON_EXIT_ACTIVE = 9;
+	public static final int BUTTON_RESTART = 6;
+	public static final int BUTTON_RESTART_ACTIVE = 7;
+	public static final int BUTTON_PLAY = 10;
+	public static final int BUTTON_PLAY_ACTIVE = 11;
+	public static final int BUTTON_SETTINGS = 4;
+	public static final int BUTTON_SETTINGS_ACTIVE = 5;
 
+	private ITiledTextureRegion buttons;
 	private Font headerFont;
 	private ITiledTextureRegion dialog;
 	private ITextureRegion headerArrow;
@@ -26,11 +40,34 @@ public class CommonResource extends Resource {
 	protected void onLoad() {
 		// TODO Auto-generated method stub
 		SVGBitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/common/");
+		createButtons();
 		createDialogTextureRegion();
 		createHeaderArrow();
 		
 		FontFactory.setAssetBasePath("fnt/");
 		createHeaderFont();
+	}
+	
+	private void createButtons() {
+		boolean useLarge = isLargeScreen();
+		int width = useLarge ? getDPI() * 4 : (getDPI() * 2);
+		int height = useLarge ? getDPI() * 3 : (getDPI() * 3 / 2);
+		BuildableBitmapTextureAtlas atlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			width,
+			height,
+			TextureOptions.DEFAULT
+		);
+		addAtlas(atlas);
+		buttons = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+			atlas,
+			activity,
+			"buttons.svg",
+			width,
+			height,
+			4,
+			3
+		);
 	}
 
 	private void createDialogTextureRegion() {
@@ -87,6 +124,10 @@ public class CommonResource extends Resource {
 	}
 	
 	// Getters
+	public ITiledTextureRegion getButtons() {
+		return buttons;
+	}
+
 	public ITiledTextureRegion getDialog() {
 		return dialog;
 	}

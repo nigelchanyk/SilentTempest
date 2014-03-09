@@ -33,7 +33,26 @@ public class GameScene extends BaseScene {
 		// TODO Set to asynchronous loading
 		setBackground(new Background(Color.WHITE));
 		gameInterface = new GameInterface(resource, this.controller);
-		gameMenu = new GameMenu(commonResource);
+		gameMenu = new GameMenu(commonResource) {
+
+			@Override
+			public void onContinue() {
+				onBackKeyPressed();
+			}
+
+			@Override
+			public void onExit() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onRestart() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
 		Entity uiLayer = new Entity();
 		subsceneManager = new SubsceneManager(uiLayer);
 		subsceneManager.add(gameInterface, gameMenu);

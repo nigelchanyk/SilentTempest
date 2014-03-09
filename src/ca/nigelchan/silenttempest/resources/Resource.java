@@ -46,6 +46,10 @@ public abstract class Resource {
 			atlas.unload();
 	}
 	
+	public boolean isLargeScreen() {
+		return metrics.widthPixels / metrics.xdpi >= 5;
+	}
+	
 	protected void addAtlas(BitmapTextureAtlas atlas) {
 		atlases.add(atlas);
 	}

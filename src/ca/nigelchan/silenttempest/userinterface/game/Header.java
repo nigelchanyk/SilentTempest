@@ -58,5 +58,9 @@ public class Header extends Entity {
 		text.dispose();
 		super.dispose();
 	}
+	
+	public float getButtonY() {
+		return getY() + line.getY() + line.getHeight();
+	}
 
 }
