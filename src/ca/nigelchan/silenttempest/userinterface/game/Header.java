@@ -26,6 +26,7 @@ public class Header extends Entity {
 			label,
 			resource.getVertexBufferObjectManager()
 		);
+		width = Math.max(width, (int)text.getWidth());
 
 		ITextureRegion arrowTexture = resource.getHeaderArrow();
 		int lineHeight = resource.getDPI() / 25;

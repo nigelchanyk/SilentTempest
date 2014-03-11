@@ -21,6 +21,7 @@ import ca.nigelchan.silenttempest.managers.SceneManager;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.scenes.BaseScene;
 import ca.nigelchan.silenttempest.scenes.GameScene;
+import ca.nigelchan.silenttempest.scenes.MainMenuScene;
 import ca.nigelchan.silenttempest.scenes.SplashScene;
 
 public class MainActivity extends BaseGameActivity {
@@ -77,11 +78,13 @@ public class MainActivity extends BaseGameActivity {
 				mEngine.unregisterUpdateHandler(pTimerHandler);
 				manager.popScene();
 				// TODO Change to MainMenuScene
+                CommonResource resource = new CommonResource(MainActivity.this);
+                resource.load();
+                manager.pushScene(new MainMenuScene(manager, resource));
+                /*
 				ActorConfiguration actorConfiguration = new ActorConfiguration();
 				try {
 					WorldData worldData = WorldImporter.load("levels/sample.stl", MainActivity.this, actorConfiguration);
-					CommonResource resource = new CommonResource(MainActivity.this);
-					resource.load();
                     manager.pushScene(new GameScene(manager, resource, worldData));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -91,7 +94,7 @@ public class MainActivity extends BaseGameActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					finish();
-				}
+				}*/
 			}
 
 		}));

@@ -31,6 +31,7 @@ public class CommonResource extends Resource {
 	private Font headerFont;
 	private ITiledTextureRegion dialog;
 	private ITextureRegion headerArrow;
+	private ITextureRegion rain;
 
 	public CommonResource(BaseGameActivity activity) {
 		super(activity);
@@ -43,6 +44,7 @@ public class CommonResource extends Resource {
 		createButtons();
 		createDialogTextureRegion();
 		createHeaderArrow();
+		createRain();
 		
 		FontFactory.setAssetBasePath("fnt/");
 		createHeaderFont();
@@ -109,7 +111,7 @@ public class CommonResource extends Resource {
 	}
 	
 	private void createHeaderFont() {
-		BitmapTextureAtlas headerFontTexture = new BitmapTextureAtlas(activity.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+		BitmapTextureAtlas headerFontTexture = new BitmapTextureAtlas(activity.getTextureManager(), 512, 256, TextureOptions.BILINEAR);
 		headerFont = FontFactory.createFromAsset(
 			activity.getFontManager(),
 			headerFontTexture,
@@ -121,6 +123,25 @@ public class CommonResource extends Resource {
 		);
 	    headerFont.load();
 	    addAtlas(headerFontTexture);
+	}
+	
+	private void createRain() {
+		int width = Math.max(getDPI() / 50, 1);
+		int height = getDPI() / 5;
+		BuildableBitmapTextureAtlas atlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			width,
+			height,
+			TextureOptions.DEFAULT
+		);
+		addAtlas(atlas);
+		rain = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			atlas,
+			activity,
+			"rain.svg",
+			width,
+			height
+		);
 	}
 	
 	// Getters
@@ -138,6 +159,10 @@ public class CommonResource extends Resource {
 
 	public Font getHeaderFont() {
 		return headerFont;
+	}
+	
+	public ITextureRegion getRain() {
+		return rain;
 	}
 
 }

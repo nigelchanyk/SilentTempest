@@ -100,6 +100,11 @@ public abstract class BaseScene extends Scene {
 		return resource;
 	}
 
+	/**
+	 * 
+	 * @return true if resource can be deallocated when
+	 *         the scene is inactive.
+	 */
 	public boolean isInactiveResourceAllowed() {
 		return inactiveResourceAllowed;
 	}
