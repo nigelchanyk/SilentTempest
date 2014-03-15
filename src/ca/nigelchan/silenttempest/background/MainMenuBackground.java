@@ -15,6 +15,7 @@ public class MainMenuBackground extends Entity {
 	
 	private static final float MIN_LIGHTNING_INTERVAL = 6;
 	private static final float MAX_LIGHTNING_INTERVAL = 9;
+	private static final float LIGHT_FILTER_MAX_OPACITY = 0.9f;
 
 	private Rectangle lightFilter;
 	private float lightningInterval;
@@ -47,7 +48,7 @@ public class MainMenuBackground extends Entity {
 			resource.getScreenHeight(),
 			resource.getVertexBufferObjectManager()
 		);
-		lightFilter.setColor(0, 0, 0, 0.9f);
+		lightFilter.setColor(0, 0, 0, LIGHT_FILTER_MAX_OPACITY);
 		attachChild(lightFilter);
 		resetLightningInterval();
 		
@@ -74,7 +75,7 @@ public class MainMenuBackground extends Entity {
 			
 			@Override
 			public void onUpdate(float pSecondsElapsed) {
-				lightFilter.setAlpha(Math.min(0.9f, lightFilter.getAlpha() + pSecondsElapsed / 2));
+				lightFilter.setAlpha(Math.min(LIGHT_FILTER_MAX_OPACITY, lightFilter.getAlpha() + pSecondsElapsed / 2));
 				penguinShine.setAlpha(Math.max(0, penguinShine.getAlpha() - pSecondsElapsed / 2));
 				lightningInterval -= pSecondsElapsed;
 				if (lightningInterval <= 0) {

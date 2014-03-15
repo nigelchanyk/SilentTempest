@@ -31,8 +31,10 @@ public class World extends Entity {
 	private ActorLayer actorLayer;
 	private Entity alwaysVisibleLayer = new Entity();
 	private Entity belowActorLayer = new Entity();
+	private Vector2 cameraRelativePosition = Vector2.ZERO;
 	private int height;
 	private ArrayList<Layer> layers = new ArrayList<Layer>();
+	private int locks = 0;
 	private GameResource resource;
 	private ArrayList<IListener> subscribers = new ArrayList<IListener>();
 	private int width;
@@ -79,11 +81,7 @@ public class World extends Entity {
 			
 			@Override
 			public void onUpdate(float pSecondsElapsed) {
-				Player player = actorLayer.getPlayer();
-				if (player == null)
-					return;
-				// Round to nearest integer to avoid gaps in between grid
-				setPosition(World.this.resource.getScreenWidth() / 2 - (int)player.getX(), World.this.resource.getScreenHeight() / 2 - (int)player.getY());
+				chasePlayer();
 			}
 		});
 	}
@@ -94,6 +92,14 @@ public class World extends Entity {
 	
 	public void attachBelowActorChild(IEntity pEntity) {
 		belowActorLayer.attachChild(pEntity);
+	}
+	
+	public void chasePlayer() {
+		Player player = actorLayer.getPlayer();
+		if (player == null)
+			return;
+		// Round to nearest integer to avoid gaps in between grid
+		setCameraRelativePosition(player.getPosition());
 	}
 	
 	@Override
@@ -145,6 +151,11 @@ public class World extends Entity {
 		}
 		
 		return null;
+	}
+	
+	public void lock() {
+		locks++;
+		setIgnoreUpdate(true);
 	}
 	
 	public boolean isHidingSpot(Coordinate position) {
@@ -252,11 +263,23 @@ public class World extends Entity {
 		subscribers.add(subscriber);
 	}
 	
+	public void unlock() {
+		if (locks == 0)
+			return;
+		locks--;
+		if (locks == 0)
+			setIgnoreUpdate(false);
+	}
+	
 	public void unsubscribe(IListener subscriber) {
 		subscribers.remove(subscriber);
 	}
 
 	// Getters
+	public Vector2 getCameraRelativePosition() {
+		return cameraRelativePosition;
+	}
+
 	public Iterable<Enemy> getEnemies() {
 		return actorLayer.getEnemies();
 	}
@@ -275,6 +298,15 @@ public class World extends Entity {
 
 	public int getWidth() {
 		return width;
+	}
+	
+	// Setters
+	public void setCameraRelativePosition(Vector2 position) {
+		cameraRelativePosition = position;
+		setPosition(
+			resource.getScreenWidth() / 2 - (int)(position.x() * resource.getFieldTileSize()),
+			resource.getScreenHeight() / 2 - (int)(position.y() * resource.getFieldTileSize())
+		);
 	}
 	
 	

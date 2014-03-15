@@ -14,8 +14,10 @@ import org.andengine.ui.activity.BaseGameActivity;
 import org.json.JSONException;
 
 import android.util.DisplayMetrics;
+import ca.nigelchan.silenttempest.data.EventsData;
 import ca.nigelchan.silenttempest.data.WorldData;
 import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
+import ca.nigelchan.silenttempest.importer.EventImporter;
 import ca.nigelchan.silenttempest.importer.WorldImporter;
 import ca.nigelchan.silenttempest.managers.SceneManager;
 import ca.nigelchan.silenttempest.resources.CommonResource;
@@ -80,12 +82,12 @@ public class MainActivity extends BaseGameActivity {
 				// TODO Change to MainMenuScene
                 CommonResource resource = new CommonResource(MainActivity.this);
                 resource.load();
-                manager.pushScene(new MainMenuScene(manager, resource));
-                /*
+                //manager.pushScene(new MainMenuScene(manager, resource));
 				ActorConfiguration actorConfiguration = new ActorConfiguration();
 				try {
 					WorldData worldData = WorldImporter.load("levels/sample.stl", MainActivity.this, actorConfiguration);
-                    manager.pushScene(new GameScene(manager, resource, worldData));
+					EventsData eventsData = EventImporter.load("levels/sample.stl", MainActivity.this);
+                    manager.pushScene(new GameScene(manager, resource, worldData, eventsData));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -94,7 +96,7 @@ public class MainActivity extends BaseGameActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					finish();
-				}*/
+				}
 			}
 
 		}));

@@ -12,6 +12,7 @@ import android.util.DisplayMetrics;
 
 public class GameResource extends Resource {
 
+	public static final int MAX_BEACON_SIZE = 4;
 	public static final int FIELD_SPRITE_HEIGHT = 5;
 	public static final int FIELD_SPRITE_WIDTH = 5;
 	
@@ -20,6 +21,7 @@ public class GameResource extends Resource {
 	}
 	
 	private ITextureRegion alertIndicator;
+	private ITextureRegion beacon;
 	private ITiledTextureRegion fieldTextureRegion;
 	private int fieldTileSize;
 	private ITextureRegion joystickDisplay;
@@ -35,6 +37,7 @@ public class GameResource extends Resource {
 		createMonkeyTexture();
 		createJoystickTexture();
 		createIndicatorTexture();
+		createBeaconTexture();
 	}
 	
 	private void computeSize(BaseGameActivity activity) {
@@ -42,6 +45,17 @@ public class GameResource extends Resource {
 		// Be able to see 5 tiles above/below
 		// Therefore, 2 * 5 + 1
 		fieldTileSize = metrics.heightPixels / 11;
+	}
+	
+	private void createBeaconTexture() {
+		BuildableBitmapTextureAtlas atlas = createBuildableAtlas(MAX_BEACON_SIZE, MAX_BEACON_SIZE);
+		beacon = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			atlas,
+			activity,
+			"beacon.svg",
+			fieldTileSize * MAX_BEACON_SIZE,
+			fieldTileSize * MAX_BEACON_SIZE
+		);
 	}
 	
 	// Create buildable bitmap texture atlas by grid width and height
@@ -120,6 +134,10 @@ public class GameResource extends Resource {
 	// Getters
 	public ITextureRegion getAlertIndicator() {
 		return alertIndicator;
+	}
+	
+	public ITextureRegion getBeacon() {
+		return beacon;
 	}
 
 	public ITiledTextureRegion getFieldTextureRegion() {

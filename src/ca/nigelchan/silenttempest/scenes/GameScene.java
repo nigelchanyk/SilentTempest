@@ -5,8 +5,10 @@ import org.andengine.entity.scene.background.Background;
 import org.andengine.util.color.Color;
 
 import ca.nigelchan.silenttempest.controllers.ActorController;
+import ca.nigelchan.silenttempest.data.EventsData;
 import ca.nigelchan.silenttempest.data.WorldData;
 import ca.nigelchan.silenttempest.managers.EnemyManager;
+import ca.nigelchan.silenttempest.managers.EventManager;
 import ca.nigelchan.silenttempest.managers.SceneManager;
 import ca.nigelchan.silenttempest.managers.SubsceneManager;
 import ca.nigelchan.silenttempest.objects.World;
@@ -18,6 +20,8 @@ import ca.nigelchan.silenttempest.scenes.subscenes.GameMenu;
 public class GameScene extends BaseScene {
 	
 	private ActorController controller = new ActorController();
+	private EventManager eventManager = null;
+	private EventsData eventsData;
 	private GameInterface gameInterface;
 	private GameMenu gameMenu;
 	private GameResource resource;
@@ -25,9 +29,15 @@ public class GameScene extends BaseScene {
 	private World world;
 	private WorldData worldData;
 
-	public GameScene(SceneManager manager, CommonResource commonResource, WorldData worldData) {
+	public GameScene(
+		SceneManager manager,
+		CommonResource commonResource,
+		WorldData worldData,
+		EventsData eventsData
+	) {
 		super(manager);
 		this.worldData = worldData;
+		this.eventsData = eventsData;
 		resource = new GameResource(activity);
 		setResource(resource);
 		// TODO Set to asynchronous loading
@@ -70,11 +80,11 @@ public class GameScene extends BaseScene {
 	public void onBackKeyPressed() {
 		if (gameInterface.isActive()) {
 			subsceneManager.activate(gameMenu);
-			world.setIgnoreUpdate(true);
+			world.lock();
 		}
 		else {
 			subsceneManager.activate(gameInterface);
-			world.setIgnoreUpdate(false);
+			world.unlock();
 		}
 	}
 
@@ -96,6 +106,9 @@ public class GameScene extends BaseScene {
 		attachChild(world);
 		controller.setActor(world.getPlayer());
 		world.subscribe(new EnemyManager(world, resource));
+		
+		eventManager = new EventManager(eventsData, world, gameInterface, resource);
+		this.registerUpdateHandler(eventManager);
 	}
 	
 }

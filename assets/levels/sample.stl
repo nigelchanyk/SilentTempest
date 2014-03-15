@@ -19,5 +19,13 @@
   		"range": 3,
   		"pattern": "e(6);s(3);w(6);n(3)"
   	}
+  ],
+  "events": [
+  	{
+  		"type": "approach",
+  		"x": 15,
+  		"y": 10,
+  		"radius": 1
+  	}
   ]
 }
