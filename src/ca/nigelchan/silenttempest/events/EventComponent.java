@@ -8,6 +8,8 @@ public abstract class EventComponent {
 		return completed;
 	}
 	
+	public abstract void dispose();
+	
 	public abstract void onLoad();
 	public abstract void onUpdate(float elapsedTime);
 

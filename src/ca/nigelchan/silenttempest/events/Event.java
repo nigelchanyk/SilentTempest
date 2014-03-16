@@ -15,6 +15,12 @@ public class Event extends EventComponent {
 		this.lock = lock;
 	}
 	
+	@Override
+	public void dispose() {
+		for (EventComponent component : eventComponents)
+			component.dispose();
+	}
+
 	public Event addEventComponent(EventComponent component) {
 		eventComponents.addLast(component);
 		return this;
@@ -31,7 +37,7 @@ public class Event extends EventComponent {
 			return;
 		eventComponents.peek().onUpdate(elapsedTime);
 		if (eventComponents.peek().isCompleted()) {
-			eventComponents.poll();
+			eventComponents.poll().dispose();
 			prepareNext();
 		}
 	}

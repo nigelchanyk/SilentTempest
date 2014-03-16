@@ -5,6 +5,7 @@ import org.andengine.input.touch.TouchEvent;
 
 import ca.nigelchan.silenttempest.controllers.ActorController;
 import ca.nigelchan.silenttempest.controllers.Joystick;
+import ca.nigelchan.silenttempest.modals.Modal;
 import ca.nigelchan.silenttempest.resources.GameResource;
 import ca.nigelchan.silenttempest.userinterface.game.JoystickDisplay;
 
@@ -14,6 +15,7 @@ public class GameInterface extends Subscene {
 	private GameResource resource;
 	private Joystick joystick;
 	private JoystickDisplay joystickDisplay;
+	private Modal modal = null;
 	
 	public GameInterface(GameResource resource, ActorController controller) {
 		this.resource = resource;
@@ -50,5 +52,15 @@ public class GameInterface extends Subscene {
 	protected void onDispose() {
 		// TODO Auto-generated method stub
 	}
-
+	
+	// Setters
+	public void setModal(Modal modal) {
+		if (this.modal != null) {
+			this.modal.detachSelf();
+			this.modal.dispose();
+		}
+		this.modal = modal;
+		if (modal != null)
+			getHUD().attachChild(modal);
+	}
 }

@@ -1,6 +1,5 @@
 package ca.nigelchan.silenttempest.events;
 
-import android.util.Log;
 import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.util.MathHelper;
@@ -23,6 +22,10 @@ public class CameraTranslation extends EventComponent {
 		this.world = world;
 		this.dest = dest;
 		this.speed = speed;
+	}
+
+	@Override
+	public void dispose() {
 	}
 
 	@Override

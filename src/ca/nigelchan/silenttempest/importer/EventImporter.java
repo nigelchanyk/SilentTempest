@@ -25,7 +25,8 @@ public class EventImporter {
 				data.addEventData(
 					new ApproachMission(
 						Coordinate.fromJSONObject(event).toCenterVector2(),
-						(float)event.getDouble("radius")
+						(float)event.getDouble("radius"),
+						event.getString("instruction")
 					)
 				);
 			}

@@ -19,6 +19,7 @@ import ca.nigelchan.silenttempest.scenes.subscenes.GameMenu;
 
 public class GameScene extends BaseScene {
 	
+	private CommonResource commonResource;
 	private ActorController controller = new ActorController();
 	private EventManager eventManager = null;
 	private EventsData eventsData;
@@ -36,6 +37,7 @@ public class GameScene extends BaseScene {
 		EventsData eventsData
 	) {
 		super(manager);
+		this.commonResource = commonResource;
 		this.worldData = worldData;
 		this.eventsData = eventsData;
 		resource = new GameResource(activity);
@@ -72,6 +74,8 @@ public class GameScene extends BaseScene {
 
 	@Override
 	public void disposeScene() {
+		if (eventManager != null)
+			eventManager.dispose();
 		subsceneManager.dispose();
 		super.disposeScene();
 	}
@@ -107,7 +111,7 @@ public class GameScene extends BaseScene {
 		controller.setActor(world.getPlayer());
 		world.subscribe(new EnemyManager(world, resource));
 		
-		eventManager = new EventManager(eventsData, world, gameInterface, resource);
+		eventManager = new EventManager(eventsData, world, gameInterface, resource, commonResource);
 		this.registerUpdateHandler(eventManager);
 	}
 	

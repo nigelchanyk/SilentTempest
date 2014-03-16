@@ -29,9 +29,10 @@ public class CommonResource extends Resource {
 
 	private ITiledTextureRegion buttons;
 	private Font headerFont;
-	private ITiledTextureRegion dialog;
+	private Font regularFont;
 	private ITextureRegion headerArrow;
 	private ITextureRegion rain;
+	private ITiledTextureRegion uiShadow;
 
 	public CommonResource(BaseGameActivity activity) {
 		super(activity);
@@ -42,12 +43,13 @@ public class CommonResource extends Resource {
 		// TODO Auto-generated method stub
 		SVGBitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/common/");
 		createButtons();
-		createDialogTextureRegion();
+		createUiShadowTextureRegion();
 		createHeaderArrow();
 		createRain();
 		
 		FontFactory.setAssetBasePath("fnt/");
 		createHeaderFont();
+		createRegularFont();
 	}
 	
 	private void createButtons() {
@@ -72,7 +74,7 @@ public class CommonResource extends Resource {
 		);
 	}
 
-	private void createDialogTextureRegion() {
+	private void createUiShadowTextureRegion() {
 		BuildableBitmapTextureAtlas dialogAtlas = new BuildableBitmapTextureAtlas(
 			activity.getTextureManager(),
 			256,
@@ -80,10 +82,10 @@ public class CommonResource extends Resource {
 			TextureOptions.DEFAULT
 		);
 		addAtlas(dialogAtlas);
-		dialog = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+		uiShadow = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
             dialogAtlas,
             activity,
-            "dialog.svg",
+            "ui_shadow.svg",
             getDPI() * 3 / 4,
             getDPI() * 3 / 4,
             3,
@@ -116,7 +118,7 @@ public class CommonResource extends Resource {
 			activity.getFontManager(),
 			headerFontTexture,
 			activity.getAssets(),
-			"DancingScript.ttf",
+			"OrbitronBlack.ttf",
 			Math.min(getDPI() * 2 / 5, 128),
 			true,
 			Color.WHITE
@@ -144,13 +146,34 @@ public class CommonResource extends Resource {
 		);
 	}
 	
+	private void createRegularFont() {
+		int textHeight = Math.min(getDPI() / 5, 128);
+		BitmapTextureAtlas regularFontTexture = new BitmapTextureAtlas(
+			activity.getTextureManager(),
+			getScreenWidth(),
+			textHeight + 32,
+			TextureOptions.BILINEAR
+		);
+		regularFont = FontFactory.createFromAsset(
+			activity.getFontManager(),
+			regularFontTexture,
+			activity.getAssets(),
+			"OrbitronLight.ttf",
+			textHeight,
+			true,
+			Color.WHITE
+		);
+	    regularFont.load();
+	    addAtlas(regularFontTexture);
+	}
+	
 	// Getters
 	public ITiledTextureRegion getButtons() {
 		return buttons;
 	}
 
-	public ITiledTextureRegion getDialog() {
-		return dialog;
+	public ITiledTextureRegion getUiShadow() {
+		return uiShadow;
 	}
 	
 	public ITextureRegion getHeaderArrow() {
@@ -163,6 +186,10 @@ public class CommonResource extends Resource {
 	
 	public ITextureRegion getRain() {
 		return rain;
+	}
+	
+	public Font getRegularFont() {
+		return regularFont;
 	}
 
 }

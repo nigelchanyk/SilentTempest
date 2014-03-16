@@ -31,6 +31,13 @@ public class DestinationBeacon extends EventComponent {
 	}
 
 	@Override
+	public void dispose() {
+		entity.detachSelf();
+		beacon.dispose();
+		entity.dispose();
+	}
+
+	@Override
 	public void onLoad() {
 		this.gameInterface.getHUD().attachChild(entity);
 	}
@@ -49,12 +56,8 @@ public class DestinationBeacon extends EventComponent {
 				beacon.setAlpha(0);
 				beacon.setPosition(0, 0);
 				count++;
-				if (count == 3) {
+				if (count == 3)
 					completed = true;
-					entity.detachSelf();
-					entity.dispose();
-					beacon.dispose();
-				}
 			}
 		}
 	}

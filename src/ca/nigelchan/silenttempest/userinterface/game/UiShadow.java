@@ -9,12 +9,12 @@ import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.util.Coordinate;
 import ca.nigelchan.silenttempest.util.PositionHelper;
 
-public class DialogBox extends Entity {
+public class UiShadow extends Entity {
 	
 	private Entity window;
 	
-	public DialogBox(CommonResource resource, PositionHelper positionHelper) {
-		ITiledTextureRegion texture = resource.getDialog();
+	public UiShadow(CommonResource resource, PositionHelper positionHelper) {
+		ITiledTextureRegion texture = resource.getUiShadow();
 		int corner = (int)texture.getWidth(0);
 		positionHelper.setMinWidth(corner * 2 + 1);
 		positionHelper.setMinHeight(corner * 2 + 1);
@@ -35,6 +35,7 @@ public class DialogBox extends Entity {
 			for (int x = 0; x < 3; ++x) {
 				TiledSprite sprite = new TiledSprite(posX[x], posY[y], width[x], height[y], texture, vbom);
 				sprite.setCurrentTileIndex(y * 3 + x);
+				sprite.setColor(0, 0, 0, 0.8f);
 				window.attachChild(sprite);
 			}
 		}

@@ -1,6 +1,5 @@
 package ca.nigelchan.silenttempest.objects;
 
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -84,6 +83,7 @@ public class World extends Entity {
 				chasePlayer();
 			}
 		});
+		chasePlayer();
 	}
 	
 	public void attachAlwaysVisibleChild(IEntity pEntity) {
