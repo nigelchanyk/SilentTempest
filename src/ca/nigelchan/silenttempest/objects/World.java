@@ -267,8 +267,9 @@ public class World extends Entity {
 		if (locks == 0)
 			return;
 		locks--;
-		if (locks == 0)
+		if (locks == 0) {
 			setIgnoreUpdate(false);
+		}
 	}
 	
 	public void unsubscribe(IListener subscriber) {

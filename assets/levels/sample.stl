@@ -23,10 +23,10 @@
   "events": [
   	{
   		"type": "approach",
-  		"x": 15,
-  		"y": 10,
+  		"x": 3,
+  		"y": 11,
   		"radius": 1,
-  		"instruction": "Go to (15, 10)"
+  		"instruction": "Go to (3, 11)"
   	}
   ]
 }

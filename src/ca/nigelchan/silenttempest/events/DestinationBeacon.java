@@ -26,7 +26,7 @@ public class DestinationBeacon extends EventComponent {
 		entity.attachChild(beacon);
 		entity.setPosition(
 			(resource.getScreenWidth() - beacon.getWidth()) / 2,
-			(resource.getScreenHeight() - beacon.getHeight() / 2) / 2
+			(resource.getScreenHeight() - beacon.getHeight()) / 2
 		);
 	}
 
