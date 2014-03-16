@@ -7,6 +7,7 @@ import org.andengine.util.color.Color;
 import ca.nigelchan.silenttempest.controllers.ActorController;
 import ca.nigelchan.silenttempest.data.EventsData;
 import ca.nigelchan.silenttempest.data.WorldData;
+import ca.nigelchan.silenttempest.events.EventLayer;
 import ca.nigelchan.silenttempest.managers.EnemyManager;
 import ca.nigelchan.silenttempest.managers.EventManager;
 import ca.nigelchan.silenttempest.managers.SceneManager;
@@ -21,8 +22,10 @@ public class GameScene extends BaseScene {
 	
 	private CommonResource commonResource;
 	private ActorController controller = new ActorController();
+	private EventLayer eventLayer = new EventLayer();
 	private EventManager eventManager = null;
 	private EventsData eventsData;
+	private Entity gameCore = new Entity();
 	private GameInterface gameInterface;
 	private GameMenu gameMenu;
 	private GameResource resource;
@@ -65,10 +68,12 @@ public class GameScene extends BaseScene {
 			}
 			
 		};
+		attachChild(gameCore);
 		Entity uiLayer = new Entity();
 		subsceneManager = new SubsceneManager(uiLayer);
 		subsceneManager.add(gameInterface, gameMenu);
 		setOnSceneTouchListener(subsceneManager);
+		registerUpdateHandler(subsceneManager);
 		attachUI(uiLayer);
 	}
 
@@ -76,6 +81,8 @@ public class GameScene extends BaseScene {
 	public void disposeScene() {
 		if (eventManager != null)
 			eventManager.dispose();
+		if (world != null)
+			world.dispose();
 		subsceneManager.dispose();
 		super.disposeScene();
 	}
@@ -84,11 +91,11 @@ public class GameScene extends BaseScene {
 	public void onBackKeyPressed() {
 		if (gameInterface.isActive()) {
 			subsceneManager.activate(gameMenu);
-			world.lock();
+			gameCore.setIgnoreUpdate(true);
 		}
 		else {
 			subsceneManager.activate(gameInterface);
-			world.unlock();
+			gameCore.setIgnoreUpdate(false);
 		}
 	}
 
@@ -107,12 +114,13 @@ public class GameScene extends BaseScene {
 		}
 		this.worldData = worldData;
 		world = new World(worldData, resource);
-		attachChild(world);
+		gameCore.attachChild(world);
 		controller.setActor(world.getPlayer());
 		world.subscribe(new EnemyManager(world, resource));
 		
-		eventManager = new EventManager(eventsData, world, gameInterface, resource, commonResource);
-		this.registerUpdateHandler(eventManager);
+		eventManager = new EventManager(eventsData, world, eventLayer, resource, commonResource);
+		gameCore.attachChild(eventLayer);
+		gameCore.registerUpdateHandler(eventManager);
 	}
 	
 }

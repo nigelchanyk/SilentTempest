@@ -5,7 +5,6 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.util.color.Color;
 
 import ca.nigelchan.silenttempest.resources.GameResource;
-import ca.nigelchan.silenttempest.scenes.subscenes.GameInterface;
 import ca.nigelchan.silenttempest.util.MathHelper;
 
 public class DestinationBeacon extends EventComponent {
@@ -15,11 +14,11 @@ public class DestinationBeacon extends EventComponent {
 	private Sprite beacon;
 	private int count = 0;
 	private Entity entity = new Entity();
-	private GameInterface gameInterface;
+	private EventLayer eventLayer;
 	private float phase = 0;
 	
-	public DestinationBeacon(GameInterface gameInterface, GameResource resource) {
-		this.gameInterface = gameInterface;
+	public DestinationBeacon(EventLayer eventLayer, GameResource resource) {
+		this.eventLayer = eventLayer;
 		beacon = new Sprite(0, 0, resource.getBeacon(), resource.getVertexBufferObjectManager());
 		beacon.setScale(0);
 		beacon.setColor(Color.RED);
@@ -39,7 +38,7 @@ public class DestinationBeacon extends EventComponent {
 
 	@Override
 	public void onLoad() {
-		this.gameInterface.getHUD().attachChild(entity);
+		eventLayer.attachChild(entity);
 	}
 
 	@Override

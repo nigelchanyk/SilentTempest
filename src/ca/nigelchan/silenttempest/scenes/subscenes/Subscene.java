@@ -85,6 +85,10 @@ public abstract class Subscene implements IOnSceneTouchListener {
 		return false;
 	}
 	
+	public void update(float elapsedTime) {
+		onUpdate(elapsedTime);
+	}
+	
 	protected void registerTouch(ITouchableInterfaceObject touchable) {
 		touchables.add(touchable);
 	}
@@ -97,6 +101,7 @@ public abstract class Subscene implements IOnSceneTouchListener {
 	protected abstract void onDeactivate();
 	protected abstract void onDispose();
 	protected abstract void onLoad();
+	protected abstract void onUpdate(float elapsedTime);
 	
 	// Getters
 	public Entity getHUD() {

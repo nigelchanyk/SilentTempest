@@ -5,10 +5,10 @@ import org.andengine.engine.handler.IUpdateHandler;
 import ca.nigelchan.silenttempest.data.EventsData;
 import ca.nigelchan.silenttempest.data.events.IEventData;
 import ca.nigelchan.silenttempest.events.Event;
+import ca.nigelchan.silenttempest.events.EventLayer;
 import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.resources.GameResource;
-import ca.nigelchan.silenttempest.scenes.subscenes.GameInterface;
 
 public class EventManager implements IUpdateHandler {
 	
@@ -17,13 +17,13 @@ public class EventManager implements IUpdateHandler {
 	public EventManager(
 		EventsData eventsData,
 		World world,
-		GameInterface gameInterface,
+		EventLayer eventLayer,
 		GameResource gameResource,
 		CommonResource commonResource
 	) {
 		globalEvent = new Event(world, false);
 		for (IEventData eventData : eventsData.getAllEventData()) {
-			globalEvent.addEventComponent(eventData.toEvent(world, gameInterface, gameResource, commonResource));
+			globalEvent.addEventComponent(eventData.toEvent(world, eventLayer, gameResource, commonResource));
 		}
 		globalEvent.onLoad();
 	}

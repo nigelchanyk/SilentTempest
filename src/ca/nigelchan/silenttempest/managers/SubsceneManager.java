@@ -2,6 +2,7 @@ package ca.nigelchan.silenttempest.managers;
 
 import java.util.HashSet;
 
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -9,7 +10,7 @@ import org.andengine.input.touch.TouchEvent;
 
 import ca.nigelchan.silenttempest.scenes.subscenes.Subscene;
 
-public class SubsceneManager implements IOnSceneTouchListener {
+public class SubsceneManager implements IOnSceneTouchListener, IUpdateHandler {
 	
 	private HashSet<Subscene> subscenes = new HashSet<Subscene>();
 	private Subscene activeSubscene = null;
@@ -53,5 +54,14 @@ public class SubsceneManager implements IOnSceneTouchListener {
 		return activeSubscene.onSceneTouchEvent(pScene, pSceneTouchEvent);
 	}
 
+	@Override
+	public void onUpdate(float pSecondsElapsed) {
+		if (activeSubscene != null)
+			activeSubscene.update(pSecondsElapsed);
+	}
+
+	@Override
+	public void reset() {
+	}
 
 }

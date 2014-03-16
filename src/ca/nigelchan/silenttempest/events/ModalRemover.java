@@ -1,23 +1,20 @@
 package ca.nigelchan.silenttempest.events;
 
-import ca.nigelchan.silenttempest.scenes.subscenes.GameInterface;
-
 public class ModalRemover extends EventComponent {
 	
-	private GameInterface gameInterface;
+	private EventLayer eventLayer;
 	
-	public ModalRemover(GameInterface gameInterface) {
-		this.gameInterface = gameInterface;
+	public ModalRemover(EventLayer eventLayer) {
+		this.eventLayer = eventLayer;
 	}
 
 	@Override
 	public void dispose() {
-		
+		eventLayer.setModal(null);
 	}
 
 	@Override
 	public void onLoad() {
-		gameInterface.setModal(null);
 		completed = true;
 	}
 

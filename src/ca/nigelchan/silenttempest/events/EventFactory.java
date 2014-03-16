@@ -4,7 +4,6 @@ import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.resources.GameResource;
-import ca.nigelchan.silenttempest.scenes.subscenes.GameInterface;
 import ca.nigelchan.silenttempest.util.Vector2;
 
 public class EventFactory {
@@ -16,16 +15,16 @@ public class EventFactory {
 		Actor source,
 		Vector2 destination,
 		World world,
-		GameInterface gameInterface,
+		EventLayer layer,
 		GameResource gameResource,
 		CommonResource commonResource
 	) {
 		return new Event(world, true)
-			.addEventComponent(new ModalSetter(instruction, gameInterface, commonResource))
+			.addEventComponent(new ModalSetter(instruction, layer, commonResource))
 			.addEventComponent(new CameraTranslation(world, destination, CAMERA_TRANSLATION_SPEED))
-			.addEventComponent(new DestinationBeacon(gameInterface, gameResource))
+			.addEventComponent(new DestinationBeacon(layer, gameResource))
 			.addEventComponent(new CameraTranslation(world, source, CAMERA_TRANSLATION_SPEED))
-			.addEventComponent(new ModalRemover(gameInterface));
+			.addEventComponent(new ModalRemover(layer));
 	}
 
 }

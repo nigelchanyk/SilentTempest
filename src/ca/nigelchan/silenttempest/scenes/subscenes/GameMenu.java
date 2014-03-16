@@ -65,7 +65,11 @@ public abstract class GameMenu extends Subscene {
 		createRestartButton((pos.getDimension().x() - resource.getButtons().getWidth()) / 2);
 		createExitButton(pos.getDimension().x() - resource.getButtons().getWidth());
 	}
-	
+
+	@Override
+	protected void onUpdate(float elapsedTime) {
+	}
+
 	private void createBackground() {
 		Rectangle background = new Rectangle(
 			0,
