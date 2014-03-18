@@ -20,7 +20,7 @@ public class MainMenuScene extends BaseScene {
 		this.commonResource = commonResource;
 		resource = new MainMenuResource(activity);
 		setResource(resource);
-		// loadAsynchronous = true;
+		loadAsynchronous = true;
 	}
 
 	@Override

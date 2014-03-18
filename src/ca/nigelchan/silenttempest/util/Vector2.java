@@ -75,4 +75,8 @@ public class Vector2 {
 	public float y() {
 		return _y;
 	}
+	
+	public static Vector2 fromFloats(float[] values) {
+		return new Vector2(values[0], values[1]);
+	}
 }

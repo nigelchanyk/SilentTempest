@@ -1,5 +1,9 @@
 package ca.nigelchan.silenttempest.resources;
 
+import java.io.IOException;
+
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.extension.svg.opengl.texture.atlas.bitmap.SVGBitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
@@ -28,6 +32,7 @@ public class CommonResource extends Resource {
 	public static final int BUTTON_SETTINGS_ACTIVE = 5;
 
 	private ITiledTextureRegion buttons;
+	private Sound buttonSound;
 	private Font headerFont;
 	private Font regularFont;
 	private ITextureRegion headerArrow;
@@ -50,6 +55,13 @@ public class CommonResource extends Resource {
 		FontFactory.setAssetBasePath("fnt/");
 		createHeaderFont();
 		createRegularFont();
+		
+		try {
+			createSound();
+		} catch (IOException e) {
+			// This should never happen.
+			throw new RuntimeException(e.getMessage());
+		}
 	}
 	
 	private void createButtons() {
@@ -167,9 +179,18 @@ public class CommonResource extends Resource {
 	    addAtlas(regularFontTexture);
 	}
 	
+	private void createSound() throws IOException {
+		SoundFactory.setAssetBasePath("mfx/common/");
+		buttonSound = SoundFactory.createSoundFromAsset(activity.getSoundManager(), activity, "menu_click.ogg");
+	}
+	
 	// Getters
 	public ITiledTextureRegion getButtons() {
 		return buttons;
+	}
+
+	public Sound getButtonSound() {
+		return buttonSound;
 	}
 
 	public ITiledTextureRegion getUiShadow() {

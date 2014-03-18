@@ -43,10 +43,39 @@ public class GameScene extends BaseScene {
 		this.commonResource = commonResource;
 		this.worldData = worldData;
 		this.eventsData = eventsData;
+		this.loadAsynchronous = true;
 		resource = new GameResource(activity);
 		setResource(resource);
-		// TODO Set to asynchronous loading
 		setBackground(new Background(Color.WHITE));
+		attachChild(gameCore);
+	}
+
+	@Override
+	public void disposeScene() {
+		if (eventManager != null)
+			eventManager.dispose();
+		if (world != null)
+			world.dispose();
+		if (subsceneManager != null)
+			subsceneManager.dispose();
+		super.disposeScene();
+	}
+
+	@Override
+	public void onBackKeyPressed() {
+		if (gameInterface.isActive()) {
+			subsceneManager.activate(gameMenu);
+			gameCore.setIgnoreUpdate(true);
+		}
+		else {
+			subsceneManager.activate(gameInterface);
+			gameCore.setIgnoreUpdate(false);
+		}
+	}
+
+	@Override
+	protected void createScene() {
+		setWorldData(worldData);
 		gameInterface = new GameInterface(resource, this.controller);
 		gameMenu = new GameMenu(commonResource) {
 
@@ -68,40 +97,12 @@ public class GameScene extends BaseScene {
 			}
 			
 		};
-		attachChild(gameCore);
 		Entity uiLayer = new Entity();
+		attachUI(uiLayer);
 		subsceneManager = new SubsceneManager(uiLayer);
 		subsceneManager.add(gameInterface, gameMenu);
 		setOnSceneTouchListener(subsceneManager);
 		registerUpdateHandler(subsceneManager);
-		attachUI(uiLayer);
-	}
-
-	@Override
-	public void disposeScene() {
-		if (eventManager != null)
-			eventManager.dispose();
-		if (world != null)
-			world.dispose();
-		subsceneManager.dispose();
-		super.disposeScene();
-	}
-
-	@Override
-	public void onBackKeyPressed() {
-		if (gameInterface.isActive()) {
-			subsceneManager.activate(gameMenu);
-			gameCore.setIgnoreUpdate(true);
-		}
-		else {
-			subsceneManager.activate(gameInterface);
-			gameCore.setIgnoreUpdate(false);
-		}
-	}
-
-	@Override
-	protected void createScene() {
-		setWorldData(worldData);
 		subsceneManager.load();
 		subsceneManager.activate(gameInterface);
 	}

@@ -4,10 +4,10 @@ import java.util.Stack;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.handler.timer.ITimerCallback;
-import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import ca.nigelchan.silenttempest.asynctasks.AsyncSceneLoader;
+import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.scenes.BaseScene;
 import ca.nigelchan.silenttempest.scenes.LoadingScene;
 
@@ -19,11 +19,11 @@ public class SceneManager {
 	private LoadingScene loadingScene;
 	private Stack<BaseScene> sceneStack = new Stack<BaseScene>();
 	
-	public SceneManager(BaseGameActivity activity, Camera camera, Engine engine) {
+	public SceneManager(BaseGameActivity activity, Camera camera, Engine engine, CommonResource resource) {
 		this.activity = activity;
 		this.camera = camera;
 		this.engine = engine;
-		loadingScene = new LoadingScene(this);
+		loadingScene = new LoadingScene(this, resource);
 		loadingScene.prepareScene();
 	}
 	
@@ -63,21 +63,18 @@ public class SceneManager {
 			return;
 		if (scene.isLoadAsynchronous()) {
 			pushScene(loadingScene);
-			engine.registerUpdateHandler(new TimerHandler(0.3f, new ITimerCallback() {
+			activity.runOnUiThread(new Runnable() {
 				
 				@Override
-				public void onTimePassed(TimerHandler pTimerHandler) {
-					engine.unregisterUpdateHandler(pTimerHandler);
-					scene.prepareScene();
-					popScene();
-					engine.setScene(scene);
+				public void run() {
+					new AsyncSceneLoader(scene, loadingScene).execute();
 				}
-			}));
+			});
 		}
 		else {
 			scene.prepareScene();
-			engine.setScene(scene);
 		}
+		engine.setScene(sceneStack.peek());
 	}
 
 	// Getters

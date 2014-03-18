@@ -87,6 +87,7 @@ public abstract class GameMenu extends Subscene {
             resource.getButtons(),
             CommonResource.BUTTON_PLAY,
             CommonResource.BUTTON_PLAY_ACTIVE,
+            resource.getButtonSound(),
             resource.getVertexBufferObjectManager()
         ) {
 			@Override
@@ -104,6 +105,7 @@ public abstract class GameMenu extends Subscene {
             resource.getButtons(),
             CommonResource.BUTTON_EXIT,
             CommonResource.BUTTON_EXIT_ACTIVE,
+            resource.getButtonSound(),
             resource.getVertexBufferObjectManager()
         ) {
 			@Override
@@ -120,6 +122,7 @@ public abstract class GameMenu extends Subscene {
             resource.getButtons(),
             CommonResource.BUTTON_RESTART,
             CommonResource.BUTTON_RESTART_ACTIVE,
+            resource.getButtonSound(),
             resource.getVertexBufferObjectManager()
         ) {
 			@Override

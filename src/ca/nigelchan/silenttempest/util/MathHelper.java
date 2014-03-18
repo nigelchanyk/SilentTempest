@@ -2,6 +2,7 @@ package ca.nigelchan.silenttempest.util;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.Random;
 
 public final class MathHelper {
 
@@ -57,6 +58,8 @@ public final class MathHelper {
 		DIAGONAL_DIRECTIONS.add(Direction.SOUTHWEST);
 	}
 	
+	private static final Random random = new Random();
+	
 	public static Coordinate abs(Coordinate coordinate) {
 		return new Coordinate(Math.abs(coordinate.x()), Math.abs(coordinate.y()));
 	}
@@ -83,6 +86,10 @@ public final class MathHelper {
 	
 	public static Iterable<Direction> getNonDiagonalDirections() {
 		return NON_DIAGONAL_DIRECTIONS;
+	}
+	
+	public static Random getRandom() {
+		return random;
 	}
 	
 	public static float getRotation(Direction direction) {

@@ -1,9 +1,9 @@
 package ca.nigelchan.silenttempest.userinterface.game;
 
+import org.andengine.audio.sound.Sound;
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.sprite.TiledSprite;
-import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
@@ -13,27 +13,15 @@ public abstract class Button extends Entity implements ITouchableInterfaceObject
 	
 	private int activeIndex;
 	private int index;
+	private Sound sound;
 	private TiledSprite sprite;
 
-	public Button(ITiledTextureRegion texture, int index, int activeIndex, VertexBufferObjectManager vbom) {
+	public Button(ITiledTextureRegion texture, int index, int activeIndex, final Sound sound, VertexBufferObjectManager vbom) {
 		this.index = index;
 		this.activeIndex = activeIndex;
+		this.sound = sound;
 
-		sprite = new TiledSprite(0, 0, texture, vbom) {
-
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_DOWN) {
-					setCurrentTileIndex(Button.this.activeIndex);
-				}
-				else if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
-					setCurrentTileIndex(Button.this.index);
-					onClick();
-				}
-				return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-			}
-			
-		};
+		sprite = new TiledSprite(0, 0, texture, vbom);
 		sprite.setCurrentTileIndex(index);
 		attachChild(sprite);
 	}
@@ -67,6 +55,7 @@ public abstract class Button extends Entity implements ITouchableInterfaceObject
 	public boolean onTouchEvent(UserInterfaceTouchEvent event) {
         if (event == UserInterfaceTouchEvent.DOWN) {
             sprite.setCurrentTileIndex(Button.this.activeIndex);
+			sound.play();
         }
         else if (event == UserInterfaceTouchEvent.UP) {
             sprite.setCurrentTileIndex(Button.this.index);
