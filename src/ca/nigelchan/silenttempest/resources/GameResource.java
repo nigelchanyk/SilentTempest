@@ -1,5 +1,6 @@
 package ca.nigelchan.silenttempest.resources;
 
+import org.andengine.entity.sprite.batch.SpriteGroup;
 import org.andengine.extension.svg.opengl.texture.atlas.bitmap.SVGBitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -22,10 +23,15 @@ public class GameResource extends Resource {
 	
 	private ITextureRegion alertIndicator;
 	private ITextureRegion beacon;
+	private BuildableBitmapTextureAtlas fieldAtlas;
 	private ITiledTextureRegion fieldTextureRegion;
 	private int fieldTileSize;
 	private ITextureRegion joystickDisplay;
 	private ITextureRegion monkeyBaseTextureRegion;
+	
+	public SpriteGroup createFieldSpriteGroup(int capacity) {
+		return new SpriteGroup(fieldAtlas, capacity, getVertexBufferObjectManager());
+	}
 
 	@Override
 	public void onLoad() {
@@ -71,12 +77,12 @@ public class GameResource extends Resource {
 	}
 	
 	private void createFieldTexture() {
-		BuildableBitmapTextureAtlas fieldTextureAtlas = createBuildableAtlas(
+		fieldAtlas = createBuildableAtlas(
 			FIELD_SPRITE_WIDTH,
 			FIELD_SPRITE_HEIGHT
 		);
 		fieldTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
-			fieldTextureAtlas,
+			fieldAtlas,
 			activity,
 			"field.svg",
 			fieldTileSize * FIELD_SPRITE_WIDTH,

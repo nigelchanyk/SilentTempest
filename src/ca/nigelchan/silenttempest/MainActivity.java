@@ -10,6 +10,7 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.util.FPSLogger;
 import org.andengine.ui.activity.BaseGameActivity;
 import org.json.JSONException;
 
@@ -56,6 +57,7 @@ public class MainActivity extends BaseGameActivity {
 	public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback) throws Exception {
 		splash = new SplashScene(this, camera);
 		mEngine.setScene(splash);
+		mEngine.registerUpdateHandler(new FPSLogger());
 		pOnCreateSceneCallback.onCreateSceneFinished(splash);
 	}
 

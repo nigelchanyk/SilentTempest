@@ -24,6 +24,10 @@ public class EnemyManager implements World.IListener {
 	}
 
 	@Override
+	public void onCameraPositionChanged(Vector2 position) {
+	}
+
+	@Override
 	public void onWorldDisposed() {
 		indicatorPool.dispose();
 	}

@@ -32,6 +32,10 @@ public class Vector2 {
 		return (x() - x) * (x() - x) + (y() - y) * (y() - y);
 	}
 	
+	public Vector2 divide(float scalar) {
+		return new Vector2(x() / scalar, y() / scalar);
+	}
+	
 	public float dot(Vector2 other) {
 		return x() * other.x() + y() * other.y();
 	}

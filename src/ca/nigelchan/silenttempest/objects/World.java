@@ -52,7 +52,9 @@ public class World extends Entity {
 			
 			@Override
 			public void visit(FieldLayerData data) {
-				addLayer(new FieldLayer(data, World.this.resource));
+				FieldLayer layer = new FieldLayer(data, World.this.resource);
+				addLayer(layer);
+				subscribe(layer);
 			}
 			
 			@Override
@@ -308,11 +310,14 @@ public class World extends Entity {
 			resource.getScreenWidth() / 2 - (int)(position.x() * resource.getFieldTileSize()),
 			resource.getScreenHeight() / 2 - (int)(position.y() * resource.getFieldTileSize())
 		);
+		for (IListener subscriber : subscribers)
+			subscriber.onCameraPositionChanged(position);
 	}
 	
 	
 	public static interface IListener {
 		
+		public void onCameraPositionChanged(Vector2 position);
 		public void onWorldDisposed();
 		
 	}
