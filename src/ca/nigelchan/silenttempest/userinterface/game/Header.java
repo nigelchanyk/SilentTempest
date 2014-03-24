@@ -26,7 +26,7 @@ public class Header extends Entity {
 			label,
 			resource.getVertexBufferObjectManager()
 		);
-		width = Math.max(width, (int)text.getWidth());
+		float lineWidth = text.getX() + Math.max(width, text.getWidth()) + resource.getDPI() / 8;
 
 		ITextureRegion arrowTexture = resource.getHeaderArrow();
 		int lineHeight = resource.getDPI() / 25;
@@ -34,14 +34,14 @@ public class Header extends Entity {
 		line = new Rectangle(
 			0,
 			text.getHeight(),
-			width + 1 - arrowTexture.getWidth(),
+			lineWidth + 1,
 			lineHeight,
 			resource.getVertexBufferObjectManager()
 		);
 		line.setColor(Color.WHITE);
 		
 		arrow = new Sprite(
-			width - arrowTexture.getWidth(),
+			lineWidth,
 			line.getY() + line.getHeight() - arrowTexture.getHeight(),
 			arrowTexture,
 			resource.getVertexBufferObjectManager()
@@ -60,7 +60,7 @@ public class Header extends Entity {
 		super.dispose();
 	}
 	
-	public float getButtonY() {
+	public float getBottomY() {
 		return getY() + line.getY() + line.getHeight();
 	}
 

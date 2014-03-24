@@ -60,6 +60,7 @@ public class LoadingScene extends BaseScene {
 		subsceneManager = new SubsceneManager(uiLayer);
 		minigame = new LoadingSceneMinigame(resource);
 		subsceneManager.add(minigame);
+		subsceneManager.load();
 		subsceneManager.activate(minigame);
 		setOnSceneTouchListener(subsceneManager);
 		registerUpdateHandler(subsceneManager);

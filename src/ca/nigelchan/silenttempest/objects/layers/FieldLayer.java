@@ -6,7 +6,6 @@ import java.util.Stack;
 import org.andengine.entity.sprite.TiledSprite;
 import org.andengine.entity.sprite.batch.SpriteGroup;
 
-import android.util.Log;
 import ca.nigelchan.silenttempest.data.layers.FieldLayerData;
 import ca.nigelchan.silenttempest.data.layers.TileTemplate;
 import ca.nigelchan.silenttempest.objects.World;

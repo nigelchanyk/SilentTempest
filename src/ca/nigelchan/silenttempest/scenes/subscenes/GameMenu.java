@@ -56,7 +56,7 @@ public abstract class GameMenu extends Subscene {
 			pos.getPosition().x(),
 			Math.max(
 				(resource.getScreenHeight() - resource.getButtons().getHeight()) / 2,
-				header.getButtonY() + resource.getDPI() / 3
+				header.getBottomY() + resource.getDPI() / 3
 			)
 		);
 		

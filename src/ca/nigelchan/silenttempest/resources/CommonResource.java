@@ -125,13 +125,18 @@ public class CommonResource extends Resource {
 	}
 	
 	private void createHeaderFont() {
-		BitmapTextureAtlas headerFontTexture = new BitmapTextureAtlas(activity.getTextureManager(), 512, 256, TextureOptions.BILINEAR);
+		BitmapTextureAtlas headerFontTexture = new BitmapTextureAtlas(
+			activity.getTextureManager(),
+			getScreenWidth(),
+			128,
+			TextureOptions.BILINEAR
+		);
 		headerFont = FontFactory.createFromAsset(
 			activity.getFontManager(),
 			headerFontTexture,
 			activity.getAssets(),
 			"OrbitronBlack.ttf",
-			Math.min(getDPI() * 2 / 5, 128),
+			Math.min(getDPI() * 2 / 5, 120),
 			true,
 			Color.WHITE
 		);

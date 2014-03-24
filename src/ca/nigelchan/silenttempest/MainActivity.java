@@ -24,6 +24,7 @@ import ca.nigelchan.silenttempest.importer.WorldImporter;
 import ca.nigelchan.silenttempest.managers.SceneManager;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.scenes.GameScene;
+import ca.nigelchan.silenttempest.scenes.MainMenuScene;
 import ca.nigelchan.silenttempest.scenes.SplashScene;
 
 public class MainActivity extends BaseGameActivity {
@@ -111,7 +112,8 @@ public class MainActivity extends BaseGameActivity {
 	
 	private void buildFirstScene() {
 		splash.dispose();
-		//manager.pushScene(new MainMenuScene(manager, commonResource));
+		manager.pushScene(new MainMenuScene(manager, commonResource));
+		/*
 		ActorConfiguration actorConfiguration = new ActorConfiguration();
 		try {
 			WorldData worldData = WorldImporter.load("levels/sample.stl", MainActivity.this, actorConfiguration);
@@ -126,6 +128,7 @@ public class MainActivity extends BaseGameActivity {
 			e.printStackTrace();
 			finish();
 		}
+		*/
 	}
 	
 }

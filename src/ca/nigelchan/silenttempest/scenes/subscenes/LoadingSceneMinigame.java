@@ -30,10 +30,6 @@ public class LoadingSceneMinigame extends Subscene {
 	
 	public LoadingSceneMinigame(LoadingResource resource) {
 		this.resource = resource;
-		penguin = new LoadingScenePenguin(resource);
-		world.attachChild(penguin);
-		getHUD().attachChild(world);
-		registerTouch(penguin);
 	}
 	
 	public void prepare(ICallback callback) {
@@ -76,8 +72,10 @@ public class LoadingSceneMinigame extends Subscene {
 
 	@Override
 	protected void onLoad() {
-		// TODO Auto-generated method stub
-		
+		penguin = new LoadingScenePenguin(resource);
+		world.attachChild(penguin);
+		getHUD().attachChild(world);
+		registerTouch(penguin);
 	}
 
 	@Override

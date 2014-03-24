@@ -1,19 +1,22 @@
 package ca.nigelchan.silenttempest.scenes;
 
+import org.andengine.entity.Entity;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.util.color.Color;
 
 import ca.nigelchan.silenttempest.background.MainMenuBackground;
 import ca.nigelchan.silenttempest.managers.SceneManager;
+import ca.nigelchan.silenttempest.managers.SubsceneManager;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.resources.MainMenuResource;
-import ca.nigelchan.silenttempest.userinterface.game.Header;
-import ca.nigelchan.silenttempest.util.PositionHelper;
+import ca.nigelchan.silenttempest.scenes.subscenes.MainMenu;
 
 public class MainMenuScene extends BaseScene {
 	
 	private CommonResource commonResource;
+	private MainMenu mainMenu;
 	private MainMenuResource resource;
+	private SubsceneManager subsceneManager;
 
 	public MainMenuScene(SceneManager manager, CommonResource commonResource) {
 		super(manager);
@@ -24,6 +27,13 @@ public class MainMenuScene extends BaseScene {
 	}
 
 	@Override
+	public void disposeScene() {
+		if (subsceneManager != null)
+			subsceneManager.dispose();
+		super.disposeScene();
+	}
+
+	@Override
 	public void onBackKeyPressed() {
 	}
 
@@ -31,14 +41,20 @@ public class MainMenuScene extends BaseScene {
 	protected void createScene() {
 		setBackground(new Background(new Color(0.2f, 0.2f, 0.2f)));
 		attachChild(new MainMenuBackground(resource, commonResource));
+		Entity uiLayer = new Entity();
+		attachChild(uiLayer);
+		subsceneManager = new SubsceneManager(uiLayer);
+		mainMenu = new MainMenu(commonResource) {
+			
+			@Override
+			public void onPlay() {
+			}
+		};
 		
-		PositionHelper pos = new PositionHelper(resource.getScreenWidth(), resource.getScreenHeight())
-			.setAnchorX(PositionHelper.AnchorX.LEFT)
-			.setAnchorY(PositionHelper.AnchorY.TOP)
-			.setMarginX(0.1f)
-			.setMarginY(0.1f)
-			.setWidth(0.5f);
-
-		attachChild(new Header("Silent Tempest", pos.getPosition(), pos.getDimension().x(), commonResource));
+		subsceneManager.add(mainMenu);
+		subsceneManager.load();
+		subsceneManager.activate(mainMenu);
+		setOnSceneTouchListener(subsceneManager);
+		registerUpdateHandler(subsceneManager);
 	}
 }
