@@ -23,6 +23,16 @@ public class WorldObject extends OffsetEntity {
 		super.setRotationCenter(world.getUnitScale() * 0.5f, world.getUnitScale() * 0.5f);
 	}
 	
+	public WorldObject(Vector2 position, Vector2 dimension, OffsetEntity.OffsetType offsetType, World world) {
+		super(world.getUnitScale() * dimension.x(), world.getUnitScale() * dimension.y(), offsetType);
+		this.world = world;
+		_setPosition(position);
+		super.setRotationCenter(
+			world.getUnitScale() * dimension.x() * 0.5f,
+			world.getUnitScale() * dimension.y() * 0.5f
+		);
+	}
+	
 	// Getters
 	public World getWorld() {
 		return world;

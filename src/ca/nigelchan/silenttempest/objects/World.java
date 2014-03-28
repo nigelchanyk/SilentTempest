@@ -143,7 +143,7 @@ public class World extends Entity {
 					while (!current.equals(start)) {
 						direction = directions[current.y()][current.x()];
 						next = current.add(MathHelper.getTranslation(MathHelper.reverse(direction)));
-						path.addFirst(new Move(actor, next, direction));
+						path.addFirst(new Move(actor, next.toCenterVector2(), direction));
 						current = next;
 					}
 					return path;

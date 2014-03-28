@@ -3,7 +3,7 @@ package ca.nigelchan.silenttempest.data.actors.sequences;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Sequence;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Wait;
-import ca.nigelchan.silenttempest.util.Coordinate;
+import ca.nigelchan.silenttempest.util.Vector2;
 
 public class WaitData extends SequenceData {
 	
@@ -14,7 +14,7 @@ public class WaitData extends SequenceData {
 	}
 
 	@Override
-	public Sequence create(Actor actor, Coordinate initialPosition) {
+	public Sequence create(Actor actor, Vector2 initialPosition) {
 		return new Wait(actor, initialPosition, time);
 	}
 

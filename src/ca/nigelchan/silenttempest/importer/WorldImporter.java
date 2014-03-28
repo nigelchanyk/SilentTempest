@@ -15,13 +15,16 @@ import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
 import ca.nigelchan.silenttempest.data.actors.EnemyData;
 import ca.nigelchan.silenttempest.data.actors.PlayerData;
 import ca.nigelchan.silenttempest.data.actors.sequences.MoveData;
+import ca.nigelchan.silenttempest.data.actors.sequences.SequenceDataList;
 import ca.nigelchan.silenttempest.data.actors.sequences.TurnData;
 import ca.nigelchan.silenttempest.data.actors.sequences.WaitData;
+import ca.nigelchan.silenttempest.data.actors.traps.SawBladeData;
 import ca.nigelchan.silenttempest.data.layers.ActorLayerData;
 import ca.nigelchan.silenttempest.data.layers.FieldLayerData;
 import ca.nigelchan.silenttempest.data.layers.TileTemplateCollection;
 import ca.nigelchan.silenttempest.util.Coordinate;
 import ca.nigelchan.silenttempest.util.Direction;
+import ca.nigelchan.silenttempest.util.Vector2;
 
 public class WorldImporter {
 	
@@ -50,6 +53,7 @@ public class WorldImporter {
 		JSONArray top = json.getJSONArray("top");
 		JSONObject player = json.getJSONObject("player");
 		JSONArray enemies = json.getJSONArray("enemies");
+		JSONArray sawBlades = json.getJSONArray("saw_blades");
 		TileTemplateCollection tiles = TileTemplateCollection.instance();
 		
 		WorldData data = new WorldData(columns, rows);
@@ -60,6 +64,9 @@ public class WorldImporter {
 		ActorLayerData actorLayer = new ActorLayerData(columns, rows, playerData);
 		for (int i = 0; i < enemies.length(); ++i)
 			actorLayer.addEnemy(parseEnemy(enemies.getJSONObject(i), actorConfiguration));
+		
+		for (int i = 0; i < sawBlades.length(); ++i)
+			actorLayer.addTrap(parseSawBlade(sawBlades.getJSONObject(i)));
 
 		data.addLayer(actorLayer);
 		for (int i = 0; i < top.length(); ++i)
@@ -74,6 +81,39 @@ public class WorldImporter {
 			actorConfiguration.getEnemySpeed(),
 			json.getInt("range")
 		);
+		parseSequenceDataList(json, data.getSequenceList());
+		return data;
+	}
+	
+	public static SawBladeData parseSawBlade(JSONObject json) throws JSONException {
+		SawBladeData data = new SawBladeData(
+			Vector2.fromJSONObject(json),
+			(float)json.getDouble("speed"),
+			SawBladeData.Size.valueOf(json.getString("size"))
+		);
+		parseSequenceDataList(json, data.getSequenceList());
+		return data;
+	}
+	
+	public static FieldLayerData parseLayer(TileTemplateCollection tiles, String compressedLayer, int rows, int columns) throws JSONException {
+		FieldLayerData data = new FieldLayerData(columns, rows);
+		int total = rows * columns;
+		String[] tokens = compressedLayer.split(";");
+		for (int i = 0, j = 0; i < tokens.length && j < total; ++i) {
+			Matcher m = LAYER_REGEX.matcher(tokens[i]);
+			if (!m.matches())
+				throw new JSONException("Unable to decompress layer.");
+			int skip = m.group(1) == null ? 0 : Integer.parseInt(m.group(1), 36);
+			int index = m.group(3).equals("") ? -1 : Integer.parseInt(m.group(3), 36);
+			int repeat = m.group(4) == null ? 0 : Integer.parseInt(m.group(4), 36);
+			j += skip;
+			for (int k = 0; k <= repeat && j < total; ++j, ++k)
+                data.setTile(j / columns, j % columns, tiles.get(index));
+		}
+		return data;
+	}
+	
+	private static void parseSequenceDataList(JSONObject json, SequenceDataList data) throws JSONException {
 		String[] tokens = json.getString("pattern").split(";");
 		for (String token : tokens) {
 			Matcher m = MOVE_REGEX.matcher(token);
@@ -98,26 +138,6 @@ public class WorldImporter {
 			
 			throw new JSONException("Unable to parse enemy pattern.");
 		}
-		
-		return data;
-	}
-	
-	public static FieldLayerData parseLayer(TileTemplateCollection tiles, String compressedLayer, int rows, int columns) throws JSONException {
-		FieldLayerData data = new FieldLayerData(columns, rows);
-		int total = rows * columns;
-		String[] tokens = compressedLayer.split(";");
-		for (int i = 0, j = 0; i < tokens.length && j < total; ++i) {
-			Matcher m = LAYER_REGEX.matcher(tokens[i]);
-			if (!m.matches())
-				throw new JSONException("Unable to decompress layer.");
-			int skip = m.group(1) == null ? 0 : Integer.parseInt(m.group(1), 36);
-			int index = m.group(3).equals("") ? -1 : Integer.parseInt(m.group(3), 36);
-			int repeat = m.group(4) == null ? 0 : Integer.parseInt(m.group(4), 36);
-			j += skip;
-			for (int k = 0; k <= repeat && j < total; ++j, ++k)
-                data.setTile(j / columns, j % columns, tiles.get(index));
-		}
-		return data;
 	}
 
 }

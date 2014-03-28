@@ -9,6 +9,7 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import ca.nigelchan.silenttempest.data.actors.traps.SawBladeData;
 import android.util.DisplayMetrics;
 
 public class GameResource extends Resource {
@@ -16,6 +17,9 @@ public class GameResource extends Resource {
 	public static final int MAX_BEACON_SIZE = 4;
 	public static final int FIELD_SPRITE_HEIGHT = 5;
 	public static final int FIELD_SPRITE_WIDTH = 5;
+	public static final int LARGE_SAW_BLADE = 0;
+	public static final int MEDIUM_SAW_BLADE = 1;
+	public static final int SMALL_SAW_BLADE = 2;
 	
 	public GameResource(BaseGameActivity activity) {
 		super(activity);
@@ -28,6 +32,7 @@ public class GameResource extends Resource {
 	private int fieldTileSize;
 	private ITextureRegion joystickDisplay;
 	private ITextureRegion monkeyBaseTextureRegion;
+	private ITextureRegion[] sawBlades = new ITextureRegion[SawBladeData.Size.values().length];
 	
 	public SpriteGroup createFieldSpriteGroup(int capacity) {
 		return new SpriteGroup(fieldAtlas, capacity, getVertexBufferObjectManager());
@@ -41,6 +46,7 @@ public class GameResource extends Resource {
 
 		createFieldTexture();
 		createMonkeyTexture();
+		createSawBlades();
 		createJoystickTexture();
 		createIndicatorTexture();
 		createBeaconTexture();
@@ -136,6 +142,26 @@ public class GameResource extends Resource {
 			fieldTileSize
         );
 	}
+	
+	private void createSawBlades() {
+		for (SawBladeData.Size size : SawBladeData.Size.values()) {
+			int sizeValue = SawBladeData.diameter(size) * fieldTileSize;
+			BuildableBitmapTextureAtlas atlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(),
+				sizeValue,
+				sizeValue,
+				TextureOptions.DEFAULT
+			);
+			addAtlas(atlas);
+			sawBlades[size.ordinal()] = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				atlas,
+				activity,
+				"saw_blade.svg",
+				sizeValue,
+				sizeValue
+			);
+		}
+	}
 
 	// Getters
 	public ITextureRegion getAlertIndicator() {
@@ -160,5 +186,9 @@ public class GameResource extends Resource {
 	
 	public ITextureRegion getMonkeyBase() {
 		return monkeyBaseTextureRegion;
+	}
+	
+	public ITextureRegion getSawBlade(SawBladeData.Size size) {
+		return sawBlades[size.ordinal()];
 	}
 }

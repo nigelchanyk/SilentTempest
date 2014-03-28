@@ -20,11 +20,11 @@ public class Patrol extends EnemyStrategy {
 
 	public Patrol(Actor actor, EnemyCore core, EnemyData data, boolean justSpawned) {
 		super(actor, core);
-		sequence = new Sequence[data.getSequenceSize()];
+		sequence = new Sequence[data.getSequenceList().size()];
 		int i = 0;
-		Coordinate pos = data.getInitialPosition();
-		for (SequenceData sequenceItem : data.getSequence()) {
-			sequence[i] = sequenceItem.create(actor, pos);
+		Coordinate pos = data.getInitialCoordinate();
+		for (SequenceData sequenceItem : data.getSequenceList().getSequence()) {
+			sequence[i] = sequenceItem.create(actor, pos.toCenterVector2());
 			sequenceSet.add(pos, i);
 			pos = pos.add(sequenceItem.getTranslation());
 			i++;

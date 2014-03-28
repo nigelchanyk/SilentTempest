@@ -6,6 +6,7 @@ import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Seque
 import ca.nigelchan.silenttempest.util.Coordinate;
 import ca.nigelchan.silenttempest.util.Direction;
 import ca.nigelchan.silenttempest.util.MathHelper;
+import ca.nigelchan.silenttempest.util.Vector2;
 
 public class MoveData extends SequenceData {
 	
@@ -16,7 +17,7 @@ public class MoveData extends SequenceData {
 	}
 
 	@Override
-	public Sequence create(Actor actor, Coordinate initialPosition) {
+	public Sequence create(Actor actor, Vector2 initialPosition) {
 		return new Move(actor, initialPosition, direction);
 	}
 

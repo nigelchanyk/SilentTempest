@@ -28,5 +28,14 @@
   		"radius": 1,
   		"instruction": "Go to (3, 11)"
   	}
+  ],
+  "saw_blades": [
+  	{
+  		"x": 4,
+  		"y": 5,
+  		"speed": 1,
+  		"size": "MEDIUM",
+  		"pattern": "w(3);s;e(3);w(3);n;e(3)"
+  	}
   ]
 }

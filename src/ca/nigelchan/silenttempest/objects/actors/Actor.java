@@ -22,8 +22,16 @@ public abstract class Actor extends WorldObject {
 	private PostponedList<IListener> subscribers = new PostponedList<Actor.IListener>(4);
 
 	public Actor(ActorData data, World world) {
-		super(data.getInitialPosition().toCenterVector2(), OffsetEntity.OffsetType.CENTER, world);
-
+		super(data.getInitialPosition(), OffsetEntity.OffsetType.CENTER, world);
+		__construct(data);
+	}
+	
+	public Actor(ActorData data, Vector2 dimension, World world) {
+		super(data.getInitialPosition(), dimension, OffsetEntity.OffsetType.CENTER, world);
+		__construct(data);
+	}
+	
+	private void __construct(ActorData data) {
 		super.setRotation(data.getInitialRotation());
 		speed = data.getSpeed();
 
@@ -45,6 +53,10 @@ public abstract class Actor extends WorldObject {
 		if (controllers.contains(controller))
 			return;
 		controllers.add(controller);
+	}
+	
+	public boolean changeRotationOnMove() {
+		return true;
 	}
 
 	public void move(Vector2 delta) {

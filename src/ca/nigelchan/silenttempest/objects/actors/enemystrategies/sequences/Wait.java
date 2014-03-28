@@ -1,13 +1,13 @@
 package ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences;
 
 import ca.nigelchan.silenttempest.objects.actors.Actor;
-import ca.nigelchan.silenttempest.util.Coordinate;
+import ca.nigelchan.silenttempest.util.Vector2;
 
 public class Wait extends Sequence {
 	
 	private float remainingTime;
 
-	public Wait(Actor actor, Coordinate initPosition, float time) {
+	public Wait(Actor actor, Vector2 initPosition, float time) {
 		super(actor, initPosition);
 		remainingTime = time;
 	}

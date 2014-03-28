@@ -35,7 +35,7 @@ public class Approach extends EnemyStrategy {
 				snap = new Snap(
 					actor,
 					core,
-					first.getInitialPosition().add(MathHelper.getTranslation(first.getDirection())),
+					first.getInitialCoordinate().add(MathHelper.getTranslation(first.getDirection())),
 					this
 				);
 			}
@@ -114,7 +114,7 @@ public class Approach extends EnemyStrategy {
 					while (!current.equals(start)) {
 						direction = directions[current.y()][current.x()];
 						next = current.add(MathHelper.getTranslation(MathHelper.reverse(direction)));
-						path.addFirst(new Move(actor, next, direction));
+						path.addFirst(new Move(actor, next.toCenterVector2(), direction));
 						current = next;
 					}
 					return path;

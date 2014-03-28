@@ -112,8 +112,7 @@ public class MainActivity extends BaseGameActivity {
 	
 	private void buildFirstScene() {
 		splash.dispose();
-		manager.pushScene(new MainMenuScene(manager, commonResource));
-		/*
+		// manager.pushScene(new MainMenuScene(manager, commonResource));
 		ActorConfiguration actorConfiguration = new ActorConfiguration();
 		try {
 			WorldData worldData = WorldImporter.load("levels/sample.stl", MainActivity.this, actorConfiguration);
@@ -128,7 +127,6 @@ public class MainActivity extends BaseGameActivity {
 			e.printStackTrace();
 			finish();
 		}
-		*/
 	}
 	
 }

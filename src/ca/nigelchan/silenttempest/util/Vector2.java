@@ -1,5 +1,8 @@
 package ca.nigelchan.silenttempest.util;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Vector2 {
 	
 	public static final Vector2 ZERO = new Vector2(0, 0);
@@ -82,5 +85,9 @@ public class Vector2 {
 	
 	public static Vector2 fromFloats(float[] values) {
 		return new Vector2(values[0], values[1]);
+	}
+	
+	public static Vector2 fromJSONObject(JSONObject obj) throws JSONException {
+		return new Vector2((float)obj.getDouble("x"), (float)obj.getDouble("y"));
 	}
 }
