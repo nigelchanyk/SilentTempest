@@ -155,6 +155,10 @@ public abstract class Actor extends WorldObject {
 	public float getRadius() {
 		return 0.4f;
 	}
+	
+	public float getRotationSpeed() {
+		return ROTATION_PER_SEC;
+	}
 
 	public float getSpeed() {
 		return speed;

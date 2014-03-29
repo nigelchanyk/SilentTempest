@@ -14,9 +14,14 @@ public class SawBlade extends Trap {
 	private Sprite sprite;
 
 	public SawBlade(SawBladeData data, World world, GameResource resource) {
-		super(data, world);
+		super(data, world, data.getDimension());
 		sprite = new Sprite(0, 0, resource.getSawBlade(data.getSize()), resource.getVertexBufferObjectManager());
 		attachChild(sprite);
+	}
+
+	@Override
+	public boolean changeRotationOnMove() {
+		return false;
 	}
 
 	@Override
@@ -26,7 +31,7 @@ public class SawBlade extends Trap {
 	}
 
 	@Override
-	protected void onUpadate(float elapsedTime) {
+	protected void handleUpdate(float elapsedTime) {
 		setRadianRotation((getRadianRotation() + ROTATION_SPEED * elapsedTime) % MathHelper.TWO_PI);
 	}
 

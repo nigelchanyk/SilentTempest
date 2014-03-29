@@ -18,6 +18,7 @@ import ca.nigelchan.silenttempest.data.actors.sequences.MoveData;
 import ca.nigelchan.silenttempest.data.actors.sequences.SequenceDataList;
 import ca.nigelchan.silenttempest.data.actors.sequences.TurnData;
 import ca.nigelchan.silenttempest.data.actors.sequences.WaitData;
+import ca.nigelchan.silenttempest.data.actors.traps.LaserData;
 import ca.nigelchan.silenttempest.data.actors.traps.SawBladeData;
 import ca.nigelchan.silenttempest.data.layers.ActorLayerData;
 import ca.nigelchan.silenttempest.data.layers.FieldLayerData;
@@ -54,6 +55,7 @@ public class WorldImporter {
 		JSONObject player = json.getJSONObject("player");
 		JSONArray enemies = json.getJSONArray("enemies");
 		JSONArray sawBlades = json.getJSONArray("saw_blades");
+		JSONArray laser = json.getJSONArray("laser");
 		TileTemplateCollection tiles = TileTemplateCollection.instance();
 		
 		WorldData data = new WorldData(columns, rows);
@@ -67,6 +69,9 @@ public class WorldImporter {
 		
 		for (int i = 0; i < sawBlades.length(); ++i)
 			actorLayer.addTrap(parseSawBlade(sawBlades.getJSONObject(i)));
+		
+		for (int i = 0; i < laser.length(); ++i)
+			actorLayer.addTrap(parseLaserData(laser.getJSONObject(i)));
 
 		data.addLayer(actorLayer);
 		for (int i = 0; i < top.length(); ++i)
@@ -90,6 +95,17 @@ public class WorldImporter {
 			Vector2.fromJSONObject(json),
 			(float)json.getDouble("speed"),
 			SawBladeData.Size.valueOf(json.getString("size"))
+		);
+		parseSequenceDataList(json, data.getSequenceList());
+		return data;
+	}
+	
+	public static LaserData parseLaserData(JSONObject json) throws JSONException {
+		LaserData data = new LaserData(
+			Vector2.fromJSONObject(json),
+			Direction.valueOf(json.getString("direction")),
+			(float)json.getDouble("speed"),
+			(float)json.getDouble("rotation_speed")
 		);
 		parseSequenceDataList(json, data.getSequenceList());
 		return data;

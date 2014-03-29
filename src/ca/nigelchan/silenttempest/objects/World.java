@@ -155,9 +155,9 @@ public class World extends Entity {
 		return null;
 	}
 	
-	public void lock() {
-		locks++;
-		setIgnoreUpdate(true);
+	public Coordinate findBlockingTile(Vector2 src, float rotation) {
+		Vector2 dest = MathHelper.getUnitVector(rotation).add(src);
+		return getBlockingTile(src, dest, Integer.MAX_VALUE);
 	}
 	
 	public boolean isHidingSpot(Coordinate position) {
@@ -177,62 +177,7 @@ public class World extends Entity {
 	}
 	
 	public boolean isValidPath(Vector2 src, Vector2 dest) {
-		float x0 = src.x(), x1 = dest.x(), y0 = src.y(), y1 = dest.y();
-        float dx = Math.abs(x1 - x0);
-        float dy = Math.abs(y1 - y0);
-        
-        if (dx == 0 && dy == 0)
-        	return true;
-        
-        int x = (int)Math.floor(src.x());
-        int y = (int)Math.floor(src.y());
-        int n = 1;
-        int xInc = 0, yInc = 0;
-        float error = 0;
-
-        if (dx == 0)
-            error = Float.POSITIVE_INFINITY;
-        else if (x1 > x0) {
-            xInc = 1;
-            n += (int)Math.floor(x1) - x;
-            error = (float)(Math.floor(x0) + 1 - x0) * dy;
-        }
-        else {
-            xInc = -1;
-            n += x - (int)Math.floor(x1);
-            error = (float)(x0 - Math.floor(x0)) * dy;
-        }
-
-        if (dy == 0)
-            error = Float.NEGATIVE_INFINITY;
-        else if (y1 > y0) {
-            yInc = 1;
-            n += (int)Math.floor(y1) - y;
-            error -= (float)(Math.floor(y0) + 1 - y0) * dx;
-        }
-        else {
-            yInc = -1;
-            n += y - (int)Math.floor(y1);
-            error -= (float)(y0 - Math.floor(y0)) * dx;
-        }
-
-        for (; n > 0; --n) {
-        	Coordinate coordinate = new Coordinate(x, y);
-        	for (Layer layer : layers) {
-        		if (!layer.isWalkable(coordinate))
-        			return false;
-        	}
-            if (error > 0) {
-                y += yInc;
-                error -= dx;
-            }
-            else {
-                x += xInc;
-                error += dy;
-            }
-        }
-        
-        return true;
+		return getBlockingTile(src, dest) == null;
 	}
 	
 	public boolean isValidPosition(Vector2 position, Actor actor) {
@@ -259,6 +204,11 @@ public class World extends Entity {
 		return true;
 	}
 	
+	public void lock() {
+		locks++;
+		setIgnoreUpdate(true);
+	}
+	
 	public void subscribe(IListener subscriber) {
 		if (subscribers.contains(subscriber))
 			return;
@@ -276,6 +226,80 @@ public class World extends Entity {
 	
 	public void unsubscribe(IListener subscriber) {
 		subscribers.remove(subscriber);
+	}
+	
+	private Coordinate getBlockingTile(Vector2 src, Vector2 dest) {
+        int x = (int)Math.floor(src.x());
+        int y = (int)Math.floor(src.y());
+        int n = 1;
+		float x0 = src.x(), x1 = dest.x(), y0 = src.y(), y1 = dest.y();
+        if (x1 > x0) {
+            n += (int)Math.floor(x1) - x;
+        }
+        else {
+            n += x - (int)Math.floor(x1);
+        }
+
+        if (y1 > y0) {
+            n += (int)Math.floor(y1) - y;
+        }
+        else {
+            n += y - (int)Math.floor(y1);
+        }
+        
+        return getBlockingTile(src, dest, n);
+	}
+	
+	private Coordinate getBlockingTile(Vector2 src, Vector2 dest, int n) {
+		float x0 = src.x(), x1 = dest.x(), y0 = src.y(), y1 = dest.y();
+        float dx = Math.abs(x1 - x0);
+        float dy = Math.abs(y1 - y0);
+        
+        if (dx == 0 && dy == 0)
+        	return null;
+        
+        int x = (int)Math.floor(src.x());
+        int y = (int)Math.floor(src.y());
+        int xInc = 0, yInc = 0;
+        float error = 0;
+
+        if (dx == 0)
+            error = Float.POSITIVE_INFINITY;
+        else if (x1 > x0) {
+            xInc = 1;
+            error = (float)(Math.floor(x0) + 1 - x0) * dy;
+        }
+        else {
+            xInc = -1;
+            error = (float)(x0 - Math.floor(x0)) * dy;
+        }
+
+        if (dy == 0)
+            error = Float.NEGATIVE_INFINITY;
+        else if (y1 > y0) {
+            yInc = 1;
+            error -= (float)(Math.floor(y0) + 1 - y0) * dx;
+        }
+        else {
+            yInc = -1;
+            error -= (float)(y0 - Math.floor(y0)) * dx;
+        }
+
+        for (; n > 0; --n) {
+        	Coordinate coordinate = new Coordinate(x, y);
+        	if (!isWalkable(coordinate))
+        		return coordinate;
+            if (error > 0) {
+                y += yInc;
+                error -= dx;
+            }
+            else {
+                x += xInc;
+                error += dy;
+            }
+        }
+        
+        return null;
 	}
 
 	// Getters

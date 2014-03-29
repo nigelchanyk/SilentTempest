@@ -9,21 +9,15 @@ import ca.nigelchan.silenttempest.util.Vector2;
 
 public abstract class TrapData extends ActorData {
 
-	private Vector2 dimension;
 	private SequenceDataList sequenceList = new SequenceDataList();
 
-	public TrapData(Vector2 initPosition, float initRotation, float speed, Vector2 dimension) {
+	public TrapData(Vector2 initPosition, float initRotation, float speed) {
 		super(initPosition, initRotation, speed);
-		this.dimension = dimension;
 	}
 	
 	public abstract Trap createTrap(World world, GameResource resource);
 
 	// Getters
-	public Vector2 getDimension() {
-		return dimension;
-	}
-
 	public SequenceDataList getSequenceList() {
 		return sequenceList;
 	}

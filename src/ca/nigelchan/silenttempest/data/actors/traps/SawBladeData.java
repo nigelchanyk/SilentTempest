@@ -25,11 +25,13 @@ public class SawBladeData extends TrapData {
 		}
 	}
 
+	private Vector2 dimension;
 	private Size size;
 
 	public SawBladeData(Vector2 initPosition, float speed, Size size) {
-		super(initPosition, 0, speed, new Vector2(diameter(size), diameter(size)));
+		super(initPosition, 0, speed);
 		this.size = size;
+		this.dimension = new Vector2(diameter(size), diameter(size));
 	}
 
 	@Override
@@ -38,6 +40,10 @@ public class SawBladeData extends TrapData {
 	}
 
 	// Getters
+	public Vector2 getDimension() {
+		return dimension;
+	}
+
 	public Size getSize() {
 		return size;
 	}

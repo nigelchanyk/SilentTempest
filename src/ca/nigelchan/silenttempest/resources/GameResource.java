@@ -31,6 +31,9 @@ public class GameResource extends Resource {
 	private ITiledTextureRegion fieldTextureRegion;
 	private int fieldTileSize;
 	private ITextureRegion joystickDisplay;
+	private ITextureRegion laserBeam;
+	private ITextureRegion laserBeamCap;
+	private ITextureRegion laserCannon;
 	private ITextureRegion monkeyBaseTextureRegion;
 	private ITextureRegion[] sawBlades = new ITextureRegion[SawBladeData.Size.values().length];
 	
@@ -47,6 +50,7 @@ public class GameResource extends Resource {
 		createFieldTexture();
 		createMonkeyTexture();
 		createSawBlades();
+		createLaser();
 		createJoystickTexture();
 		createIndicatorTexture();
 		createBeaconTexture();
@@ -132,6 +136,54 @@ public class GameResource extends Resource {
 		);
 	}
 	
+	private void createLaser() {
+		int laserWidth = fieldTileSize / 2;
+		BuildableBitmapTextureAtlas laserBeamAtlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			laserWidth,
+			laserWidth,
+			TextureOptions.DEFAULT
+		);
+		addAtlas(laserBeamAtlas);
+		laserBeam = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			laserBeamAtlas,
+			activity,
+			"laser_beam.svg",
+			laserWidth,
+			laserWidth
+		);
+
+		BuildableBitmapTextureAtlas laserBeamCapAtlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			laserWidth,
+			laserWidth / 5,
+			TextureOptions.DEFAULT
+		);
+		addAtlas(laserBeamCapAtlas);
+		laserBeamCap = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			laserBeamCapAtlas,
+			activity,
+			"laser_beam_cap.svg",
+			laserWidth,
+			laserWidth / 5
+		);
+		
+		BuildableBitmapTextureAtlas laserCannonAtlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			laserWidth,
+			fieldTileSize,
+			TextureOptions.DEFAULT
+		);
+		addAtlas(laserCannonAtlas);
+		laserCannon = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			laserCannonAtlas,
+			activity,
+			"laser_cannon.svg",
+			laserWidth,
+			fieldTileSize
+		);
+	}
+	
 	private void createMonkeyTexture() {
 		BuildableBitmapTextureAtlas monkeyBaseTextureAtlas = createBuildableAtlas(1, 1);
 		monkeyBaseTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
@@ -184,6 +236,18 @@ public class GameResource extends Resource {
 		return joystickDisplay;
 	}
 	
+	public ITextureRegion getLaserBeam() {
+		return laserBeam;
+	}
+	
+	public ITextureRegion getLaserBeamCap() {
+		return laserBeamCap;
+	}
+
+	public ITextureRegion getLaserCannon() {
+		return laserCannon;
+	}
+
 	public ITextureRegion getMonkeyBase() {
 		return monkeyBaseTextureRegion;
 	}

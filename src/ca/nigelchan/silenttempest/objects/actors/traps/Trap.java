@@ -14,8 +14,8 @@ public abstract class Trap extends Actor {
 	private int current = 0;
 	private Sequence[] sequence;
 
-	public Trap(TrapData data, World world) {
-		super(data, data.getDimension(), world);
+	public Trap(TrapData data, World world, Vector2 dimension) {
+		super(data, dimension, world);
 		sequence = new Sequence[data.getSequenceList().size()];
 		int i = 0;
 		Vector2 pos = data.getInitialPosition();
@@ -24,8 +24,11 @@ public abstract class Trap extends Actor {
 			pos = pos.add(sequenceItem.getTranslation().toVector2());
 			i++;
 		}
-		sequence[current].onSpawn();
-		sequence[current].onStart();
+		
+		if (sequence.length > 0) {
+			sequence[current].onSpawn();
+			sequence[current].onStart();
+		}
 		
 		registerUpdateHandler(new IUpdateHandler() {
 			
@@ -39,25 +42,22 @@ public abstract class Trap extends Actor {
 			}
 		});
 	}
-
-	@Override
-	public boolean changeRotationOnMove() {
-		return false;
-	}
 	
-	protected abstract void onUpadate(float elapsedTime);
+	protected abstract void handleUpdate(float elapsedTime);
 	
 	private int next() {
 		return (current + 1) % sequence.length;
 	}
 	
 	private void update(float elapsedTime) {
-		sequence[current].onUpdate(elapsedTime);
-		if (sequence[current].isCompleted()) {
-			current = next();
-			sequence[current].onStart();
+		if (sequence.length > 0) {
+			sequence[current].onUpdate(elapsedTime);
+			if (sequence[current].isCompleted()) {
+				current = next();
+				sequence[current].onStart();
+			}
 		}
-		onUpadate(elapsedTime);
+		handleUpdate(elapsedTime);
 	}
 
 }

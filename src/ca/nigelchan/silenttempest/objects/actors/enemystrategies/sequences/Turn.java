@@ -27,7 +27,7 @@ public class Turn extends Sequence {
 		float current = MathHelper.interpolateAngle(
             actor.getRadianRotation(),
             angle,
-            elapsedTime * Actor.ROTATION_PER_SEC
+            elapsedTime * actor.getRotationSpeed()
         );
 		if (Math.abs(current - angle) < 0.0001f) {
 			current = angle;
