@@ -62,6 +62,10 @@ public class LoadingSceneMinigame extends Subscene {
 	}
 
 	@Override
+	public void onBackKeyPressed() {
+	}
+
+	@Override
 	protected void onDeactivate() {
 	}
 

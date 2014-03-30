@@ -2,7 +2,6 @@ package ca.nigelchan.silenttempest.objects.actors.traps;
 
 import org.andengine.entity.sprite.Sprite;
 
-import android.util.Log;
 import ca.nigelchan.silenttempest.data.actors.traps.LaserData;
 import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.resources.GameResource;

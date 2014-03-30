@@ -29,6 +29,10 @@ public abstract class GameMenu extends Subscene {
 	}
 
 	@Override
+	public void onBackKeyPressed() {
+	}
+
+	@Override
 	protected void onDeactivate() {
 	}
 

@@ -9,10 +9,12 @@ import ca.nigelchan.silenttempest.managers.SceneManager;
 import ca.nigelchan.silenttempest.managers.SubsceneManager;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.resources.MainMenuResource;
+import ca.nigelchan.silenttempest.scenes.subscenes.ActSelectionMenu;
 import ca.nigelchan.silenttempest.scenes.subscenes.MainMenu;
 
 public class MainMenuScene extends BaseScene {
 	
+	private ActSelectionMenu actSelecetionMenu;
 	private CommonResource commonResource;
 	private MainMenu mainMenu;
 	private MainMenuResource resource;
@@ -35,6 +37,7 @@ public class MainMenuScene extends BaseScene {
 
 	@Override
 	public void onBackKeyPressed() {
+		subsceneManager.onBackKeyPressed();
 	}
 
 	@Override
@@ -44,17 +47,23 @@ public class MainMenuScene extends BaseScene {
 		Entity uiLayer = new Entity();
 		attachChild(uiLayer);
 		subsceneManager = new SubsceneManager(uiLayer);
-		mainMenu = new MainMenu(commonResource) {
-			
-			@Override
-			public void onPlay() {
-			}
-		};
+		mainMenu = new MainMenu(this, commonResource);
+		actSelecetionMenu = new ActSelectionMenu(this, resource, commonResource);
 		
-		subsceneManager.add(mainMenu);
+		subsceneManager.add(mainMenu, actSelecetionMenu);
 		subsceneManager.load();
 		subsceneManager.activate(mainMenu);
 		setOnSceneTouchListener(subsceneManager);
 		registerUpdateHandler(subsceneManager);
 	}
+
+	// Getters
+	public ActSelectionMenu getActSelecetionMenu() {
+		return actSelecetionMenu;
+	}
+
+	public MainMenu getMainMenu() {
+		return mainMenu;
+	}
+
 }

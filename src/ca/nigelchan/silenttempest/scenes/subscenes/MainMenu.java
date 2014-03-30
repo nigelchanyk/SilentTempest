@@ -1,23 +1,28 @@
 package ca.nigelchan.silenttempest.scenes.subscenes;
 
 import ca.nigelchan.silenttempest.resources.CommonResource;
+import ca.nigelchan.silenttempest.scenes.MainMenuScene;
 import ca.nigelchan.silenttempest.userinterface.game.Button;
 import ca.nigelchan.silenttempest.userinterface.game.Header;
 import ca.nigelchan.silenttempest.util.PositionHelper;
 
-public abstract class MainMenu extends Subscene {
+public class MainMenu extends Subscene {
 
 	private CommonResource resource;
 	private Header header;
+	private MainMenuScene scene;
 	
-	public MainMenu(CommonResource resource) {
+	public MainMenu(MainMenuScene scene, CommonResource resource) {
 		this.resource = resource;
+		this.scene = scene;
 	}
 	
-	public abstract void onPlay();
-
 	@Override
 	protected void onActivate() {
+	}
+
+	@Override
+	public void onBackKeyPressed() {
 	}
 
 	@Override
@@ -56,7 +61,7 @@ public abstract class MainMenu extends Subscene {
         ) {
 			@Override
 			public void onClick() {
-				onPlay();
+				switchSubscene(scene.getActSelecetionMenu());
 			}
 		};
 		

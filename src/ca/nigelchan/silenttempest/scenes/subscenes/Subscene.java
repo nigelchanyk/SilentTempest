@@ -7,6 +7,7 @@ import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.input.touch.TouchEvent;
 
+import ca.nigelchan.silenttempest.managers.SubsceneManager;
 import ca.nigelchan.silenttempest.userinterface.game.ITouchableInterfaceObject;
 import ca.nigelchan.silenttempest.userinterface.game.UserInterfaceTouchEvent;
 import ca.nigelchan.silenttempest.util.Vector2;
@@ -15,6 +16,7 @@ public abstract class Subscene implements IOnSceneTouchListener {
 	
 	private boolean active = false;
 	private Entity hud = new Entity();
+	protected SubsceneManager manager;
 	private HashSet<ITouchableInterfaceObject> touchables = new HashSet<ITouchableInterfaceObject>();
 	private ITouchableInterfaceObject activeTouchable = null;
 	
@@ -89,8 +91,14 @@ public abstract class Subscene implements IOnSceneTouchListener {
 		onUpdate(elapsedTime);
 	}
 	
+	public abstract void onBackKeyPressed();
+	
 	protected void registerTouch(ITouchableInterfaceObject touchable) {
 		touchables.add(touchable);
+	}
+	
+	protected void switchSubscene(Subscene next) {
+		manager.activate(next);
 	}
 	
 	protected void unregisterTouch(ITouchableInterfaceObject touchable) {
@@ -110,6 +118,11 @@ public abstract class Subscene implements IOnSceneTouchListener {
 
 	public boolean isActive() {
 		return active;
+	}
+
+	// Setters
+	public void setManager(SubsceneManager manager) {
+		this.manager = manager;
 	}
 
 }

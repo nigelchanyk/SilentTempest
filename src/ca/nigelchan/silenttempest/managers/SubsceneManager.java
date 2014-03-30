@@ -21,8 +21,10 @@ public class SubsceneManager implements IOnSceneTouchListener, IUpdateHandler {
 	}
 	
 	public void add(Subscene ... subscenes) {
-		for (int i = 0; i < subscenes.length; ++i)
+		for (int i = 0; i < subscenes.length; ++i) {
 			this.subscenes.add(subscenes[i]);
+			subscenes[i].setManager(this);
+		}
 	}
 	
 	public void activate(Subscene subscene) {
@@ -45,6 +47,12 @@ public class SubsceneManager implements IOnSceneTouchListener, IUpdateHandler {
 		for (Subscene subscene :subscenes) {
 			subscene.load();
 		}
+	}
+
+	public void onBackKeyPressed() {
+		if (activeSubscene == null)
+			return;
+		activeSubscene.onBackKeyPressed();
 	}
 
 	@Override

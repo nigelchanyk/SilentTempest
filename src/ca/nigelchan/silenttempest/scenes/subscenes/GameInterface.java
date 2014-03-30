@@ -33,6 +33,10 @@ public class GameInterface extends Subscene {
 	}
 
 	@Override
+	public void onBackKeyPressed() {
+	}
+
+	@Override
 	protected void onDeactivate() {
 		// TODO Auto-generated method stub
 		
