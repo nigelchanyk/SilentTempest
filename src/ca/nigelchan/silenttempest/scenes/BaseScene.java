@@ -21,11 +21,11 @@ public abstract class BaseScene extends Scene {
 	protected BaseGameActivity activity;
 	protected Camera camera;
 	protected Engine engine;
-	protected boolean loadAsynchronous = false;
 	protected SceneManager manager;
 	protected boolean inactiveResourceAllowed = true;
 	protected boolean resourceLoaded = false;
 	
+	private boolean loadAsynchronous = false;
 	private PopOperation defualtPopOperation = PopOperation.NONE;
 	private Resource resource;
 	private Entity objectLayer = new Entity();
@@ -118,12 +118,16 @@ public abstract class BaseScene extends Scene {
 	}
 
 	// Setters
-	public void setDefualtPopOperation(PopOperation defualtPopOperation) {
+	protected void setDefualtPopOperation(PopOperation defualtPopOperation) {
 		this.defualtPopOperation = defualtPopOperation;
 	}
 
 	protected void setResource(Resource resource) {
 		this.resource = resource;
+	}
+
+	protected void setLoadAsynchronous(boolean loadAsynchronous) {
+		this.loadAsynchronous = loadAsynchronous;
 	}
 
 }

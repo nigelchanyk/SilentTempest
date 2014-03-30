@@ -47,7 +47,7 @@ public class SceneManager {
 		
 		if (sceneStack.empty())
 			return;
-		sceneStack.peek().prepareScene();
+		prepareScene(sceneStack.peek());
 		engine.setScene(sceneStack.peek());
 	}
 	
@@ -59,6 +59,13 @@ public class SceneManager {
 
 		camera.setHUD(null);
 		sceneStack.push(scene);
+		if (scene.isResourceLoaded())
+			return;
+		prepareScene(scene);
+		engine.setScene(sceneStack.peek());
+	}
+	
+	private void prepareScene(final BaseScene scene) {
 		if (scene.isResourceLoaded())
 			return;
 		if (scene.isLoadAsynchronous()) {
@@ -74,7 +81,6 @@ public class SceneManager {
 		else {
 			scene.prepareScene();
 		}
-		engine.setScene(sceneStack.peek());
 	}
 
 	// Getters

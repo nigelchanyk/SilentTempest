@@ -1,13 +1,19 @@
 package ca.nigelchan.silenttempest.scenes;
 
+import java.io.IOException;
+
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.util.color.Color;
+import org.json.JSONException;
 
 import ca.nigelchan.silenttempest.controllers.ActorController;
 import ca.nigelchan.silenttempest.data.EventsData;
 import ca.nigelchan.silenttempest.data.WorldData;
+import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
 import ca.nigelchan.silenttempest.events.EventLayer;
+import ca.nigelchan.silenttempest.importer.EventImporter;
+import ca.nigelchan.silenttempest.importer.WorldImporter;
 import ca.nigelchan.silenttempest.managers.EnemyManager;
 import ca.nigelchan.silenttempest.managers.EventManager;
 import ca.nigelchan.silenttempest.managers.SceneManager;
@@ -22,6 +28,7 @@ public class GameScene extends BaseScene {
 	
 	private CommonResource commonResource;
 	private ActorController controller = new ActorController();
+	private String dataFilePath;
 	private EventLayer eventLayer = new EventLayer();
 	private EventManager eventManager = null;
 	private EventsData eventsData;
@@ -36,16 +43,15 @@ public class GameScene extends BaseScene {
 	public GameScene(
 		SceneManager manager,
 		CommonResource commonResource,
-		WorldData worldData,
-		EventsData eventsData
+		String dataFilePath
 	) {
 		super(manager);
 		this.commonResource = commonResource;
-		this.worldData = worldData;
-		this.eventsData = eventsData;
-		this.loadAsynchronous = true;
+		this.dataFilePath = dataFilePath;
 		resource = new GameResource(activity);
 		setResource(resource);
+		setLoadAsynchronous(true);
+		setDefualtPopOperation(PopOperation.DISPOSE);
 		setBackground(new Background(Color.WHITE));
 		attachChild(gameCore);
 	}
@@ -63,40 +69,16 @@ public class GameScene extends BaseScene {
 
 	@Override
 	public void onBackKeyPressed() {
-		if (gameInterface.isActive()) {
-			subsceneManager.activate(gameMenu);
-			gameCore.setIgnoreUpdate(true);
-		}
-		else {
-			subsceneManager.activate(gameInterface);
-			gameCore.setIgnoreUpdate(false);
-		}
+		subsceneManager.onBackKeyPressed();
 	}
 
 	@Override
 	protected void createScene() {
+		loadData();
 		setWorldData(worldData);
-		gameInterface = new GameInterface(resource, this.controller);
-		gameMenu = new GameMenu(commonResource) {
+		gameInterface = new GameInterface(this, resource, this.controller);
+		gameMenu = new GameMenu(this, commonResource);
 
-			@Override
-			public void onContinue() {
-				onBackKeyPressed();
-			}
-
-			@Override
-			public void onExit() {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onRestart() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		};
 		Entity uiLayer = new Entity();
 		attachUI(uiLayer);
 		subsceneManager = new SubsceneManager(uiLayer);
@@ -106,8 +88,40 @@ public class GameScene extends BaseScene {
 		subsceneManager.load();
 		subsceneManager.activate(gameInterface);
 	}
+	
+	private void loadData() {
+		ActorConfiguration actorConfiguration = new ActorConfiguration();
+		try {
+			worldData = WorldImporter.load(dataFilePath, activity, actorConfiguration);
+			eventsData = EventImporter.load(dataFilePath, activity);
+		} catch (IOException e) {
+			e.printStackTrace();
+			activity.finish();
+		} catch (JSONException e) {
+			e.printStackTrace();
+			activity.finish();
+		}
+	}
+	
+	public void returnToMainMenu() {
+		manager.popScene();
+		manager.pushScene(new MainMenuScene(manager, commonResource));
+	}
+
+	// Getters
+	public GameInterface getGameInterface() {
+		return gameInterface;
+	}
+
+	public GameMenu getGameMenu() {
+		return gameMenu;
+	}
 
 	// Setters
+	public void setGamePaused(boolean paused) {
+		gameCore.setIgnoreUpdate(paused);
+	}
+
 	public void setWorldData(WorldData worldData) {
 		if (world != null) {
 			world.detachSelf();

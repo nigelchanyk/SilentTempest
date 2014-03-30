@@ -61,7 +61,7 @@ public class MainMenu extends Subscene {
         ) {
 			@Override
 			public void onClick() {
-				switchSubscene(scene.getActSelecetionMenu());
+				switchSubscene(scene.getActSelectionMenu());
 			}
 		};
 		

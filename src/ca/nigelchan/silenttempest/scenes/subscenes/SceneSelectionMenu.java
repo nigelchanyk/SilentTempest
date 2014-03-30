@@ -26,7 +26,7 @@ public class SceneSelectionMenu extends Subscene {
 
 	@Override
 	public void onBackKeyPressed() {
-		switchSubscene(scene.getActSelecetionMenu());
+		switchSubscene(scene.getActSelectionMenu());
 	}
 
 	@Override
@@ -79,6 +79,7 @@ public class SceneSelectionMenu extends Subscene {
 					@Override
 					public void onClick() {
 						selection = referenceSelection;
+						scene.startGame();
 					}
 				};
 				button.setPosition(totalWidth * x / 2, totalHeight * y / 2);

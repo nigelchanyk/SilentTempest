@@ -5,31 +5,32 @@ import org.andengine.entity.primitive.Rectangle;
 import org.andengine.util.color.Color;
 
 import ca.nigelchan.silenttempest.resources.CommonResource;
+import ca.nigelchan.silenttempest.scenes.GameScene;
 import ca.nigelchan.silenttempest.userinterface.game.Button;
 import ca.nigelchan.silenttempest.userinterface.game.Header;
 import ca.nigelchan.silenttempest.util.PositionHelper;
 
-public abstract class GameMenu extends Subscene {
+public class GameMenu extends Subscene {
 	
 	private static final Color BACKGROUND_COLOR = new Color(0, 0, 0, 0.9f);
 	
 	private Entity mainButtonsContainer;
 	private CommonResource resource;
+	private GameScene scene;
 	
-	public GameMenu(CommonResource resource) {
+	public GameMenu(GameScene scene, CommonResource resource) {
+		this.scene = scene;
 		this.resource = resource;
 	}
-	
-	public abstract void onContinue();
-	public abstract void onExit();
-	public abstract void onRestart();
 
 	@Override
 	protected void onActivate() {
+		scene.setGamePaused(true);
 	}
 
 	@Override
 	public void onBackKeyPressed() {
+		switchSubscene(scene.getGameInterface());
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public abstract class GameMenu extends Subscene {
         ) {
 			@Override
 			public void onClick() {
-				onContinue();
+				switchSubscene(scene.getGameInterface());
 			}
 		};
 		button.setPosition(x, 0);
@@ -114,6 +115,7 @@ public abstract class GameMenu extends Subscene {
         ) {
 			@Override
 			public void onClick() {
+				scene.returnToMainMenu();
 			}
 		};
 		button.setPosition(x, 0);

@@ -15,7 +15,7 @@ import ca.nigelchan.silenttempest.scenes.subscenes.SceneSelectionMenu;
 
 public class MainMenuScene extends BaseScene {
 	
-	private ActSelectionMenu actSelecetionMenu;
+	private ActSelectionMenu actSelectionMenu;
 	private CommonResource commonResource;
 	private MainMenu mainMenu;
 	private MainMenuResource resource;
@@ -27,7 +27,8 @@ public class MainMenuScene extends BaseScene {
 		this.commonResource = commonResource;
 		resource = new MainMenuResource(activity);
 		setResource(resource);
-		loadAsynchronous = true;
+		setDefualtPopOperation(PopOperation.DISPOSE);
+		setLoadAsynchronous(true);
 	}
 
 	@Override
@@ -41,6 +42,11 @@ public class MainMenuScene extends BaseScene {
 	public void onBackKeyPressed() {
 		subsceneManager.onBackKeyPressed();
 	}
+	
+	public void startGame() {
+		manager.popScene();
+		manager.pushScene(new GameScene(manager, commonResource, "levels/sample.stl"));
+	}
 
 	@Override
 	protected void createScene() {
@@ -50,10 +56,10 @@ public class MainMenuScene extends BaseScene {
 		attachChild(uiLayer);
 		subsceneManager = new SubsceneManager(uiLayer);
 		mainMenu = new MainMenu(this, commonResource);
-		actSelecetionMenu = new ActSelectionMenu(this, resource, commonResource);
+		actSelectionMenu = new ActSelectionMenu(this, resource, commonResource);
 		sceneSelectionMenu = new SceneSelectionMenu(this, resource, commonResource);
 		
-		subsceneManager.add(mainMenu, actSelecetionMenu, sceneSelectionMenu);
+		subsceneManager.add(mainMenu, actSelectionMenu, sceneSelectionMenu);
 		subsceneManager.load();
 		subsceneManager.activate(mainMenu);
 		setOnSceneTouchListener(subsceneManager);
@@ -61,8 +67,8 @@ public class MainMenuScene extends BaseScene {
 	}
 
 	// Getters
-	public ActSelectionMenu getActSelecetionMenu() {
-		return actSelecetionMenu;
+	public ActSelectionMenu getActSelectionMenu() {
+		return actSelectionMenu;
 	}
 
 	public MainMenu getMainMenu() {

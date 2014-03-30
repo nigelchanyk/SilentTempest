@@ -46,9 +46,13 @@ public class FieldLayer extends Layer implements World.IListener {
 	@Override
 	public void dispose() {
 		for (LinkedList<TiledSprite> tileRow : tileLattice) {
-			for (TiledSprite tile : tileRow)
+			for (TiledSprite tile : tileRow) {
+				if (tile != null)
 				tile.dispose();
+			}
 		}
+		while (!tilePool.isEmpty())
+			tilePool.pop().dispose();
 		super.dispose();
 	}
 

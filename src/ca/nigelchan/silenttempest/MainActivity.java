@@ -1,6 +1,5 @@
 package ca.nigelchan.silenttempest;
 
-import java.io.IOException;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.timer.ITimerCallback;
@@ -12,18 +11,11 @@ import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.ui.activity.BaseGameActivity;
-import org.json.JSONException;
 
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
-import ca.nigelchan.silenttempest.data.EventsData;
-import ca.nigelchan.silenttempest.data.WorldData;
-import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
-import ca.nigelchan.silenttempest.importer.EventImporter;
-import ca.nigelchan.silenttempest.importer.WorldImporter;
 import ca.nigelchan.silenttempest.managers.SceneManager;
 import ca.nigelchan.silenttempest.resources.CommonResource;
-import ca.nigelchan.silenttempest.scenes.GameScene;
 import ca.nigelchan.silenttempest.scenes.MainMenuScene;
 import ca.nigelchan.silenttempest.scenes.SplashScene;
 
@@ -113,22 +105,6 @@ public class MainActivity extends BaseGameActivity {
 	private void buildFirstScene() {
 		splash.dispose();
 		manager.pushScene(new MainMenuScene(manager, commonResource));
-		/*
-		ActorConfiguration actorConfiguration = new ActorConfiguration();
-		try {
-			WorldData worldData = WorldImporter.load("levels/sample.stl", MainActivity.this, actorConfiguration);
-			EventsData eventsData = EventImporter.load("levels/sample.stl", MainActivity.this);
-			manager.pushScene(new GameScene(manager, commonResource, worldData, eventsData));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			finish();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			finish();
-		}
-		*/
 	}
 	
 }
