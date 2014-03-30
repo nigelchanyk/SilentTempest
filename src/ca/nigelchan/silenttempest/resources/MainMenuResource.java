@@ -110,11 +110,11 @@ public class MainMenuResource extends Resource {
 	}
 	
 	private void createSceneButtons() {
-		int size = getDPI() / 3;
+		int size = getDPI() * 2 / 3;
 		BuildableBitmapTextureAtlas atlas = new BuildableBitmapTextureAtlas(
 			activity.getTextureManager(),
-			size * 3,
-			size * 3,
+			size * 2,
+			size * 9,
 			TextureOptions.DEFAULT
 		);
 		addAtlas(atlas);
@@ -122,10 +122,10 @@ public class MainMenuResource extends Resource {
 			atlas,
 			activity,
 			"scene_buttons.svg",
-			size * 3,
-			size * 3,
-			3,
-			3
+			size * 2,
+			size * 9,
+			2,
+			9
 		);
 	}
 
