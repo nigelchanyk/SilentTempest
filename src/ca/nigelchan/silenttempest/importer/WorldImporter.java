@@ -60,7 +60,7 @@ public class WorldImporter {
 		
 		WorldData data = new WorldData(columns, rows);
 		for (int i = 0; i < ground.length(); ++i)
-			data.addLayer(parseLayer(tiles, ground.getString(i), rows, columns));
+			data.addLayer(parseLayer(tiles, ground.getJSONObject(i), rows, columns));
 
 		PlayerData playerData = new PlayerData(Coordinate.fromJSONObject(player), 0, actorConfiguration.getPlayerSpeed());
 		ActorLayerData actorLayer = new ActorLayerData(columns, rows, playerData);
@@ -75,7 +75,7 @@ public class WorldImporter {
 
 		data.addLayer(actorLayer);
 		for (int i = 0; i < top.length(); ++i)
-			data.addLayer(parseLayer(tiles, top.getString(i), rows, columns));
+			data.addLayer(parseLayer(tiles, top.getJSONObject(i), rows, columns));
 		return data;
 	}
 	
@@ -111,10 +111,16 @@ public class WorldImporter {
 		return data;
 	}
 	
-	public static FieldLayerData parseLayer(TileTemplateCollection tiles, String compressedLayer, int rows, int columns) throws JSONException {
-		FieldLayerData data = new FieldLayerData(columns, rows);
+	public static FieldLayerData parseLayer(
+		TileTemplateCollection tiles,
+		JSONObject json,
+		int rows,
+		int columns
+		) throws JSONException {
+		int defaultTile = json.optInt("default", -1);
+		FieldLayerData data = new FieldLayerData(columns, rows, defaultTile >= 0 ? tiles.get(defaultTile) : null);
 		int total = rows * columns;
-		String[] tokens = compressedLayer.split(";");
+		String[] tokens = json.getString("layout").split(";");
 		for (int i = 0, j = 0; i < tokens.length && j < total; ++i) {
 			Matcher m = LAYER_REGEX.matcher(tokens[i]);
 			if (!m.matches())

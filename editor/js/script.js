@@ -8,6 +8,7 @@ Core = function(canvas) {
     this.subscribers = {
         onBeforeCellsChanged: Array(),
         onCellChanged: Array(),
+        onDefaultTileChanged: Array(),
         onMouseCoordinateChanged: Array(),
         onLayerChanged: Array(),
         onLayerCountChanged: Array(),
@@ -19,6 +20,7 @@ Core = function(canvas) {
     };
     this.setLevel(new Level(1, 1, 15, 20));
     this.setPaletteArea(new Area(0, 0, 1, 1));
+    this.openedJSON = {};
 };
 
 Core.LayerGroup = {};
@@ -97,6 +99,19 @@ Core.prototype.setLayerGroup = function(layerGroup) {
     this.notify('onLayerGroupChanged', layerGroup);
 };
 
+Core.prototype.setDefaultTile = function(tile) {
+    this.level.setLayerDefault(this.layerGroup, this.layer, tile);
+    this.notify('onDefaultTileChanged');
+};
+
+Core.prototype.getDefaultTile = function() {
+    if (this.layerGroup === Core.LayerGroup.GROUND)
+        return this.level.getGroundLayerDefault(this.layer);
+    else if (this.layerGroup === Core.LayerGroup.OBJECT)
+        return this.level.getTopLayerDefault(this.layer);
+    return -1;
+};
+
 Core.prototype.paint = function(changes) {
     this.notify('onBeforeCellsChanged', changes);
     for (var i = 0; i < changes.length; ++i) {
@@ -154,6 +169,14 @@ Core.prototype.setHeight = function(height) {
 Core.prototype.mouseCoordinateChanged = function(x, y) {
     this.notify('onMouseCoordinateChanged', x, y);
 };
+
+Core.prototype.getOpenedJSON = function() {
+    return this.openedJSON;
+};
+
+Core.prototype.setOpenedJSON = function(openedJSON) {
+    this.openedJSON = openedJSON;
+}
 
 // Class Area {
 Area = function(row, column, width, height) {
@@ -475,10 +498,11 @@ LayerManager.prototype.onLayerCountChanged = function(count) {
 };
 
 // Class Canvas
-Canvas = function(core, canvas, btnGroup, fieldSprite) {
+Canvas = function(core, canvas, btnGroup, defaultTileDisplay, fieldSprite) {
     this.core = core;
     this.canvas = canvas;
     this.btnGroup = btnGroup;
+    this.defaultTileDisplay = defaultTileDisplay;
     this.fieldSprite = $(fieldSprite)[0];
     this.ctx = $(canvas)[0].getContext('2d');
     this.startX = 0;
@@ -507,6 +531,9 @@ Canvas = function(core, canvas, btnGroup, fieldSprite) {
     $(canvas).bind('mouseleave', function() {
         _this.onBlur();
     });
+    $(defaultTileDisplay).bind('click', function() {
+        _this.onDefaultTileClicked();
+    });
     $(window).bind('blur', function() {
         _this.onBlur();
     });
@@ -515,6 +542,9 @@ Canvas = function(core, canvas, btnGroup, fieldSprite) {
     });
     core.bind('onCellChanged', function(row, column) {
         _this.paintCell(row, column);
+    });
+    core.bind('onDefaultTileChanged', function() {
+        _this.repaintDefaultTile();
     });
     this.repaint(core.getLevel());
 };
@@ -583,6 +613,12 @@ Canvas.prototype.onBlur = function() {
     this.repaint();
 };
 
+Canvas.prototype.onDefaultTileClicked = function() {
+    var paletteArea = this.core.getPaletteArea();
+    var index = paletteArea.getRow() * this.core.getPaletteWidth() + paletteArea.getColumn();
+    this.core.setDefaultTile(this.mode === Canvas.Mode.DRAW ? index : -1);
+};
+
 Canvas.prototype.paintPreview = function() {
     if (this.previewArea === null) {
         var a = this.previewArea = Area.fromDisplayCoordinate(this.startX, this.startY, this.endX, this.endY, this.width, this.height);
@@ -615,6 +651,22 @@ Canvas.prototype.repaint = function() {
         for (var c = 0; c < cols; ++c)
             this.paintCell(r, c);
     }
+
+    this.repaintDefaultTile();
+};
+
+Canvas.prototype.repaintDefaultTile = function() {
+    var tile = this.core.getDefaultTile();
+    if (tile < 0)
+        $(this.defaultTileDisplay).css('background-image', 'none');
+    else {
+        var x = -(tile % this.core.getPaletteWidth()) * 32;
+        var y = -~~(tile / this.core.getPaletteWidth()) * 32;
+        $(this.defaultTileDisplay).css({
+            'background-image': 'url(field.png)',
+            'background-position': x + 'px ' + y + 'px'
+        });
+    };
 };
 
 Canvas.prototype.paintCell = function(row, column) {
@@ -671,6 +723,8 @@ Level = function(groundDepth, topDepth, row, column) {
 
     this.groundLayers = this.createArray(row, column, groundDepth);
     this.topLayers = this.createArray(row, column, topDepth);
+    this.groundLayersDefault = this.createLayerDefault(groundDepth);
+    this.topLayersDefault = this.createLayerDefault(topDepth);
 };
 
 Level.prototype.setWidth = function(width) {
@@ -686,6 +740,13 @@ Level.prototype.createArray = function(row, column, depth) {
     for (var i = 0; i < depth; ++i)
         layers[i] = this.createLayer(row, column);
     return layers;
+}
+
+Level.prototype.createLayerDefault = function(depth) {
+    var values = new Array(depth);
+    for (var i = 0; i < depth; ++i)
+        values[i] = -1;
+    return values;
 }
 
 Level.prototype.createLayer = function(row, column) {
@@ -739,13 +800,38 @@ Level.prototype.setTopGrid = function(depth, row, column, index) {
     this.topLayers[depth][row][column] = index;
 };
 
+Level.prototype.setLayerDefault = function(layerGroup, depth, tile) {
+    if (layerGroup === Core.LayerGroup.GROUND)
+        this.setGroundLayerDefault(depth, tile);
+    else if (layerGroup === Core.LayerGroup.OBJECT)
+        this.setTopLayerDefault(depth, tile);
+}
+
+Level.prototype.getGroundLayerDefault = function(depth) {
+    return this.groundLayersDefault[depth];
+}
+
+Level.prototype.setGroundLayerDefault = function(depth, tile) {
+    this.groundLayersDefault[depth] = tile;
+}
+
+Level.prototype.getTopLayerDefault = function(depth) {
+    return this.topLayersDefault[depth];
+}
+
+Level.prototype.setTopLayerDefault = function(depth, tile) {
+    this.topLayersDefault[depth] = tile;
+}
+
 Level.prototype.addGroundLayer = function() {
     this.groundLayers.push(this.createLayer(this.row, this.column));
+    this.groundLayersDefault.push(-1);
     this.groundDepth++;
 };
 
 Level.prototype.addTopLayer = function() {
     this.topLayers.push(this.createLayer(this.row, this.column));
+    this.topLayersDefault.push(-1);
     this.topDepth++;
 };
 
@@ -753,6 +839,7 @@ Level.prototype.removeGroundLayer = function(index) {
     if (this.groundDepth === 1)
         return;
     this.groundLayers.splice(index, 1);
+    this.groundLayersDefault.splice(index, 1);
     this.groundDepth--;
 };
 
@@ -760,6 +847,7 @@ Level.prototype.removeTopLayer = function(index) {
     if (this.topDepth === 1)
         return;
     this.topLayers.splice(index, 1);
+    this.topLayersDefault.splice(index, 1);
     this.topDepth--;
 };
 
@@ -781,8 +869,10 @@ LevelImporter.prototype.load = function(file, errorCallback) {
     var _this = this;
     reader.onload = function(evt) {
         //try {
-            var level = _this.parseLevel($.parseJSON(evt.target.result));
+            var json = $.parseJSON(evt.target.result);
+            var level = _this.parseLevel(json);
             _this.core.setLevel(level);
+            _this.core.setOpenedJSON(json);
         /*} catch (e) {
             switch (e.name) {
                 case 'SyntaxError':
@@ -833,7 +923,7 @@ LevelImporter.prototype.parseLayer = function(level, layerGroup, layer, data) {
     var rows = level.getRowCount();
     var columns = level.getColumnCount();
     var total = rows * columns;
-    var tuples = data.split(';');
+    var tuples = data['layout'].split(';');
     for (var i = 0, j = 0; i < tuples.length && j < total; ++i) {
         var matches = tuples[i].match(LevelImporter.REGEX);
         var skip = parseInt(matches[1] || matches[2] || '0', 36);
@@ -843,6 +933,8 @@ LevelImporter.prototype.parseLayer = function(level, layerGroup, layer, data) {
         for (var r = 0; r <= repeat && j < total; ++r, ++j)
             level.setGrid(layerGroup, layer, ~~(j / columns), j % columns, index);
     }
+
+    level.setLayerDefault(layerGroup, layer, data['default'] !== undefined ? data['default'] : -1);
 };
 
 LevelExporter = function(core) {
@@ -850,15 +942,25 @@ LevelExporter = function(core) {
 };
 
 LevelExporter.prototype.transformLevel = function(level) {
-    var json = {};
+    var json = this.core.getOpenedJSON();
     json['rows'] = level.getRowCount();
     json['columns'] = level.getColumnCount();
     json['ground'] = [];
-    for (var i = 0; i < level.getGroundDepthCount(); ++i)
-        json['ground'].push(this.transformLayer(level, Core.LayerGroup.GROUND, i));
+    for (var i = 0; i < level.getGroundDepthCount(); ++i) {
+        var layer = {};
+        if (level.getGroundLayerDefault(i) >= 0)
+            layer['default'] = level.getGroundLayerDefault(i);
+        layer['layout'] = this.transformLayer(level, Core.LayerGroup.GROUND, i);
+        json['ground'].push(layer);
+   }
     json['top'] = [];
-    for (var i = 0; i < level.getTopDepthCount(); ++i)
-        json['top'].push(this.transformLayer(level, Core.LayerGroup.OBJECT, i));
+    for (var i = 0; i < level.getTopDepthCount(); ++i) {
+        var layer = {};
+        if (level.getTopLayerDefault(i) >= 0)
+            layer['default'] = level.getTopLayerDefault(i);
+        layer['layout'] = this.transformLayer(level, Core.LayerGroup.OBJECT, i);
+        json['top'].push(layer);
+    }
     return json;
 };
 
@@ -1061,7 +1163,7 @@ $(document).on('ready', function() {
     window.app.levelImporter = new LevelImporter(window.app.core);
     window.app.levelExporter = new LevelExporter(window.app.core);
     window.app.palette = new Palette(window.app.core, '#palette', '#field-sprite');
-    window.app.canvas = new Canvas(window.app.core, '#canvas', '#canvas-mode-control', '#field-sprite');
+    window.app.canvas = new Canvas(window.app.core, '#canvas', '#canvas-mode-control', '#default-tile', '#field-sprite');
     window.app.layerManager = new LayerManager(window.app.core, '#layer-manager');
     window.app.fileSelector = new FileSelector(window.app.levelImporter, '#btn-open', '#file-open-modal');
     window.app.fileSaver = new FileSaver(window.app.levelExporter, '#btn-save', '#input-filename');

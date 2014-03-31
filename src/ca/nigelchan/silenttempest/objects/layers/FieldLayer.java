@@ -110,8 +110,6 @@ public class FieldLayer extends Layer implements World.IListener {
 	}
 
 	private TiledSprite allocate(int x, int y) {
-		if (x < 0 || x >= width || y < 0 || y >= height)
-			return null;
 		TileTemplate template = data.getTile(y, x);
 		if (template == null)
 			return null;
@@ -127,6 +125,11 @@ public class FieldLayer extends Layer implements World.IListener {
 	}
 
 	private int computePoolSize() {
+		int maxOnScreen = (resource.getScreenWidth() / resource.getFieldTileSize() + 2)
+			* (resource.getScreenHeight() / resource.getFieldTileSize() + 2);
+		if (data.getDefaultTile() != null) {
+			return maxOnScreen;
+		}
 		int maxPoolSize = 0;
 		for (int r = 0; r < height; ++r) {
 			for (int c = 0; c < width; ++c) {
@@ -134,11 +137,7 @@ public class FieldLayer extends Layer implements World.IListener {
 					maxPoolSize++;
 			}
 		}
-		return Math.min(
-				maxPoolSize,
-				(resource.getScreenWidth() / resource.getFieldTileSize() + 2)
-						* (resource.getScreenHeight()
-								/ resource.getFieldTileSize() + 2));
+		return Math.min(maxPoolSize, maxOnScreen);
 	}
 
 	private void recycle(TiledSprite tile) {
