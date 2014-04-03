@@ -16,7 +16,7 @@ public class SplashScene extends Scene {
 	public SplashScene(BaseGameActivity activity, Camera camera) {
 		resource = new SplashResource(activity);
 		resource.load();
-		this.setBackground(new Background(Color.WHITE));
+		this.setBackground(new Background(Color.BLACK));
 		Sprite splash = new Sprite(0, 0, resource.getSplashTextureRegion(), activity.getVertexBufferObjectManager());
 		splash.setPosition((camera.getWidth() - splash.getWidth()) * 0.5f, (camera.getHeight() - splash.getHeight()) * 0.5f);
 		attachChild(splash);

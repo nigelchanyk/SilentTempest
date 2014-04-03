@@ -1,14 +1,14 @@
 package ca.nigelchan.silenttempest.resources;
 
+import org.andengine.extension.svg.opengl.texture.atlas.bitmap.SVGBitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.region.TextureRegion;
+import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.ui.activity.BaseGameActivity;
 
 public class SplashResource extends Resource {
 
-	private TextureRegion splashTextureRegion;
+	private ITextureRegion splashTextureRegion;
 
 	public SplashResource(BaseGameActivity activity) {
 		super(activity);
@@ -17,24 +17,28 @@ public class SplashResource extends Resource {
 
 	@Override
 	public void onLoad() {
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		SVGBitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/splash/");
+		int width = getScreenWidth() * 2 / 3;
+		int height = width * 15 / 70;
 		BitmapTextureAtlas splashTextureAtlas = new BitmapTextureAtlas(
 			activity.getTextureManager(),
-			256,
-			256,
+			width,
+			height,
 			TextureOptions.DEFAULT
 		);
 		addAtlas(splashTextureAtlas);
-		splashTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+		splashTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
 			splashTextureAtlas,
 			activity,
-			"splash.png",
+			"title.svg",
+			width,
+			height,
 			0,
 			0
 		);
 	}
 
-	public TextureRegion getSplashTextureRegion() {
+	public ITextureRegion getSplashTextureRegion() {
 		return splashTextureRegion;
 	}
 }
