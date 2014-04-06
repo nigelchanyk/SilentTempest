@@ -44,7 +44,15 @@ public class EnemyManager implements World.IListener {
 		}
 
 		@Override
+		public void onKnockedOut() {
+		}
+
+		@Override
 		public void onPositionChanged(Vector2 position) {
+		}
+
+		@Override
+		public void onRecovered() {
 		}
 
 		@Override

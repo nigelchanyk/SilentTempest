@@ -18,6 +18,7 @@ public abstract class Actor extends WorldObject {
 	public static final float SNAPPING_BUFFER = 0.01f;
 
 	private PostponedList<Controller> controllers = new PostponedList<Controller>(4);
+	private boolean knockedOut = false;
 	private float speed;
 	private PostponedList<IListener> subscribers = new PostponedList<Actor.IListener>(4);
 
@@ -167,8 +168,26 @@ public abstract class Actor extends WorldObject {
 	public World getWorld() {
 		return world;
 	}
+
+	public boolean isKnockedOut() {
+		return knockedOut;
+	}
 	
 	// Setters
+	public void setKnockedOut(boolean knockedOut) {
+		this.knockedOut = knockedOut;
+		for (Controller controller : controllers)
+			controller.setPermitted(!knockedOut);
+		if (knockedOut) {
+			for (IListener subscriber : subscribers)
+				subscriber.onKnockedOut();
+		}
+		else {
+			for (IListener subscriber : subscribers)
+				subscriber.onRecovered();
+		}
+	}
+
 	@Override
 	public void setPosition(Vector2 position) {
 		if (getWorld().isOutOfBound(position.toCoordinate()))
@@ -203,7 +222,9 @@ public abstract class Actor extends WorldObject {
 
 	public static interface IListener {
 		
+		public void onKnockedOut();
 		public void onPositionChanged(Vector2 position);
+		public void onRecovered();
 		public void onRotationChanged(float rotation);
 
 	}

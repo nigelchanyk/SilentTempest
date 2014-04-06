@@ -27,6 +27,10 @@ public class Enemy extends Actor {
 	}
 
 	// Getters
+	public float getAlertLevel() {
+		return core.getAlertLevel();
+	}
+
 	public EnemyCore getCore() {
 		return core;
 	}

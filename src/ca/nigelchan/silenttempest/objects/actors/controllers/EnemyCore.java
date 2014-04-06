@@ -39,6 +39,11 @@ public class EnemyCore extends Controller {
 			return false;
 		return true;
 	}
+	
+	public void reset() {
+		strategy = new Patrol(actor, this, enemyData, true);
+		setAlertLevel(0);
+	}
 
 	@Override
 	protected void onUpdate(float elapsedTime) {
@@ -116,6 +121,12 @@ public class EnemyCore extends Controller {
 			subscriber.onAlertLevelChanged(alertLevel);
 	}
 
+	@Override
+	public void setPermitted(boolean permitted) {
+		if (!permitted)
+			reset();
+		super.setPermitted(permitted);
+	}
 
 	public static interface IListener {
 

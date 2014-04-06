@@ -23,7 +23,6 @@ public class EnemyAlertIndicator extends FollowIndicator<Enemy> implements Enemy
 
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
-				// TODO Auto-generated method stub
 				super.preDraw(pGLState, pCamera);
 				pGLState.enableDither();
 			}
@@ -42,6 +41,14 @@ public class EnemyAlertIndicator extends FollowIndicator<Enemy> implements Enemy
 	@Override
 	public void onAlertLevelChanged(float alertLevel) {
 		setAlertLevel(alertLevel);
+	}
+
+	@Override
+	public void onKnockedOut() {
+	}
+
+	@Override
+	public void onRecovered() {
 	}
 
 	@Override
