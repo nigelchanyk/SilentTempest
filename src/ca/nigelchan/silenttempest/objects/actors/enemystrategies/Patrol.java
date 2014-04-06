@@ -30,13 +30,13 @@ public class Patrol extends EnemyStrategy {
 			i++;
 		}
 		if (justSpawned) {
-            sequence[current].onSpawn();
-            sequence[current].onStart();
+			sequence[current].onSpawn();
+			sequence[current].onStart();
 		}
 		else if (!sequenceSet.contains(actor.getGridPosition()))
 			approach = new Approach(actor, core, sequenceSet, this);
 		else
-            sequence[current].onStart();
+			sequence[current].onStart();
 	}
 
 	@Override

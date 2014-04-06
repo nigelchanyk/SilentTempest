@@ -46,16 +46,16 @@ public class Seek extends EnemyStrategy {
 			increaseSuspicionLevel();
 		}
 		if (path == null) {
-            raytraceVisibleGrids();
-            if (!startNewPath()) {
-            	return;
-            }
+			raytraceVisibleGrids();
+			if (!startNewPath()) {
+				return;
+			}
 			currentSequence.onStart();
 		}
 		
 		currentSequence.onUpdate(elapsedTime);
 		if (currentSequence.isCompleted()) {
-            raytraceVisibleGrids();
+			raytraceVisibleGrids();
 			if (path.hasNext())
 				currentSequence = path.next();
 			else if (!startNewPath()) {
@@ -86,64 +86,64 @@ public class Seek extends EnemyStrategy {
 		int yx,
 		int yy
 	) {
-	    float newStart = 0.0f;
-	    if (start < end) {
-	        return;
-	    }
-	    boolean blocked = false;
-	    for (int distance = row; distance <= SCAN_RADIUS && !blocked; distance++) {
-	        int deltaY = -distance;
-	        for (int deltaX = -distance; deltaX <= 0; deltaX++) {
-	        	Coordinate current = new Coordinate(
-	        		startPosition.x() + deltaX * xx + deltaY * xy,
-	        		startPosition.y() + deltaX * yx + deltaY * yy
-	        	);
-	            float leftSlope = (deltaX - 0.5f) / (deltaY + 0.5f);
-	            float rightSlope = (deltaX + 0.5f) / (deltaY - 0.5f);
+		float newStart = 0.0f;
+		if (start < end) {
+			return;
+		}
+		boolean blocked = false;
+		for (int distance = row; distance <= SCAN_RADIUS && !blocked; distance++) {
+			int deltaY = -distance;
+			for (int deltaX = -distance; deltaX <= 0; deltaX++) {
+				Coordinate current = new Coordinate(
+					startPosition.x() + deltaX * xx + deltaY * xy,
+					startPosition.y() + deltaX * yx + deltaY * yy
+				);
+				float leftSlope = (deltaX - 0.5f) / (deltaY + 0.5f);
+				float rightSlope = (deltaX + 0.5f) / (deltaY - 0.5f);
 	 
-	            if (actor.getWorld().isOutOfBound(current) || start < rightSlope) {
-	                continue;
-	            } else if (end > leftSlope) {
-	                break;
-	            }
+				if (actor.getWorld().isOutOfBound(current) || start < rightSlope) {
+					continue;
+				} else if (end > leftSlope) {
+					break;
+				}
 	 
-	            if (suspicionLevel[current.y()][current.x()] > 0) {
-                    float dotProduct = unitVector.dot(current.toCenterVector2().normal());
-                    if (dotProduct > minimumDotProduct)
-                        suspicionLevel[current.y()][current.x()] = 0;
-	            }
+				if (suspicionLevel[current.y()][current.x()] > 0) {
+					float dotProduct = unitVector.dot(current.toCenterVector2().normal());
+					if (dotProduct > minimumDotProduct)
+						suspicionLevel[current.y()][current.x()] = 0;
+				}
 	 
-	            if (blocked) {
-	            	//previous cell was a blocking one
-	                if (!actor.getWorld().isWalkable(current)) {
-	                	//hit a wall
-	                    newStart = rightSlope;
-	                    continue;
-	                } else {
-	                    blocked = false;
-	                    start = newStart;
-	                }
-	            } else {
-	                if (!actor.getWorld().isWalkable(current) && distance < SCAN_RADIUS) {
-	                	//hit a wall within sight line
-	                    blocked = true;
-	                    castVisibleArea(
-	                    	startPosition,
-	                    	unitVector,
-	                    	minimumDotProduct,
-	                    	distance + 1,
-	                    	start,
-	                    	leftSlope,
-	                    	xx,
-	                    	xy,
-	                    	yx,
-	                    	yy
-	                    );
-	                    newStart = rightSlope;
-	                }
-	            }
-	        }
-	    }
+				if (blocked) {
+					//previous cell was a blocking one
+					if (!actor.getWorld().isWalkable(current)) {
+						//hit a wall
+						newStart = rightSlope;
+						continue;
+					} else {
+						blocked = false;
+						start = newStart;
+					}
+				} else {
+					if (!actor.getWorld().isWalkable(current) && distance < SCAN_RADIUS) {
+						//hit a wall within sight line
+						blocked = true;
+						castVisibleArea(
+							startPosition,
+							unitVector,
+							minimumDotProduct,
+							distance + 1,
+							start,
+							leftSlope,
+							xx,
+							xy,
+							yx,
+							yy
+						);
+						newStart = rightSlope;
+					}
+				}
+			}
+		}
 	}
 	
 	private void fillSuspicion(Coordinate peak, float lastSeenRotation) {
@@ -178,7 +178,7 @@ public class Seek extends EnemyStrategy {
 					continue;
 				if (visited[next.y()][next.x()])
 					continue;
-                visited[next.y()][next.x()] = true;
+				visited[next.y()][next.x()] = true;
 				if (suspicionLevel[next.y()][next.x()] <= 0)
 					continue;
 				suspicionLevel[next.y()][next.x()] = nextSuspicionLevel;
@@ -195,7 +195,7 @@ public class Seek extends EnemyStrategy {
 			for (int x = 0; x < suspicionLevel[0].length; ++x) {
 				if (!actor.getWorld().isWalkable(new Coordinate(x, y)))
 					continue;
-                int distance = Math.abs(x - position.x()) + Math.abs(y - position.y());
+				int distance = Math.abs(x - position.x()) + Math.abs(y - position.y());
 				if (suspicionLevel[y][x] > suspicionLevel[peak.y()][peak.x()]
 						|| (suspicionLevel[y][x] == suspicionLevel[peak.y()][peak.x()]
 						&& distance < bestDistance)) {
@@ -231,23 +231,23 @@ public class Seek extends EnemyStrategy {
 	// Return false if failed
 	private boolean startNewPath() {
 		path = null;
-        Coordinate peak = getSuspicionPeak();
-        // Should not happen
-        if (peak.equals(actor.getGridPosition())) {
-        	throw new IllegalArgumentException();
-        }
-        Iterable<Move> movement = actor.getWorld().findPath(actor, peak);
-        // Not supposed to happen
-        if (movement == null) {
-        	Log.i("FUCK", actor.getGridPosition().toString() + " " + peak.toString());
-            return false;
-        }
-        path = movement.iterator();
-        // Not supposed to happen
-        if (!path.hasNext()) {
-            return false;
-        }
-        currentSequence = path.next();
+		Coordinate peak = getSuspicionPeak();
+		// Should not happen
+		if (peak.equals(actor.getGridPosition())) {
+			throw new IllegalArgumentException();
+		}
+		Iterable<Move> movement = actor.getWorld().findPath(actor, peak);
+		// Not supposed to happen
+		if (movement == null) {
+			Log.i("FUCK", actor.getGridPosition().toString() + " " + peak.toString());
+			return false;
+		}
+		path = movement.iterator();
+		// Not supposed to happen
+		if (!path.hasNext()) {
+			return false;
+		}
+		currentSequence = path.next();
 		return true;
 	}
 

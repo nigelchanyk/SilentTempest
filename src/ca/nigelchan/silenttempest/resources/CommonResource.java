@@ -95,14 +95,14 @@ public class CommonResource extends Resource {
 		);
 		addAtlas(dialogAtlas);
 		uiShadow = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
-            dialogAtlas,
-            activity,
-            "ui_shadow.svg",
-            getDPI() * 3 / 4,
-            getDPI() * 3 / 4,
-            3,
-            3
-        );
+			dialogAtlas,
+			activity,
+			"ui_shadow.svg",
+			getDPI() * 3 / 4,
+			getDPI() * 3 / 4,
+			3,
+			3
+		);
 	}
 	
 	private void createHeaderArrow() {
@@ -121,7 +121,7 @@ public class CommonResource extends Resource {
 			"header_arrow.svg",
 			width,
 			height
-        );
+		);
 	}
 	
 	private void createHeaderFont() {
@@ -140,8 +140,8 @@ public class CommonResource extends Resource {
 			true,
 			Color.WHITE
 		);
-	    headerFont.load();
-	    addAtlas(headerFontTexture);
+		headerFont.load();
+		addAtlas(headerFontTexture);
 	}
 	
 	private void createRain() {
@@ -180,8 +180,8 @@ public class CommonResource extends Resource {
 			true,
 			Color.WHITE
 		);
-	    regularFont.load();
-	    addAtlas(regularFontTexture);
+		regularFont.load();
+		addAtlas(regularFontTexture);
 	}
 	
 	private void createSound() throws IOException {

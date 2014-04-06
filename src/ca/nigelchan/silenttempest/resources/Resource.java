@@ -29,14 +29,14 @@ public abstract class Resource {
 		onLoad();
 		for (BitmapTextureAtlas atlas : atlases)
 			atlas.load();
-        try {
-	        for (BuildableBitmapTextureAtlas atlas : buildableAtlases) {
-                atlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 0));
-                atlas.load();
-	        }
-        } catch (TextureAtlasBuilderException e) {
-            e.printStackTrace();
-        }
+		try {
+			for (BuildableBitmapTextureAtlas atlas : buildableAtlases) {
+				atlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 0));
+				atlas.load();
+			}
+		} catch (TextureAtlasBuilderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public final void unload() {

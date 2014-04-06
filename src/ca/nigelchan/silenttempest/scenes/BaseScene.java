@@ -78,7 +78,7 @@ public abstract class BaseScene extends Scene {
 	public void unloadResources() {
 		if (resource != null && resourceLoaded)
 			resource.unload();
-        resourceLoaded = false;
+		resourceLoaded = false;
 	}
 	
 	public abstract void onBackKeyPressed();
@@ -88,7 +88,7 @@ public abstract class BaseScene extends Scene {
 	private void loadResources() {
 		if (resource != null && !resourceLoaded)
 			resource.load();
-        resourceLoaded = true;
+		resourceLoaded = true;
 	}
 	
 	// Getters
@@ -103,7 +103,7 @@ public abstract class BaseScene extends Scene {
 	/**
 	 * 
 	 * @return true if resource can be deallocated when
-	 *         the scene is inactive.
+	 *		 the scene is inactive.
 	 */
 	public boolean isInactiveResourceAllowed() {
 		return inactiveResourceAllowed;

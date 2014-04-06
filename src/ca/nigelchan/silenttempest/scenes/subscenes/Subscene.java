@@ -51,18 +51,18 @@ public abstract class Subscene implements IOnSceneTouchListener {
 		boolean returnVal = false;
 		switch (pSceneTouchEvent.getAction()) {
 		case TouchEvent.ACTION_DOWN:
-            for (ITouchableInterfaceObject touchable : touchables) {
-            	Vector2 position = touchable.getWorldPosition();
-            	Vector2 dimension = touchable.getDimension();
-            	if (pSceneTouchEvent.getX() >= position.x()
-            		&& pSceneTouchEvent.getX() <= position.x() + dimension.x()
-            		&& pSceneTouchEvent.getY() >= position.y()
-            		&& pSceneTouchEvent.getY() <= position.y() + dimension.y()) {
-            		activeTouchable = touchable;
-            		return activeTouchable.onTouchEvent(UserInterfaceTouchEvent.DOWN);
-            	}
-            }
-            return false;
+			for (ITouchableInterfaceObject touchable : touchables) {
+				Vector2 position = touchable.getWorldPosition();
+				Vector2 dimension = touchable.getDimension();
+				if (pSceneTouchEvent.getX() >= position.x()
+					&& pSceneTouchEvent.getX() <= position.x() + dimension.x()
+					&& pSceneTouchEvent.getY() >= position.y()
+					&& pSceneTouchEvent.getY() <= position.y() + dimension.y()) {
+					activeTouchable = touchable;
+					return activeTouchable.onTouchEvent(UserInterfaceTouchEvent.DOWN);
+				}
+			}
+			return false;
 		case TouchEvent.ACTION_UP:
 			if (activeTouchable == null)
 				return false;
@@ -72,16 +72,16 @@ public abstract class Subscene implements IOnSceneTouchListener {
 		case TouchEvent.ACTION_MOVE:
 			if (activeTouchable == null)
 				return false;
-            Vector2 position = activeTouchable.getWorldPosition();
-            Vector2 dimension = activeTouchable.getDimension();
-            if (pSceneTouchEvent.getX() < position.x()
-                || pSceneTouchEvent.getX() > position.x() + dimension.x()
-                || pSceneTouchEvent.getY() < position.y()
-                || pSceneTouchEvent.getY() > position.y() + dimension.y()) {
-                returnVal = activeTouchable.onTouchEvent(UserInterfaceTouchEvent.LEAVE);
-                activeTouchable = null;
-                return returnVal;
-            }
+			Vector2 position = activeTouchable.getWorldPosition();
+			Vector2 dimension = activeTouchable.getDimension();
+			if (pSceneTouchEvent.getX() < position.x()
+				|| pSceneTouchEvent.getX() > position.x() + dimension.x()
+				|| pSceneTouchEvent.getY() < position.y()
+				|| pSceneTouchEvent.getY() > position.y() + dimension.y()) {
+				returnVal = activeTouchable.onTouchEvent(UserInterfaceTouchEvent.LEAVE);
+				activeTouchable = null;
+				return returnVal;
+			}
 
 		}
 		return false;

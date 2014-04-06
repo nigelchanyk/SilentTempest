@@ -21,19 +21,19 @@ public class Snap extends EnemyStrategy {
 	public void onUpdate(float elapsedTime) {
 		float angle = MathHelper.getRotation(actor.getPosition(), dest);
 		float current = MathHelper.interpolateAngle(
-            actor.getRadianRotation(),
-            angle,
-            elapsedTime * Actor.ROTATION_PER_SEC
-        );
+			actor.getRadianRotation(),
+			angle,
+			elapsedTime * Actor.ROTATION_PER_SEC
+		);
 		actor.setRadianRotation(current);
 		if (MathHelper.getAngleDifference(angle, current) < 0.0001f) {
-            if (actor.getPosition().distanceSquare(dest) < MathHelper.sq(elapsedTime * actor.getSpeed()))
-            	actor.setPosition(dest);
-            else {
-                actor.setPosition(actor.getPosition().add(
-                	MathHelper.getUnitVector(current).multiply(elapsedTime * actor.getSpeed())
-                ));
-            }
+			if (actor.getPosition().distanceSquare(dest) < MathHelper.sq(elapsedTime * actor.getSpeed()))
+				actor.setPosition(dest);
+			else {
+				actor.setPosition(actor.getPosition().add(
+					MathHelper.getUnitVector(current).multiply(elapsedTime * actor.getSpeed())
+				));
+			}
 		}
 	}
 

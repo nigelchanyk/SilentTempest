@@ -42,7 +42,7 @@ public class SceneManager {
 		case DISPOSE:
 			scene.disposeScene();
 			break;
-        default:
+		default:
 		}
 		
 		if (sceneStack.empty())

@@ -19,14 +19,14 @@ public class JoystickEventInterpreter implements Joystick.IListener {
 	public void onMove(float rotation) {
 		if (controller == null)
 			return;
-        controller.setRotation(rotation);
+		controller.setRotation(rotation);
 	}
 
 	@Override
 	public void onRelease() {
 		if (controller == null)
 			return;
-    	controller.setEnabled(false);
+		controller.setEnabled(false);
 	}
 
 	@Override

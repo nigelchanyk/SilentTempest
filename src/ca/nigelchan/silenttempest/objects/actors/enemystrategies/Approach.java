@@ -54,13 +54,13 @@ public class Approach extends EnemyStrategy {
 	@Override
 	public void onUpdate(float elapsedTime) {
 		if (firstUpdate) {
-            firstUpdate = false;
+			firstUpdate = false;
 			if (!pathItr.hasNext()) {
 				current = null;
 				return;
 			}
-            current = pathItr.next();
-            current.onStart();
+			current = pathItr.next();
+			current.onStart();
 		}
 		current.onUpdate(elapsedTime);
 		if (current.isCompleted()) {
@@ -96,7 +96,7 @@ public class Approach extends EnemyStrategy {
 		LinkedList<Coordinate> queue = new LinkedList<Coordinate>();
 		Coordinate start = actor.getGridPosition();
 		queue.add(start);
-        Coordinate next = null;
+		Coordinate next = null;
 		while (!queue.isEmpty()) {
 			Coordinate current = queue.poll();
 			for (Direction direction : MathHelper.getNonDiagonalDirections()) {
@@ -110,7 +110,7 @@ public class Approach extends EnemyStrategy {
 				if (sequenceSet.contains(next)) {
 					destination = next;
 					current = next;
-                    LinkedList<Move> path = new LinkedList<Move>();
+					LinkedList<Move> path = new LinkedList<Move>();
 					while (!current.equals(start)) {
 						direction = directions[current.y()][current.x()];
 						next = current.add(MathHelper.getTranslation(MathHelper.reverse(direction)));

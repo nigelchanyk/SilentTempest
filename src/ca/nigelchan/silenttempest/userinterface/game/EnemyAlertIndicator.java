@@ -28,8 +28,8 @@ public class EnemyAlertIndicator extends FollowIndicator<Enemy> implements Enemy
 			}
 
 		};
-        sprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        attachChild(sprite);
+		sprite.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		attachChild(sprite);
 	}
 	
 	@Override

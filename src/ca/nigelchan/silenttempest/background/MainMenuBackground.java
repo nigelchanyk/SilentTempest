@@ -95,7 +95,7 @@ public class MainMenuBackground extends Entity {
 	}
 	
 	private void resetLightningInterval() {
-        lightningInterval = (float)Math.random() * (MAX_LIGHTNING_INTERVAL - MIN_LIGHTNING_INTERVAL) + MIN_LIGHTNING_INTERVAL;
+		lightningInterval = (float)Math.random() * (MAX_LIGHTNING_INTERVAL - MIN_LIGHTNING_INTERVAL) + MIN_LIGHTNING_INTERVAL;
 	}
 
 }

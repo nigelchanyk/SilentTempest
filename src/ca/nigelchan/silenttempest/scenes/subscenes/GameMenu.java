@@ -89,12 +89,12 @@ public class GameMenu extends Subscene {
 	
 	private void createContinueButton(float x) {
 		Button button = new Button(
-            resource.getButtons(),
-            CommonResource.BUTTON_PLAY,
-            CommonResource.BUTTON_PLAY_ACTIVE,
-            resource.getButtonSound(),
-            resource.getVertexBufferObjectManager()
-        ) {
+			resource.getButtons(),
+			CommonResource.BUTTON_PLAY,
+			CommonResource.BUTTON_PLAY_ACTIVE,
+			resource.getButtonSound(),
+			resource.getVertexBufferObjectManager()
+		) {
 			@Override
 			public void onClick() {
 				switchSubscene(scene.getGameInterface());
@@ -107,12 +107,12 @@ public class GameMenu extends Subscene {
 	
 	private void createExitButton(float x) {
 		Button button = new Button(
-            resource.getButtons(),
-            CommonResource.BUTTON_EXIT,
-            CommonResource.BUTTON_EXIT_ACTIVE,
-            resource.getButtonSound(),
-            resource.getVertexBufferObjectManager()
-        ) {
+			resource.getButtons(),
+			CommonResource.BUTTON_EXIT,
+			CommonResource.BUTTON_EXIT_ACTIVE,
+			resource.getButtonSound(),
+			resource.getVertexBufferObjectManager()
+		) {
 			@Override
 			public void onClick() {
 				scene.returnToMainMenu();
@@ -125,12 +125,12 @@ public class GameMenu extends Subscene {
 	
 	private void createRestartButton(float x) {
 		Button button = new Button(
-            resource.getButtons(),
-            CommonResource.BUTTON_RESTART,
-            CommonResource.BUTTON_RESTART_ACTIVE,
-            resource.getButtonSound(),
-            resource.getVertexBufferObjectManager()
-        ) {
+			resource.getButtons(),
+			CommonResource.BUTTON_RESTART,
+			CommonResource.BUTTON_RESTART_ACTIVE,
+			resource.getButtonSound(),
+			resource.getVertexBufferObjectManager()
+		) {
 			@Override
 			public void onClick() {
 			}

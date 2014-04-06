@@ -123,7 +123,7 @@ public class GameResource extends Resource {
 			"joystick.svg",
 			getDPI(),
 			getDPI()
-        );
+		);
 	}
 	
 	private void createIndicatorTexture() {
@@ -199,7 +199,7 @@ public class GameResource extends Resource {
 			"monkey_base.svg",
 			fieldTileSize,
 			fieldTileSize
-        );
+		);
 	}
 	
 	private void createSawBlades() {

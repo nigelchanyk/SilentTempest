@@ -53,12 +53,12 @@ public class MainMenu extends Subscene {
 	
 	private void createPlayButton() {
 		Button button = new Button(
-            resource.getButtons(),
-            CommonResource.BUTTON_PLAY,
-            CommonResource.BUTTON_PLAY_ACTIVE,
-            resource.getButtonSound(),
-            resource.getVertexBufferObjectManager()
-        ) {
+			resource.getButtons(),
+			CommonResource.BUTTON_PLAY,
+			CommonResource.BUTTON_PLAY_ACTIVE,
+			resource.getButtonSound(),
+			resource.getVertexBufferObjectManager()
+		) {
 			@Override
 			public void onClick() {
 				switchSubscene(scene.getActSelectionMenu());

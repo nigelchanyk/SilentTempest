@@ -25,10 +25,10 @@ public class Turn extends Sequence {
 	@Override
 	public void onUpdate(float elapsedTime) {
 		float current = MathHelper.interpolateAngle(
-            actor.getRadianRotation(),
-            angle,
-            elapsedTime * actor.getRotationSpeed()
-        );
+			actor.getRadianRotation(),
+			angle,
+			elapsedTime * actor.getRotationSpeed()
+		);
 		if (Math.abs(current - angle) < 0.0001f) {
 			current = angle;
 			completed = true;

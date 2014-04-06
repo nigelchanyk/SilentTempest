@@ -34,11 +34,11 @@ public class Joystick implements IOnSceneTouchListener, IUpdateHandler {
 		case TouchEvent.ACTION_UP:
 			state = state.onTouchUp(position, subscribers);
 			break;
-        default:
-        	state = state.onTouchExit(position, subscribers);
-        	break;
+		default:
+			state = state.onTouchExit(position, subscribers);
+			break;
 		}
-        return false;
+		return false;
 	}
 
 	@Override

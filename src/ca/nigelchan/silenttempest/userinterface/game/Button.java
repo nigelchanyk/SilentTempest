@@ -53,17 +53,17 @@ public abstract class Button extends Entity implements ITouchableInterfaceObject
 
 	@Override
 	public boolean onTouchEvent(UserInterfaceTouchEvent event) {
-        if (event == UserInterfaceTouchEvent.DOWN) {
-            sprite.setCurrentTileIndex(Button.this.activeIndex);
+		if (event == UserInterfaceTouchEvent.DOWN) {
+			sprite.setCurrentTileIndex(Button.this.activeIndex);
 			sound.play();
-        }
-        else if (event == UserInterfaceTouchEvent.UP) {
-            sprite.setCurrentTileIndex(Button.this.index);
-            onClick();
-        }
-        else if (event == UserInterfaceTouchEvent.LEAVE) {
-            sprite.setCurrentTileIndex(Button.this.index);
-        }
+		}
+		else if (event == UserInterfaceTouchEvent.UP) {
+			sprite.setCurrentTileIndex(Button.this.index);
+			onClick();
+		}
+		else if (event == UserInterfaceTouchEvent.LEAVE) {
+			sprite.setCurrentTileIndex(Button.this.index);
+		}
 		return false;
 	}
 

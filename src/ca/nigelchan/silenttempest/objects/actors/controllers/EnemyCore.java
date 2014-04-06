@@ -58,7 +58,7 @@ public class EnemyCore extends Controller {
 			previous = strategy;
 		}
 
-        throw new IllegalStateException("Non deterministic enemy state.");
+		throw new IllegalStateException("Non deterministic enemy state.");
 	}
 	
 	public void subscribe(IListener subscriber) {

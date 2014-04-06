@@ -43,10 +43,10 @@ public class WorldImporter {
 	}
 	
 	public static WorldData load(
-        String file,
-        BaseGameActivity activity,
-        ActorConfiguration actorConfiguration
-    ) throws IOException, JSONException {
+		String file,
+		BaseGameActivity activity,
+		ActorConfiguration actorConfiguration
+	) throws IOException, JSONException {
 		JSONObject json = Importer.load(file, activity);
 		int rows = json.getInt("rows");
 		int columns = json.getInt("columns");
@@ -130,7 +130,7 @@ public class WorldImporter {
 			int repeat = m.group(4) == null ? 0 : Integer.parseInt(m.group(4), 36);
 			j += skip;
 			for (int k = 0; k <= repeat && j < total; ++j, ++k)
-                data.setTile(j / columns, j % columns, tiles.get(index));
+				data.setTile(j / columns, j % columns, tiles.get(index));
 		}
 		return data;
 	}
