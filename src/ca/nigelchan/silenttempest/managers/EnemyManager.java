@@ -9,15 +9,19 @@ import ca.nigelchan.silenttempest.objects.actors.controllers.EnemyCore;
 import ca.nigelchan.silenttempest.resources.GameResource;
 import ca.nigelchan.silenttempest.userinterface.game.EnemyAlertIndicator;
 import ca.nigelchan.silenttempest.userinterface.game.EnemyAlertIndicatorPool;
+import ca.nigelchan.silenttempest.userinterface.game.KnockedOutIndicator;
+import ca.nigelchan.silenttempest.userinterface.game.KnockedOutIndicatorPool;
 import ca.nigelchan.silenttempest.util.Vector2;
 
 public class EnemyManager implements World.IListener {
 
 	private ArrayList<EnemyListener> enemyListeners = new ArrayList<EnemyListener>();
-	private EnemyAlertIndicatorPool indicatorPool;
+	private KnockedOutIndicatorPool knockedOutIndicatorPool;
+	private EnemyAlertIndicatorPool alertIndicatorPool;
 	
 	public EnemyManager(World world, GameResource resource) {
-		indicatorPool = new EnemyAlertIndicatorPool(5, world, resource);
+		knockedOutIndicatorPool = new KnockedOutIndicatorPool(5, world, resource);
+		alertIndicatorPool = new EnemyAlertIndicatorPool(5, world, resource);
 		for (Enemy enemy : world.getEnemies()) {
 			enemyListeners.add(new EnemyListener(enemy));
 		}
@@ -29,13 +33,15 @@ public class EnemyManager implements World.IListener {
 
 	@Override
 	public void onWorldDisposed() {
-		indicatorPool.dispose();
+		knockedOutIndicatorPool.dispose();
+		alertIndicatorPool.dispose();
 	}
 
 	private class EnemyListener implements Actor.IListener, EnemyCore.IListener {
 		
 		private Enemy enemy;
 		private EnemyAlertIndicator alertIndicator;
+		private KnockedOutIndicator knockedOutIndicator;
 		
 		public EnemyListener(Enemy enemy) {
 			this.enemy = enemy;
@@ -45,6 +51,8 @@ public class EnemyManager implements World.IListener {
 
 		@Override
 		public void onKnockedOut() {
+			knockedOutIndicator = knockedOutIndicatorPool.get();
+			knockedOutIndicator.follow(enemy);
 		}
 
 		@Override
@@ -53,6 +61,11 @@ public class EnemyManager implements World.IListener {
 
 		@Override
 		public void onRecovered() {
+			if (knockedOutIndicator == null)
+				return;
+			knockedOutIndicator.unfollow();
+			knockedOutIndicatorPool.recycle(knockedOutIndicator);
+			knockedOutIndicator = null;
 		}
 
 		@Override
@@ -62,12 +75,12 @@ public class EnemyManager implements World.IListener {
 		@Override
 		public void onAlertLevelChanged(float alertLevel) {
 			if (alertLevel > 0.1f && alertIndicator == null) {
-				alertIndicator = indicatorPool.get();
+				alertIndicator = alertIndicatorPool.get();
 				alertIndicator.follow(enemy);
 			}
 			else if (alertLevel == 0 && alertIndicator != null) {
 				alertIndicator.unfollow();
-				indicatorPool.recycle(alertIndicator);
+				alertIndicatorPool.recycle(alertIndicator);
 				alertIndicator = null;
 			}
 		}

@@ -36,9 +36,15 @@ public class GameResource extends Resource {
 	private ITextureRegion laserCannon;
 	private ITextureRegion monkeyBaseTextureRegion;
 	private ITextureRegion[] sawBlades = new ITextureRegion[SawBladeData.Size.values().length];
+	private ITextureRegion star;
+	private BuildableBitmapTextureAtlas starAtlas;
 	
 	public SpriteGroup createFieldSpriteGroup(int capacity) {
 		return new SpriteGroup(fieldAtlas, capacity, getVertexBufferObjectManager());
+	}
+	
+	public SpriteGroup createStarAtlas(int capacity) {
+		return new SpriteGroup(starAtlas, capacity, getVertexBufferObjectManager());
 	}
 
 	@Override
@@ -47,13 +53,14 @@ public class GameResource extends Resource {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		SVGBitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 
+		createBeaconTexture();
 		createFieldTexture();
+		createIndicatorTexture();
+		createJoystickTexture();
+		createLaser();
 		createMonkeyTexture();
 		createSawBlades();
-		createLaser();
-		createJoystickTexture();
-		createIndicatorTexture();
-		createBeaconTexture();
+		createStar();
 	}
 	
 	private void computeSize(BaseGameActivity activity) {
@@ -214,6 +221,24 @@ public class GameResource extends Resource {
 			);
 		}
 	}
+	
+	private void createStar() {
+		int size = fieldTileSize / 2;
+		starAtlas = new BuildableBitmapTextureAtlas(
+			activity.getTextureManager(),
+			size,
+			size,
+			TextureOptions.DEFAULT
+		);
+		addAtlas(starAtlas);
+		star = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
+			starAtlas,
+			activity,
+			"star.svg",
+			size,
+			size
+		);
+	}
 
 	// Getters
 	public ITextureRegion getAlertIndicator() {
@@ -255,4 +280,9 @@ public class GameResource extends Resource {
 	public ITextureRegion getSawBlade(SawBladeData.Size size) {
 		return sawBlades[size.ordinal()];
 	}
+
+	public ITextureRegion getStar() {
+		return star;
+	}
+
 }

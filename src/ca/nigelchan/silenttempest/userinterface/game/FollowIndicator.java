@@ -33,12 +33,8 @@ public abstract class FollowIndicator<T extends Actor> extends WorldObject imple
 		setPosition(position.add(getFollowOffset()));
 	}
 	
-	protected void onFollow(T actor) {
-	}
-	
-	protected void onUnfollow(T actor) {
-	}
-	
+	protected abstract void onFollow(T actor);
+	protected abstract void onUnfollow(T actor);
 	protected abstract Vector2 getFollowOffset();
 
 }

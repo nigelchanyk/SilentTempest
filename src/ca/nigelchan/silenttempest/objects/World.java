@@ -27,6 +27,7 @@ import ca.nigelchan.silenttempest.util.Vector2;
 
 public class World extends Entity {
 	
+	private Entity aboveActorLayer = new Entity();
 	private ActorLayer actorLayer;
 	private Entity alwaysVisibleLayer = new Entity();
 	private Entity belowActorLayer = new Entity();
@@ -71,6 +72,7 @@ public class World extends Entity {
 		if (actorLayer == null)
 			throw new IllegalArgumentException("Missing actor layer");
 		
+		attachChild(aboveActorLayer);
 		// Must be last child
 		attachChild(alwaysVisibleLayer);
 		
@@ -86,6 +88,10 @@ public class World extends Entity {
 			}
 		});
 		chasePlayer();
+	}
+	
+	public void attachAboveActorChild(IEntity pEntity) {
+		aboveActorLayer.attachChild(pEntity);
 	}
 	
 	public void attachAlwaysVisibleChild(IEntity pEntity) {
@@ -110,6 +116,8 @@ public class World extends Entity {
 			subscriber.onWorldDisposed();
 		for (int i = 0; i < alwaysVisibleLayer.getChildCount(); ++i)
 			alwaysVisibleLayer.getChildByIndex(i).dispose();
+		for (int i = 0; i < aboveActorLayer.getChildCount(); ++i)
+			aboveActorLayer.getChildByIndex(i).dispose();
 		for (int i = 0; i < belowActorLayer.getChildCount(); ++i)
 			belowActorLayer.getChildByIndex(i).dispose();
 		for (int i = 0; i < getChildCount(); ++i)
