@@ -7,7 +7,7 @@ import org.andengine.entity.scene.background.Background;
 import org.andengine.util.color.Color;
 import org.json.JSONException;
 
-import ca.nigelchan.silenttempest.controllers.ActorController;
+import ca.nigelchan.silenttempest.controllers.JoystickEventInterpreter;
 import ca.nigelchan.silenttempest.data.EventsData;
 import ca.nigelchan.silenttempest.data.WorldData;
 import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
@@ -27,7 +27,7 @@ import ca.nigelchan.silenttempest.scenes.subscenes.GameMenu;
 public class GameScene extends BaseScene {
 	
 	private CommonResource commonResource;
-	private ActorController controller = new ActorController();
+	private JoystickEventInterpreter controller = new JoystickEventInterpreter();
 	private String dataFilePath;
 	private EventLayer eventLayer = new EventLayer();
 	private EventManager eventManager = null;
@@ -130,7 +130,7 @@ public class GameScene extends BaseScene {
 		this.worldData = worldData;
 		world = new World(worldData, resource);
 		gameCore.attachChild(world);
-		controller.setActor(world.getPlayer());
+		controller.setPlayer(world.getPlayer());
 		world.subscribe(new EnemyManager(world, resource));
 		
 		eventManager = new EventManager(eventsData, world, eventLayer, resource, commonResource);

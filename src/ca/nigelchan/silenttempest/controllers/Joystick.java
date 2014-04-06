@@ -2,57 +2,52 @@ package ca.nigelchan.silenttempest.controllers;
 
 import java.util.LinkedList;
 
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.input.touch.TouchEvent;
 
 import android.util.DisplayMetrics;
-import ca.nigelchan.silenttempest.util.MathHelper;
+import ca.nigelchan.silenttempest.controllers.joystickstates.IdleState;
+import ca.nigelchan.silenttempest.controllers.joystickstates.JoystickState;
 import ca.nigelchan.silenttempest.util.Vector2;
 
-public class Joystick implements IOnSceneTouchListener {
+public class Joystick implements IOnSceneTouchListener, IUpdateHandler {
 	
-	private boolean active = false;
 	private LinkedList<IListener> subscribers = new LinkedList<Joystick.IListener>();
-	private Vector2 now;
-	private Vector2 start;
-	private int toleranceSq;
+	private JoystickState state;
 	
 	public Joystick(DisplayMetrics metrics) {
-		toleranceSq = MathHelper.sq(metrics.densityDpi / 8);
+		state = new IdleState(metrics);
 	}
 
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		// TODO Auto-generated method stub
+		Vector2 position = new Vector2(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
 		switch (pSceneTouchEvent.getAction()) {
 		case TouchEvent.ACTION_DOWN:
-			start = new Vector2(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
-			now = start;
-            for (IListener subscriber : subscribers)
-                subscriber.onTouch(start);
+			state = state.onTouchDown(position, subscribers);
 			break;
 		case TouchEvent.ACTION_MOVE:
-			now = new Vector2(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
-			float rotation = MathHelper.getRotation(start, now);
-			// snap to nearest pi/4
-			rotation = (float)Math.floor((rotation + MathHelper.PI_OVER_8) / MathHelper.PI_OVER_4) * MathHelper.PI_OVER_4;
-			if (!active) {
-				active = start.distanceSquare(now) >= toleranceSq;
-				if (active) {
-	                for (IListener subscriber : subscribers)
-	                    subscriber.onAccept();
-				}
-			}
-			for (IListener subscriber : subscribers)
-				subscriber.onMove(rotation);
+			state = state.onTouchMove(position, subscribers);
+			break;
+		case TouchEvent.ACTION_UP:
+			state = state.onTouchUp(position, subscribers);
 			break;
         default:
-        	active = false;
-			for (IListener subscriber : subscribers)
-				subscriber.onRelease();
+        	state = state.onTouchExit(position, subscribers);
+        	break;
 		}
         return false;
+	}
+
+	@Override
+	public void onUpdate(float pSecondsElapsed) {
+		state.onUpdate(pSecondsElapsed);
+	}
+
+	@Override
+	public void reset() {
 	}
 	
 	public void subscribe(IListener subscriber) {
@@ -63,13 +58,14 @@ public class Joystick implements IOnSceneTouchListener {
 		subscribers.remove(subscriber);
 	}
 	
-	
 	public static interface IListener {
 		
 		public void onAccept();
+		public void onDoubleTap();
 		public void onMove(float rotation);
 		public void onRelease();
 		public void onTouch(Vector2 position);
 
 	}
+
 }

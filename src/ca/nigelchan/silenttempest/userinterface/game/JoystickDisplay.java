@@ -43,6 +43,10 @@ public class JoystickDisplay extends OffsetEntity implements Joystick.IListener 
 	}
 
 	@Override
+	public void onDoubleTap() {
+	}
+
+	@Override
 	public void onMove(float rotation) {
 		if (firstMove) {
 			alphaModifier = new AlphaModifier(0.3f, 0, 0.1f);

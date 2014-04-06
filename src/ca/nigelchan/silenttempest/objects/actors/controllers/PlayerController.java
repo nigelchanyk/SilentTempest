@@ -4,13 +4,16 @@ import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.util.MathHelper;
 import ca.nigelchan.silenttempest.util.Vector2;
 
-public class FreeMove extends Controller {
+public class PlayerController extends Controller {
 
 	private float rotation;
 	private Vector2 unitVector;
 	
-	public FreeMove(Actor actor) {
+	public PlayerController(Actor actor) {
 		super(actor);
+	}
+	
+	public void interact() {
 	}
 
 	@Override
