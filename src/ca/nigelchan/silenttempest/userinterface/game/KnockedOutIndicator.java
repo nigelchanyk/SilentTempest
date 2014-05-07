@@ -25,7 +25,6 @@ public class KnockedOutIndicator extends FollowIndicator<Actor> {
 		for (int i = 0; i < stars.length; ++i) {
 			Vector2 unitVector = MathHelper.getUnitVector(MathHelper.TWO_PI * i / stars.length)
 				.multiply(offset * 1.5f);
-			System.err.println(unitVector.toString());
 			stars[i] = new Sprite(
 				unitVector.x() + offset,
 				unitVector.y() + offset,

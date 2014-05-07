@@ -41,7 +41,7 @@ public class EnemyCore extends Controller {
 	}
 	
 	public void reset() {
-		strategy = new Patrol(actor, this, enemyData, true);
+		strategy = new Patrol(actor, this, enemyData, false);
 		setAlertLevel(0);
 	}
 

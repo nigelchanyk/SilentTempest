@@ -3,6 +3,7 @@ package ca.nigelchan.silenttempest.objects.actors.enemystrategies;
 import ca.nigelchan.silenttempest.data.actors.EnemyData;
 import ca.nigelchan.silenttempest.data.actors.sequences.SequenceData;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
+import ca.nigelchan.silenttempest.objects.actors.Enemy;
 import ca.nigelchan.silenttempest.objects.actors.controllers.EnemyCore;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Sequence;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.SequenceSet;
@@ -44,6 +45,9 @@ public class Patrol extends EnemyStrategy {
 		if (firstUpdate) {
 			firstUpdate = false;
 			current = sequenceSet.getIndex(actor.getGridPosition());
+			if (current == -1) {
+				System.err.println(actor.getGridPosition());
+			}
 			sequence[current].onStart();
 		}
 		core.setAlertLevel(core.getAlertLevel() - ALERT_REDUCTION_FACTOR * elapsedTime);
@@ -57,7 +61,12 @@ public class Patrol extends EnemyStrategy {
 	@Override
 	public EnemyStrategy nextMove() {
 		if (core.getAlertLevel() >= 0.5f && core.canSee(actor.getWorld().getPlayer().getPosition()))
-			return new Investigate(actor, core);
+			return new Investigate(actor, core, actor.getWorld().getPlayer());
+
+		Enemy knockedOutEnemy = noticeKnockedOutEnemy();
+		if (knockedOutEnemy != null)
+			return new Rescue(actor, core, knockedOutEnemy);
+
 		if (approach != null) {
 			Approach next = approach;
 			approach = null;

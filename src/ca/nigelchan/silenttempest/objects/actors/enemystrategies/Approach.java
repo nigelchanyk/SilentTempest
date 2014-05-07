@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import ca.nigelchan.silenttempest.objects.actors.Actor;
+import ca.nigelchan.silenttempest.objects.actors.Enemy;
 import ca.nigelchan.silenttempest.objects.actors.controllers.EnemyCore;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Move;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Sequence;
@@ -77,7 +78,13 @@ public class Approach extends EnemyStrategy {
 	@Override
 	public EnemyStrategy nextMove() {
 		if (core.getAlertLevel() >= 0.5f && core.canSee(actor.getWorld().getPlayer().getPosition()))
-			return new Investigate(actor, core);
+			return new Investigate(actor, core, actor.getWorld().getPlayer());
+
+		Enemy knockedOutEnemy = noticeKnockedOutEnemy();
+		if (knockedOutEnemy != null) {
+			return new Rescue(actor, core, knockedOutEnemy);
+		}
+
 		if (snap != null) {
 			Snap next = snap;
 			snap = null;

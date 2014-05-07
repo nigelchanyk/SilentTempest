@@ -25,7 +25,7 @@ public final class MathHelper {
 		TRANSLATION_MAPPER.put(Direction.EAST, new Coordinate(1, 0));
 		TRANSLATION_MAPPER.put(Direction.SOUTHEAST, new Coordinate(1, 1));
 		TRANSLATION_MAPPER.put(Direction.SOUTH, new Coordinate(0, 1));
-		TRANSLATION_MAPPER.put(Direction.SOUTHWEST, new Coordinate(1, 1));
+		TRANSLATION_MAPPER.put(Direction.SOUTHWEST, new Coordinate(-1, 1));
 		TRANSLATION_MAPPER.put(Direction.WEST, new Coordinate(-1, 0));
 		TRANSLATION_MAPPER.put(Direction.NORTHWEST, new Coordinate(-1, -1));
 		

@@ -1,10 +1,8 @@
 package ca.nigelchan.silenttempest.objects.actors.enemystrategies;
 
-
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import android.util.Log;
 import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.objects.actors.controllers.EnemyCore;
@@ -16,16 +14,23 @@ import ca.nigelchan.silenttempest.util.Vector2;
 
 public class Seek extends EnemyStrategy {
 	
+	private enum Visibility {
+		BLOCKED,
+		UNDETERMINED,
+		VISIBLE,
+	}
+	
 	private static final float MAX_SEEK_TIME = 20;
 	public static final int SCAN_RADIUS = 20;
 	
 	private Move currentSequence;
 	private Iterator<Move> path = null;
 	private int[][] suspicionLevel;
+	private Coordinate target;
 	private float timeSinceLastSuspicionIncrement = 0;
 	private float totalSeekTime = 0;
 
-	public Seek(Actor actor, EnemyCore core, Coordinate lastSeenPosition, float lastSeenRotation) {
+	public Seek(Actor actor, EnemyCore core, Actor target) {
 		super(actor, core);
 		suspicionLevel = new int[actor.getWorld().getHeight()][actor.getWorld().getWidth()];
 		for (int y = 0; y < suspicionLevel.length; ++y) {
@@ -34,7 +39,7 @@ public class Seek extends EnemyStrategy {
 			}
 		}
 		raytraceVisibleGrids();
-		fillSuspicion(lastSeenPosition, lastSeenRotation);
+		fillSuspicion(target.getGridPosition());
 	}
 	
 	@Override
@@ -56,7 +61,7 @@ public class Seek extends EnemyStrategy {
 		currentSequence.onUpdate(elapsedTime);
 		if (currentSequence.isCompleted()) {
 			raytraceVisibleGrids();
-			if (path.hasNext())
+			if (path.hasNext() && !core.canSee(target.toCenterVector2()))
 				currentSequence = path.next();
 			else if (!startNewPath()) {
 				return;
@@ -68,7 +73,7 @@ public class Seek extends EnemyStrategy {
 	@Override
 	public EnemyStrategy nextMove() {
 		if (core.getAlertLevel() >= 0.5f && core.canSee(actor.getWorld().getPlayer().getPosition()))
-			return new Investigate(actor, core);
+			return new Investigate(actor, core, actor.getWorld().getPlayer());
 		if (totalSeekTime >= MAX_SEEK_TIME)
 			return new Patrol(actor, core, core.getEnemyData(), false);
 		return this;
@@ -84,7 +89,8 @@ public class Seek extends EnemyStrategy {
 		int xx,
 		int xy,
 		int yx,
-		int yy
+		int yy,
+		Visibility[][] visibility
 	) {
 		float newStart = 0.0f;
 		if (start < end) {
@@ -93,7 +99,8 @@ public class Seek extends EnemyStrategy {
 		boolean blocked = false;
 		for (int distance = row; distance <= SCAN_RADIUS && !blocked; distance++) {
 			int deltaY = -distance;
-			for (int deltaX = -distance; deltaX <= 0; deltaX++) {
+			boolean adjacentBlocked = false;
+			for (int deltaX = 0; deltaX >= -distance; deltaX--) {
 				Coordinate current = new Coordinate(
 					startPosition.x() + deltaX * xx + deltaY * xy,
 					startPosition.y() + deltaX * yx + deltaY * yy
@@ -107,11 +114,15 @@ public class Seek extends EnemyStrategy {
 					break;
 				}
 	 
-				if (suspicionLevel[current.y()][current.x()] > 0) {
+				if (adjacentBlocked)
+					visibility[current.y()][current.x()] = Visibility.BLOCKED;
+				if (suspicionLevel[current.y()][current.x()] > 0 && visibility[current.y()][current.x()] != Visibility.BLOCKED) {
 					float dotProduct = unitVector.dot(current.toCenterVector2().normal());
 					if (dotProduct > minimumDotProduct)
-						suspicionLevel[current.y()][current.x()] = 0;
+						visibility[current.y()][current.x()] = Visibility.VISIBLE;
 				}
+				
+				adjacentBlocked = actor.getWorld().isWalkable(current);
 	 
 				if (blocked) {
 					//previous cell was a blocking one
@@ -137,7 +148,8 @@ public class Seek extends EnemyStrategy {
 							xx,
 							xy,
 							yx,
-							yy
+							yy,
+							visibility
 						);
 						newStart = rightSlope;
 					}
@@ -146,29 +158,14 @@ public class Seek extends EnemyStrategy {
 		}
 	}
 	
-	private void fillSuspicion(Coordinate peak, float lastSeenRotation) {
+	private void fillSuspicion(Coordinate peak) {
 		World world = actor.getWorld();
 		boolean[][] visited = new boolean[world.getHeight()][world.getWidth()];
 		LinkedList<Coordinate> queue = new LinkedList<Coordinate>();
 		int max = world.getWidth() * world.getHeight();
-		Vector2 predictedDelta = MathHelper.getUnitVector(lastSeenRotation);
 		suspicionLevel[peak.y()][peak.x()] = max;
 		visited[peak.y()][peak.x()] = true;
 		queue.add(peak);
-		Coordinate predicted = new Coordinate(predictedDelta.x() > 0 ? 1 : -1, peak.y());
-		if (Math.abs(predictedDelta.x()) > 0.5f && world.isWalkable(predicted)) {
-			suspicionLevel[predicted.y()][predicted.x()] = max;
-			visited[predicted.y()][predicted.x()] = true;
-			queue.add(predicted);
-		}
-		else {
-			predicted = new Coordinate(peak.x(), predictedDelta.y() > 0 ? 1 : -1);
-			if (Math.abs(predictedDelta.y()) > 0.5f && world.isWalkable(predicted)) {
-				suspicionLevel[predicted.y()][predicted.x()] = max;
-				visited[predicted.y()][predicted.x()] = true;
-				queue.add(predicted);
-			}
-		}
 		while (!queue.isEmpty()) {
 			Coordinate current = queue.poll();
 			int nextSuspicionLevel = suspicionLevel[current.y()][current.x()] - 1;
@@ -185,6 +182,17 @@ public class Seek extends EnemyStrategy {
 				queue.addLast(next);
 			}
 		}
+		for (int y = peak.y() - 4; y <= peak.y() + 4; ++y) {
+			for (int x = peak.x() - 4; x <= peak.x() + 4; ++x) {
+				if (!actor.getWorld().isWalkable(new Coordinate(x, y)))
+					System.err.print("xxx");
+				else
+					System.err.print(String.format("%03d", suspicionLevel[y][x]));
+				System.err.print(";");
+			}
+			System.err.println();
+		}
+		System.err.println("-------------------------------------------");
 	}
 	
 	private Coordinate getSuspicionPeak() {
@@ -221,25 +229,37 @@ public class Seek extends EnemyStrategy {
 		suspicionLevel[startPosition.y()][startPosition.x()] = 0;
 		Vector2 unitVector = MathHelper.getUnitVector(actor.getRadianRotation());
 		float minimumDotProduct = unitVector.dot(MathHelper.getUnitVector(actor.getRadianRotation() + EnemyCore.HALF_FIELD_OF_VIEW));
+		Visibility[][] visibility = new Visibility[actor.getWorld().getHeight()][actor.getWorld().getWidth()];
+		for (int y = 0; y < visibility.length; ++y) {
+			for (int x = 0; x < visibility[0].length; ++x) {
+				visibility[y][x] = Visibility.UNDETERMINED;
+			}
+		}
 		for (Direction direction : MathHelper.getDiagonalDirections()) {
 			Coordinate delta = MathHelper.getTranslation(direction);
-			castVisibleArea(startPosition, unitVector, minimumDotProduct, 1, 1, 0, 0, delta.x(), delta.y(), 0);
-			castVisibleArea(startPosition, unitVector, minimumDotProduct, 1, 1, 0, delta.x(), 0, 0, delta.y());
+			castVisibleArea(startPosition, unitVector, minimumDotProduct, 1, 1, 0, 0, delta.x(), delta.y(), 0, visibility);
+			castVisibleArea(startPosition, unitVector, minimumDotProduct, 1, 1, 0, delta.x(), 0, 0, delta.y(), visibility);
+		}
+
+		for (int y = 0; y < visibility.length; ++y) {
+			for (int x = 0; x < visibility[0].length; ++x) {
+				if (visibility[y][x] == Visibility.VISIBLE)
+					suspicionLevel[y][x] = 0;
+			}
 		}
 	}
 	
 	// Return false if failed
 	private boolean startNewPath() {
 		path = null;
-		Coordinate peak = getSuspicionPeak();
+		target = getSuspicionPeak();
 		// Should not happen
-		if (peak.equals(actor.getGridPosition())) {
+		if (target.equals(actor.getGridPosition())) {
 			throw new IllegalArgumentException();
 		}
-		Iterable<Move> movement = actor.getWorld().findPath(actor, peak);
+		Iterable<Move> movement = actor.getWorld().findPath(actor, target);
 		// Not supposed to happen
 		if (movement == null) {
-			Log.i("FUCK", actor.getGridPosition().toString() + " " + peak.toString());
 			return false;
 		}
 		path = movement.iterator();

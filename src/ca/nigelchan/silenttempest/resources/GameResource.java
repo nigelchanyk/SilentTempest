@@ -14,6 +14,8 @@ import android.util.DisplayMetrics;
 
 public class GameResource extends Resource {
 
+	public static final int ACTOR_REGULAR_MONKEY_INDEX = 1;
+	public static final int ACTOR_PENGUIN_INDEX = 0;
 	public static final int MAX_BEACON_SIZE = 4;
 	public static final int FIELD_SPRITE_HEIGHT = 5;
 	public static final int FIELD_SPRITE_WIDTH = 5;
@@ -25,6 +27,7 @@ public class GameResource extends Resource {
 		super(activity);
 	}
 	
+	private ITiledTextureRegion actors;
 	private ITextureRegion alertIndicator;
 	private ITextureRegion beacon;
 	private BuildableBitmapTextureAtlas fieldAtlas;
@@ -34,7 +37,6 @@ public class GameResource extends Resource {
 	private ITextureRegion laserBeam;
 	private ITextureRegion laserBeamCap;
 	private ITextureRegion laserCannon;
-	private ITextureRegion monkeyBaseTextureRegion;
 	private ITextureRegion[] sawBlades = new ITextureRegion[SawBladeData.Size.values().length];
 	private ITextureRegion star;
 	private BuildableBitmapTextureAtlas starAtlas;
@@ -53,12 +55,12 @@ public class GameResource extends Resource {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		SVGBitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 
+		createActorTexture();
 		createBeaconTexture();
 		createFieldTexture();
 		createIndicatorTexture();
 		createJoystickTexture();
 		createLaser();
-		createMonkeyTexture();
 		createSawBlades();
 		createStar();
 	}
@@ -68,6 +70,21 @@ public class GameResource extends Resource {
 		// Be able to see 5 tiles above/below
 		// Therefore, 2 * 5 + 1
 		fieldTileSize = metrics.heightPixels / 11;
+	}
+	
+	private void createActorTexture() {
+		int width = 2;
+		int height = 1;
+		BuildableBitmapTextureAtlas atlas = createBuildableAtlas(width, height);
+		actors = SVGBitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+			atlas,
+			activity,
+			"actors.svg",
+			fieldTileSize * width,
+			fieldTileSize * height,
+			width,
+			height
+		);
 	}
 	
 	private void createBeaconTexture() {
@@ -191,17 +208,6 @@ public class GameResource extends Resource {
 		);
 	}
 	
-	private void createMonkeyTexture() {
-		BuildableBitmapTextureAtlas monkeyBaseTextureAtlas = createBuildableAtlas(1, 1);
-		monkeyBaseTextureRegion = SVGBitmapTextureAtlasTextureRegionFactory.createFromAsset(
-			monkeyBaseTextureAtlas,
-			activity,
-			"monkey_base.svg",
-			fieldTileSize,
-			fieldTileSize
-		);
-	}
-	
 	private void createSawBlades() {
 		for (SawBladeData.Size size : SawBladeData.Size.values()) {
 			int sizeValue = SawBladeData.diameter(size) * fieldTileSize;
@@ -241,6 +247,10 @@ public class GameResource extends Resource {
 	}
 
 	// Getters
+	public ITiledTextureRegion getActors() {
+		return actors;
+	}
+
 	public ITextureRegion getAlertIndicator() {
 		return alertIndicator;
 	}
@@ -271,10 +281,6 @@ public class GameResource extends Resource {
 
 	public ITextureRegion getLaserCannon() {
 		return laserCannon;
-	}
-
-	public ITextureRegion getMonkeyBase() {
-		return monkeyBaseTextureRegion;
 	}
 	
 	public ITextureRegion getSawBlade(SawBladeData.Size size) {

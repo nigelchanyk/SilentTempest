@@ -40,7 +40,7 @@ public class Snap extends EnemyStrategy {
 	@Override
 	public EnemyStrategy nextMove() {
 		if (core.getAlertLevel() >= 0.5f && core.canSee(actor.getWorld().getPlayer().getPosition()))
-			return new Investigate(actor, core);
+			return new Investigate(actor, core, actor.getWorld().getPlayer());
 		if (actor.getPosition().distanceSquare(dest) < 0.000001f)
 			return nextStrategy;
 		return this;

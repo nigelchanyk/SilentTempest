@@ -59,7 +59,6 @@ public class PlayerController extends Controller {
 		for (Enemy enemy : actor.getWorld().getEnemies()) {
 			if (actor.getPosition().distanceSquare(enemy.getPosition()) > INTERACT_DISTANCE_SQ_THRESHOLD)
 				continue;
-			System.err.println("LOL");
 			float playerToEnemyAngle = MathHelper.getRotation(actor.getPosition(), enemy.getPosition());
 			if (MathHelper.getAngleDifference(playerToEnemyAngle, actor.getRadianRotation()) > INTERACT_PLAYER_ANGLE_THRESHOLD) {
 				continue;

@@ -1,6 +1,6 @@
 package ca.nigelchan.silenttempest.objects.actors;
 
-import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.sprite.TiledSprite;
 
 import ca.nigelchan.silenttempest.data.actors.PlayerData;
 import ca.nigelchan.silenttempest.objects.World;
@@ -9,12 +9,13 @@ import ca.nigelchan.silenttempest.resources.GameResource;
 
 public class Player extends Actor {
 	
-	private Sprite sprite;
+	private TiledSprite sprite;
 	private PlayerStatus status;
 	
 	public Player(PlayerData data, World world, GameResource resource) {
 		super(data, world);
-		sprite = new Sprite(0, 0, resource.getMonkeyBase(), resource.getVertexBufferObjectManager());
+		sprite = new TiledSprite(0, 0, resource.getActors(), resource.getVertexBufferObjectManager());
+		sprite.setCurrentTileIndex(GameResource.ACTOR_PENGUIN_INDEX);
 		attachChild(sprite);
 		status = new PlayerStatus(this);
 		addController(status);
