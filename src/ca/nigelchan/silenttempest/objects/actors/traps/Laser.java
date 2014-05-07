@@ -17,6 +17,7 @@ public class Laser extends Trap {
 	private Sprite laserBeam;
 	private Sprite laserBeamCap;
 	private Sprite laserCannon;
+	private float laserLength;
 	
 	public Laser(LaserData data, World world, GameResource resource) {
 		super(data, world, CANNON_DIMENSION);
@@ -48,12 +49,23 @@ public class Laser extends Trap {
 	}
 
 	@Override
+	protected boolean collided() {
+		return MathHelper.collided(
+			getPosition(),
+			getPosition().add(MathHelper.getUnitVector(getRadianRotation()).multiply(laserLength)),
+			world.getPlayer().getPosition(),
+			world.getPlayer().getRadius()
+		);
+	}
+
+	@Override
 	protected void handleUpdate(float elapsedTime) {
-		laserBeam.setScaleY(-2 * getLaserDistance());
+		laserLength = getLaserLength();
+		laserBeam.setScaleY(-2 * laserLength);
 		laserBeamCap.setY(laserBeam.getHeightScaled() - laserBeamCap.getHeight() + laserBeam.getY());
 	}
 	
-	private float getLaserDistance() {
+	private float getLaserLength() {
 		Coordinate blockingTile = world.findBlockingTile(getPosition(), getRadianRotation());
 		Vector2 position = getPosition();
 		Vector2 unitVector = MathHelper.getUnitVector(getRadianRotation());

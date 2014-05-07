@@ -9,6 +9,7 @@ import ca.nigelchan.silenttempest.resources.GameResource;
 
 public class Player extends Actor {
 	
+	private boolean alive = true;
 	private TiledSprite sprite;
 	private PlayerStatus status;
 	
@@ -28,8 +29,17 @@ public class Player extends Actor {
 	}
 	
 	// Getters
+	public boolean isAlive() {
+		return alive;
+	}
+
 	public boolean isHidden() {
 		return status.isHidden();
+	}
+
+	// Setters
+	public void setAlive(boolean alive) {
+		this.alive = alive;
 	}
 
 }

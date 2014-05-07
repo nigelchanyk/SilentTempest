@@ -71,6 +71,27 @@ public final class MathHelper {
 	public static float clamp(float value, float min, float max) {
 		return Math.max(min, Math.min(max, value));
 	}
+
+	public static boolean collided(Vector2 lineStart, Vector2 lineEnd, Vector2 targetPos, float targetRadius) {
+		float distanceSq = sq(
+			(targetPos.x() - lineStart.x()) * (lineEnd.y() - lineStart.y())
+			- (targetPos.y() - lineStart.y()) * (lineEnd.x() - lineStart.x())
+		) / lineStart.distanceSquare(lineEnd);
+
+		float targetRadiusSq = sq(targetRadius);
+		if (distanceSq >= targetRadiusSq)
+			return false;
+		if (lineEnd.minus(lineStart).dot(targetPos.minus(lineStart)) < 0)
+			return lineStart.distanceSquare(targetPos) < targetRadiusSq;
+		if (lineStart.minus(lineEnd).dot(targetPos.minus(lineEnd)) < 0)
+			return lineEnd.distanceSquare(targetPos) < targetRadiusSq;
+		
+		return true;
+	}
+	
+	public static boolean collided(Vector2 pos1, Vector2 pos2, float radius1, float radius2) {
+		return pos1.distanceSquare(pos2) < sq(radius1 + radius2);
+	}
 	
 	public static float getAngleDifference(float a, float b) {
 		a = wrapAngle(a);

@@ -43,6 +43,7 @@ public abstract class Trap extends Actor {
 		});
 	}
 	
+	protected abstract boolean collided();
 	protected abstract void handleUpdate(float elapsedTime);
 	
 	private int next() {
@@ -58,6 +59,8 @@ public abstract class Trap extends Actor {
 			}
 		}
 		handleUpdate(elapsedTime);
+		if (collided())
+			world.getPlayer().setAlive(false);
 	}
 
 }

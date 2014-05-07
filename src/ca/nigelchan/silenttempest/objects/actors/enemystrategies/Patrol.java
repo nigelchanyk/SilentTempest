@@ -45,9 +45,6 @@ public class Patrol extends EnemyStrategy {
 		if (firstUpdate) {
 			firstUpdate = false;
 			current = sequenceSet.getIndex(actor.getGridPosition());
-			if (current == -1) {
-				System.err.println(actor.getGridPosition());
-			}
 			sequence[current].onStart();
 		}
 		core.setAlertLevel(core.getAlertLevel() - ALERT_REDUCTION_FACTOR * elapsedTime);

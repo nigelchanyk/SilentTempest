@@ -182,17 +182,6 @@ public class Seek extends EnemyStrategy {
 				queue.addLast(next);
 			}
 		}
-		for (int y = peak.y() - 4; y <= peak.y() + 4; ++y) {
-			for (int x = peak.x() - 4; x <= peak.x() + 4; ++x) {
-				if (!actor.getWorld().isWalkable(new Coordinate(x, y)))
-					System.err.print("xxx");
-				else
-					System.err.print(String.format("%03d", suspicionLevel[y][x]));
-				System.err.print(";");
-			}
-			System.err.println();
-		}
-		System.err.println("-------------------------------------------");
 	}
 	
 	private Coordinate getSuspicionPeak() {

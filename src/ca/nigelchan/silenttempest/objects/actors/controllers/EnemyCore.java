@@ -53,6 +53,9 @@ public class EnemyCore extends Controller {
 			strategy = strategy.nextMove();
 			if (previous == strategy) {
 				strategy.onUpdate(elapsedTime);
+				Player player = actor.getWorld().getPlayer();
+				if (MathHelper.collided(actor.getPosition(), player.getPosition(), actor.getRadius(), player.getRadius()))
+					player.setAlive(false);
 				return;
 			}
 			previous = strategy;

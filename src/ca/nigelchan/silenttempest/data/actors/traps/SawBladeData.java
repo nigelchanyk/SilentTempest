@@ -43,6 +43,10 @@ public class SawBladeData extends TrapData {
 	public Vector2 getDimension() {
 		return dimension;
 	}
+	
+	public float getRadius() {
+		return diameter(size) / 2.0f;
+	}
 
 	public Size getSize() {
 		return size;
