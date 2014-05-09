@@ -11,10 +11,9 @@ import ca.nigelchan.silenttempest.scenes.subscenes.LoadingSceneMinigame;
 import ca.nigelchan.silenttempest.util.Coordinate;
 import ca.nigelchan.silenttempest.util.PositionHelper;
 
-public class LoadingScene extends BaseScene {
+public class LoadingScene extends ForegroundScene {
 	
 	private volatile boolean abortReady = false;
-	private volatile boolean abortSignal = false;
 	private CommonResource commonResource;
 	private LoadingResource resource;
 	private LoadingSceneMinigame minigame;
@@ -25,11 +24,6 @@ public class LoadingScene extends BaseScene {
 		resource = new LoadingResource(activity);
 		setResource(resource);
 		this.commonResource = commonResource;
-	}
-	
-	public void abortWhenReady() {
-		abortSignal = true;
-		checkSignal();
 	}
 
 	@Override
@@ -65,28 +59,26 @@ public class LoadingScene extends BaseScene {
 		setOnSceneTouchListener(subsceneManager);
 		registerUpdateHandler(subsceneManager);
 		
-		resetMinigame();
+		resetScene();
 	}
-	
-	private void checkSignal() {
-		if (abortSignal && abortReady) {
-			abortReady = false;
-			abortSignal = false;
-			resetMinigame();
-			manager.popScene();
-		}
-	}
-	
-	private void resetMinigame() {
+
+	@Override
+	protected void resetScene() {
+		abortReady = false;
 		minigame.prepare(new LoadingSceneMinigame.ICallback() {
 
 			@Override
 			public void onCompleted() {
 				abortReady = true;
-				checkSignal();
+				popIfReady();
 			}
 			
 		});
+	}
+
+	@Override
+	protected boolean isReady() {
+		return abortReady;
 	}
 
 }

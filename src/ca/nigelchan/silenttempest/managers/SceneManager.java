@@ -9,6 +9,7 @@ import org.andengine.ui.activity.BaseGameActivity;
 import ca.nigelchan.silenttempest.asynctasks.AsyncSceneLoader;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.scenes.BaseScene;
+import ca.nigelchan.silenttempest.scenes.ForegroundScene;
 import ca.nigelchan.silenttempest.scenes.LoadingScene;
 
 public class SceneManager {
@@ -47,11 +48,15 @@ public class SceneManager {
 		
 		if (sceneStack.empty())
 			return;
-		prepareScene(sceneStack.peek());
+		prepareScene(sceneStack.peek(), loadingScene);
 		engine.setScene(sceneStack.peek());
 	}
+
+	public void pushScene(BaseScene scene) {
+		pushScene(scene, loadingScene);
+	}
 	
-	public void pushScene(final BaseScene scene) {
+	public void pushScene(BaseScene scene, ForegroundScene loadingScene) {
 		if (!sceneStack.empty()) {
 			if (!sceneStack.peek().isInactiveResourceAllowed())
 				sceneStack.peek().unloadResources();
@@ -61,11 +66,11 @@ public class SceneManager {
 		sceneStack.push(scene);
 		if (scene.isResourceLoaded())
 			return;
-		prepareScene(scene);
+		prepareScene(scene, loadingScene);
 		engine.setScene(sceneStack.peek());
 	}
 	
-	private void prepareScene(final BaseScene scene) {
+	private void prepareScene(final BaseScene scene, final ForegroundScene loadingScene) {
 		if (scene.isResourceLoaded())
 			return;
 		if (scene.isLoadAsynchronous()) {
