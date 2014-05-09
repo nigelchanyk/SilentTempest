@@ -6,6 +6,7 @@ import ca.nigelchan.silenttempest.events.EventLayer;
 import ca.nigelchan.silenttempest.events.ModalRemover;
 import ca.nigelchan.silenttempest.events.ModalSetter;
 import ca.nigelchan.silenttempest.events.PositionSenser;
+import ca.nigelchan.silenttempest.events.SequentialEvent;
 import ca.nigelchan.silenttempest.events.WaitEvent;
 import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.resources.CommonResource;
@@ -26,7 +27,7 @@ public class ApproachMission implements IEventData {
 
 	@Override
 	public Event toEvent(World world, EventLayer layer, GameResource gameResource, CommonResource commonResource) {
-		return new Event(world, false)
+		return new SequentialEvent(world, false)
 			.addEventComponent(EventFactory.createForDestinationDisplay(
 				instruction,
 				world.getPlayer(),

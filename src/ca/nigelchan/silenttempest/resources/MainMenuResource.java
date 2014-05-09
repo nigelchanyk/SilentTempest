@@ -15,7 +15,6 @@ public class MainMenuResource extends Resource {
 	public static final Vector2 RIGHT_NIGHT_VISION_UV = new Vector2(0.535327f, 0.224717f);
 
 	private static final float NIGHT_VISION_HEIGHT_RATIO = 0.115826f;
-	private static final float PENGUIN_ASPECT_RATIO = 0.8f;
 	private static final float PENGUIN_RELATIVE_HEIGHT = 0.7f;
 	
 	private ITiledTextureRegion actButtons;

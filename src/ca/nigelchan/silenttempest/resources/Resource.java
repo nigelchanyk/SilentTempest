@@ -13,6 +13,8 @@ import org.andengine.ui.activity.BaseGameActivity;
 import android.util.DisplayMetrics;
 
 public abstract class Resource {
+
+	public static final float PENGUIN_ASPECT_RATIO = 0.8f;
 	
 	protected BaseGameActivity activity;
 	

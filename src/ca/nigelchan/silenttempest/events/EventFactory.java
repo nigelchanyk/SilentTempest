@@ -4,11 +4,14 @@ import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.resources.GameResource;
+import ca.nigelchan.silenttempest.scenes.GameScene;
+import ca.nigelchan.silenttempest.scenes.GameTerminationScene;
 import ca.nigelchan.silenttempest.util.Vector2;
 
 public class EventFactory {
 	
 	public static final int CAMERA_TRANSLATION_SPEED = 5;
+	public static final int FADE_DURATION = 3;
 	
 	public static Event createForDestinationDisplay(
 		String instruction,
@@ -19,12 +22,23 @@ public class EventFactory {
 		GameResource gameResource,
 		CommonResource commonResource
 	) {
-		return new Event(world, true)
+		return new SequentialEvent(world, true)
 			.addEventComponent(new ModalSetter(instruction, layer, commonResource))
 			.addEventComponent(new CameraTranslation(world, destination, CAMERA_TRANSLATION_SPEED))
 			.addEventComponent(new DestinationBeacon(layer, gameResource))
 			.addEventComponent(new CameraTranslation(world, source, CAMERA_TRANSLATION_SPEED))
 			.addEventComponent(new ModalRemover(layer));
+	}
+	
+	public static Event createForGameOver(GameScene game, World world, EventLayer layer, GameResource resource) {
+		return new SequentialEvent(world, false)
+			.addEventComponent(new PlayerHealthMonitor(world.getPlayer()))
+			.addEventComponent(withWorldLocked(world, new FadeEvent(layer, 1, 0, FADE_DURATION)))
+			.addEventComponent(new GameTerminationEvent(game, GameTerminationScene.Mode.FAILURE));
+	}
+	
+	private static EventComponent withWorldLocked(World world, EventComponent event) {
+		return new SequentialEvent(world, true).addEventComponent(event);
 	}
 
 }

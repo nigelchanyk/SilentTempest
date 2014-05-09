@@ -2,6 +2,7 @@ package ca.nigelchan.silenttempest.scenes;
 
 import java.io.IOException;
 
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.util.color.Color;
@@ -29,7 +30,7 @@ public class GameScene extends BaseScene {
 	private CommonResource commonResource;
 	private JoystickEventInterpreter controller = new JoystickEventInterpreter();
 	private String dataFilePath;
-	private EventLayer eventLayer = new EventLayer();
+	private EventLayer eventLayer;
 	private EventManager eventManager = null;
 	private EventsData eventsData;
 	private Entity gameCore = new Entity();
@@ -37,6 +38,7 @@ public class GameScene extends BaseScene {
 	private GameMenu gameMenu;
 	private GameResource resource;
 	private SubsceneManager subsceneManager;
+	private GameTerminationScene.Mode terminationMode = null;
 	private World world;
 	private WorldData worldData;
 
@@ -66,14 +68,19 @@ public class GameScene extends BaseScene {
 			subsceneManager.dispose();
 		super.disposeScene();
 	}
+	
+	public void terminateGame(GameTerminationScene.Mode mode) {
+		terminationMode = mode;
+	}
 
 	@Override
 	public void onBackKeyPressed() {
 		subsceneManager.onBackKeyPressed();
 	}
-
+	
 	@Override
 	protected void createScene() {
+		eventLayer = new EventLayer(resource);
 		loadData();
 		setWorldData(worldData);
 		gameInterface = new GameInterface(this, resource, this.controller);
@@ -87,6 +94,24 @@ public class GameScene extends BaseScene {
 		registerUpdateHandler(subsceneManager);
 		subsceneManager.load();
 		subsceneManager.activate(gameInterface);
+		
+		registerUpdateHandler(new IUpdateHandler() {
+			
+			@Override
+			public void reset() {
+			}
+			
+			@Override
+			public void onUpdate(float pSecondsElapsed) {
+				if (terminationMode == null)
+					return;
+				manager.popScene();
+				manager.pushScene(
+					new GameScene(manager, commonResource, dataFilePath),
+					new GameTerminationScene(manager, commonResource, terminationMode)
+				);
+			}
+		});
 	}
 	
 	private void loadData() {
@@ -133,7 +158,7 @@ public class GameScene extends BaseScene {
 		controller.setPlayer(world.getPlayer());
 		world.subscribe(new EnemyManager(world, resource));
 		
-		eventManager = new EventManager(eventsData, world, eventLayer, resource, commonResource);
+		eventManager = new EventManager(this, eventsData, world, eventLayer, resource, commonResource);
 		gameCore.attachChild(eventLayer);
 		gameCore.registerUpdateHandler(eventManager);
 	}

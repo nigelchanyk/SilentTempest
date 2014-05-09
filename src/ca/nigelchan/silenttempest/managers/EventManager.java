@@ -4,27 +4,34 @@ import org.andengine.engine.handler.IUpdateHandler;
 
 import ca.nigelchan.silenttempest.data.EventsData;
 import ca.nigelchan.silenttempest.data.events.IEventData;
+import ca.nigelchan.silenttempest.events.ConcurrentEvent;
 import ca.nigelchan.silenttempest.events.Event;
+import ca.nigelchan.silenttempest.events.EventFactory;
 import ca.nigelchan.silenttempest.events.EventLayer;
+import ca.nigelchan.silenttempest.events.SequentialEvent;
 import ca.nigelchan.silenttempest.objects.World;
 import ca.nigelchan.silenttempest.resources.CommonResource;
 import ca.nigelchan.silenttempest.resources.GameResource;
+import ca.nigelchan.silenttempest.scenes.GameScene;
 
 public class EventManager implements IUpdateHandler {
 	
 	private Event globalEvent;
 	
 	public EventManager(
+		GameScene scene,
 		EventsData eventsData,
 		World world,
 		EventLayer eventLayer,
 		GameResource gameResource,
 		CommonResource commonResource
 	) {
-		globalEvent = new Event(world, false);
-		for (IEventData eventData : eventsData.getAllEventData()) {
-			globalEvent.addEventComponent(eventData.toEvent(world, eventLayer, gameResource, commonResource));
-		}
+		globalEvent = new ConcurrentEvent(world, false);
+		SequentialEvent mapDefinedEvent = new SequentialEvent(world, false);
+		for (IEventData eventData : eventsData.getAllEventData())
+			mapDefinedEvent.addEventComponent(eventData.toEvent(world, eventLayer, gameResource, commonResource));
+		globalEvent.addEventComponent(mapDefinedEvent);
+		globalEvent.addEventComponent(EventFactory.createForGameOver(scene, world, eventLayer, gameResource));
 		globalEvent.onLoad();
 	}
 	
