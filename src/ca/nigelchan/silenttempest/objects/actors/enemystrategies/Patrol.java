@@ -14,10 +14,9 @@ public class Patrol extends EnemyStrategy {
 	private static final float ALERT_REDUCTION_FACTOR = 0.2f;
 
 	private Approach approach;
-	private int current = 0;
+	private int current = -1;
 	private Sequence[] sequence;
 	private SequenceSet sequenceSet = new SequenceSet();
-	private boolean firstUpdate = true;
 
 	public Patrol(Actor actor, EnemyCore core, EnemyData data, boolean justSpawned) {
 		super(actor, core);
@@ -31,19 +30,22 @@ public class Patrol extends EnemyStrategy {
 			i++;
 		}
 		if (justSpawned) {
+			current = 0;
 			sequence[current].onSpawn();
 			sequence[current].onStart();
 		}
-		else if (!sequenceSet.contains(actor.getGridPosition()))
-			approach = new Approach(actor, core, sequenceSet, this);
-		else
-			sequence[current].onStart();
 	}
 
 	@Override
 	public void onUpdate(float elapsedTime) {
-		if (firstUpdate) {
-			firstUpdate = false;
+		if (current == -1) {
+			// We should only check if the actor is on its patrol path during update.
+			// Never do this in the constructor because update may not be called when
+			// Patrol is instantiated.
+			if (!sequenceSet.contains(actor.getGridPosition())) {
+				approach = new Approach(actor, core, sequenceSet, this);
+				return;
+			}
 			current = sequenceSet.getIndex(actor.getGridPosition());
 			sequence[current].onStart();
 		}

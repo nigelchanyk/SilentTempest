@@ -8,6 +8,8 @@ public class SequenceSet {
 	private SparseIntArray map = new SparseIntArray();
 	
 	public void add(Coordinate coordinate, int sequenceIndex) {
+		if (contains(coordinate))
+			return;
 		map.put(coordinateHash(coordinate), sequenceIndex);
 	}
 	
