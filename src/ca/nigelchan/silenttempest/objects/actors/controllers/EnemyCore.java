@@ -120,6 +120,7 @@ public class EnemyCore extends Controller {
 	// Setters
 	public void setAlertLevel(float alertLevel) {
 		this.alertLevel = alertLevel = MathHelper.clamp(alertLevel, 0, 1);
+		actor.setSpeedMultiplier(this.alertLevel == 1 ? 2 : 1);
 		for (IListener subscriber : subscribers)
 			subscriber.onAlertLevelChanged(alertLevel);
 	}

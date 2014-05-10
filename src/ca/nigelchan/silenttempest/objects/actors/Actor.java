@@ -20,6 +20,7 @@ public abstract class Actor extends WorldObject {
 	private PostponedList<Controller> controllers = new PostponedList<Controller>(4);
 	private boolean knockedOut = false;
 	private float speed;
+	private float speedMultiplier = 1;
 	private PostponedList<IListener> subscribers = new PostponedList<Actor.IListener>(4);
 
 	public Actor(ActorData data, World world) {
@@ -162,7 +163,7 @@ public abstract class Actor extends WorldObject {
 	}
 
 	public float getSpeed() {
-		return speed;
+		return speed * speedMultiplier;
 	}
 
 	public World getWorld() {
@@ -206,6 +207,10 @@ public abstract class Actor extends WorldObject {
 	public void setRadianRotation(float rotation) {
 		super.setRadianRotation(rotation);
 		notifyRotationChanged();
+	}
+
+	public void setSpeedMultiplier(float speedMultiplier) {
+		this.speedMultiplier = speedMultiplier;
 	}
 
 	@Override

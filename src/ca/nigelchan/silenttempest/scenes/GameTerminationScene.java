@@ -27,6 +27,7 @@ public class GameTerminationScene extends ForegroundScene {
 	public GameTerminationScene(SceneManager manager, CommonResource commonResource, Mode mode) {
 		super(manager);
 		resource = new GameTerminationResource(activity, mode);
+		setDefualtPopOperation(PopOperation.DISPOSE);
 		setResource(resource);
 		this.commonResource = commonResource;
 		this.mode = mode;

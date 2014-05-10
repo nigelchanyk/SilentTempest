@@ -30,8 +30,10 @@ public class EventManager implements IUpdateHandler {
 		SequentialEvent mapDefinedEvent = new SequentialEvent(world, false);
 		for (IEventData eventData : eventsData.getAllEventData())
 			mapDefinedEvent.addEventComponent(eventData.toEvent(world, eventLayer, gameResource, commonResource));
+		mapDefinedEvent.addEventComponent(EventFactory.createForGameCompleted(scene, world, eventLayer));
+
 		globalEvent.addEventComponent(mapDefinedEvent);
-		globalEvent.addEventComponent(EventFactory.createForGameOver(scene, world, eventLayer, gameResource));
+		globalEvent.addEventComponent(EventFactory.createForGameOver(scene, world, eventLayer));
 		globalEvent.onLoad();
 	}
 	

@@ -30,15 +30,20 @@ public class EventFactory {
 			.addEventComponent(new ModalRemover(layer));
 	}
 	
-	public static Event createForGameOver(GameScene game, World world, EventLayer layer, GameResource resource) {
-		return new SequentialEvent(world, false)
-			.addEventComponent(new PlayerHealthMonitor(world.getPlayer()))
-			.addEventComponent(withWorldLocked(world, new FadeEvent(layer, 1, 0, FADE_DURATION)))
-			.addEventComponent(new GameTerminationEvent(game, GameTerminationScene.Mode.FAILURE));
+	public static Event createForGameCompleted(GameScene game, World world, EventLayer layer) {
+		return new SequentialEvent(world, true)
+			.addEventComponent(new FadeEvent(layer, 1, 0, FADE_DURATION))
+			.addEventComponent(new GameTerminationEvent(game, GameTerminationScene.Mode.SUCCESS));
 	}
 	
-	private static EventComponent withWorldLocked(World world, EventComponent event) {
-		return new SequentialEvent(world, true).addEventComponent(event);
+	public static Event createForGameOver(GameScene game, World world, EventLayer layer) {
+		return new SequentialEvent(world, false)
+			.addEventComponent(new PlayerHealthMonitor(world.getPlayer()))
+			.addEventComponent(
+				new SequentialEvent(world, true)
+					.addEventComponent(new FadeEvent(layer, 1, 0, FADE_DURATION))
+					.addEventComponent(new GameTerminationEvent(game, GameTerminationScene.Mode.FAILURE))
+			);
 	}
 
 }

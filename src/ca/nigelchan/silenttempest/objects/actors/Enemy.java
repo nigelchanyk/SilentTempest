@@ -35,5 +35,5 @@ public class Enemy extends Actor {
 	public EnemyCore getCore() {
 		return core;
 	}
-
+	
 }

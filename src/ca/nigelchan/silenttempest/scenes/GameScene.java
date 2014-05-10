@@ -66,6 +66,8 @@ public class GameScene extends BaseScene {
 			world.dispose();
 		if (subsceneManager != null)
 			subsceneManager.dispose();
+		if (eventLayer != null)
+			eventLayer.dispose();
 		super.disposeScene();
 	}
 	
