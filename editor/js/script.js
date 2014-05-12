@@ -1112,7 +1112,7 @@ LevelResizer = function(core, container) {
         var val = this.valueAsNumber;
         if (val === core.getLevel().getColumnCount())
             return;
-        if (val >= 20 && val <= 100 && val % 1 === 0)
+        if (val >= 1 && val <= 100 && val % 1 === 0)
             core.setWidth(val);
         $(this).val(core.getLevel().getColumnCount());
     });
@@ -1120,7 +1120,7 @@ LevelResizer = function(core, container) {
         if (val === core.getLevel().getRowCount())
             return;
         var val = this.valueAsNumber;
-        if (val >= 15 && val <= 100 && val % 1 === 0)
+        if (val >= 1 && val <= 100 && val % 1 === 0)
             core.setHeight(val);
         $(this).val(core.getLevel().getRowCount());
     });

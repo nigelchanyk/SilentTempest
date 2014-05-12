@@ -223,6 +223,10 @@ public class World extends Entity {
 		subscribers.add(subscriber);
 	}
 	
+	public Vector2 toCameraRelativePixelPosition(Vector2 position) {
+		return new Vector2(getX(), getY()).add(position.multiply(getUnitScale()));
+	}
+	
 	public void unlock() {
 		if (locks == 0)
 			return;

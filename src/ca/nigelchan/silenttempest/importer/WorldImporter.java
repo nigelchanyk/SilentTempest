@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.andengine.ui.activity.BaseGameActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import ca.nigelchan.silenttempest.data.WorldData;
 import ca.nigelchan.silenttempest.data.actors.ActorConfiguration;
 import ca.nigelchan.silenttempest.data.actors.EnemyData;
@@ -25,6 +23,7 @@ import ca.nigelchan.silenttempest.data.layers.FieldLayerData;
 import ca.nigelchan.silenttempest.data.layers.TileTemplateCollection;
 import ca.nigelchan.silenttempest.util.Coordinate;
 import ca.nigelchan.silenttempest.util.Direction;
+import ca.nigelchan.silenttempest.util.MathHelper;
 import ca.nigelchan.silenttempest.util.Vector2;
 
 public class WorldImporter {
@@ -53,9 +52,9 @@ public class WorldImporter {
 		JSONArray ground = json.getJSONArray("ground");
 		JSONArray top = json.getJSONArray("top");
 		JSONObject player = json.getJSONObject("player");
-		JSONArray enemies = json.getJSONArray("enemies");
-		JSONArray sawBlades = json.getJSONArray("saw_blades");
-		JSONArray laser = json.getJSONArray("laser");
+		JSONArray enemies = json.optJSONArray("enemies");
+		JSONArray sawBlades = json.optJSONArray("saw_blades");
+		JSONArray laser = json.optJSONArray("laser");
 		TileTemplateCollection tiles = TileTemplateCollection.instance();
 		
 		WorldData data = new WorldData(columns, rows);
@@ -64,14 +63,20 @@ public class WorldImporter {
 
 		PlayerData playerData = new PlayerData(Coordinate.fromJSONObject(player), 0, actorConfiguration.getPlayerSpeed());
 		ActorLayerData actorLayer = new ActorLayerData(columns, rows, playerData);
-		for (int i = 0; i < enemies.length(); ++i)
-			actorLayer.addEnemy(parseEnemy(enemies.getJSONObject(i), actorConfiguration));
+		if (enemies != null) {
+			for (int i = 0; i < enemies.length(); ++i)
+				actorLayer.addEnemy(parseEnemy(enemies.getJSONObject(i), actorConfiguration));
+		}
 		
-		for (int i = 0; i < sawBlades.length(); ++i)
-			actorLayer.addTrap(parseSawBlade(sawBlades.getJSONObject(i)));
+		if (sawBlades != null) {
+			for (int i = 0; i < sawBlades.length(); ++i)
+				actorLayer.addTrap(parseSawBlade(sawBlades.getJSONObject(i)));
+		}
 		
-		for (int i = 0; i < laser.length(); ++i)
-			actorLayer.addTrap(parseLaserData(laser.getJSONObject(i)));
+		if (laser != null) {
+			for (int i = 0; i < laser.length(); ++i)
+				actorLayer.addTrap(parseLaserData(laser.getJSONObject(i)));
+		}
 
 		data.addLayer(actorLayer);
 		for (int i = 0; i < top.length(); ++i)
@@ -82,7 +87,12 @@ public class WorldImporter {
 	public static EnemyData parseEnemy(JSONObject json, ActorConfiguration actorConfiguration) throws JSONException {
 		EnemyData data = new EnemyData(
 			Coordinate.fromJSONObject(json),
-			0,
+			MathHelper.getRotation(
+				Enum.valueOf(
+					Direction.class,
+					json.optString("direction", Direction.NORTH.toString()).toUpperCase()
+				)
+			),
 			actorConfiguration.getEnemySpeed(),
 			json.getInt("range"),
 			json.optString("id")
@@ -137,7 +147,10 @@ public class WorldImporter {
 	}
 	
 	private static void parseSequenceDataList(JSONObject json, SequenceDataList data) throws JSONException {
-		String[] tokens = json.getString("pattern").split(";");
+		String raw = json.getString("pattern");
+		if (raw.isEmpty())
+			return;
+		String[] tokens = raw.split(";");
 		for (String token : tokens) {
 			Matcher m = MOVE_REGEX.matcher(token);
 			if (m.matches()) {

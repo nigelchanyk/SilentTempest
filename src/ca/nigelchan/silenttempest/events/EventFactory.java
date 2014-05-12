@@ -25,7 +25,7 @@ public class EventFactory {
 		return new SequentialEvent(world, true)
 			.addEventComponent(new ModalSetter(instruction, layer, commonResource))
 			.addEventComponent(new CameraTranslation(world, destination, CAMERA_TRANSLATION_SPEED))
-			.addEventComponent(new DestinationBeacon(layer, gameResource))
+			.addEventComponent(new WaitEvent(4))
 			.addEventComponent(new CameraTranslation(world, source, CAMERA_TRANSLATION_SPEED))
 			.addEventComponent(new ModalRemover(layer));
 	}

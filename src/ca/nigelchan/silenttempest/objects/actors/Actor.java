@@ -34,7 +34,7 @@ public abstract class Actor extends WorldObject {
 	}
 	
 	private void __construct(ActorData data) {
-		super.setRotation(data.getInitialRotation());
+		super.setRadianRotation(data.getInitialRotation());
 		speed = data.getSpeed();
 
 		registerUpdateHandler(new IUpdateHandler() {

@@ -45,7 +45,7 @@ public class MainMenuScene extends BaseScene {
 	
 	public void startGame() {
 		manager.popScene();
-		manager.pushScene(new GameScene(manager, commonResource, "levels/sample.stl"));
+		manager.pushScene(new GameScene(manager, commonResource, "levels/1_1.stl"));
 	}
 
 	@Override

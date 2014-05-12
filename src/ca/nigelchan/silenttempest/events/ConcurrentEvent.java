@@ -3,9 +3,17 @@ package ca.nigelchan.silenttempest.events;
 import ca.nigelchan.silenttempest.objects.World;
 
 public class ConcurrentEvent extends Event {
+	
+	public enum CompletionRequirement {
+		ALL,
+		ANY
+	}
+	
+	private CompletionRequirement requirement;
 
-	public ConcurrentEvent(World world, boolean lock) {
+	public ConcurrentEvent(World world, boolean lock, CompletionRequirement requirement) {
 		super(world, lock);
+		this.requirement = requirement;
 	}
 
 	@Override
@@ -17,14 +25,17 @@ public class ConcurrentEvent extends Event {
 
 	@Override
 	public void onUpdate(float elapsedTime) {
-		boolean allCompleted = true;
+		int completionCount = 0;
 		for (EventComponent component : eventComponents) {
 			if (component.isCompleted())
 				continue;
 			component.onUpdate(elapsedTime);
-			allCompleted &= component.isCompleted();
+			if (component.isCompleted())
+				completionCount++;
 		}
-		if (allCompleted)
+		if (requirement == CompletionRequirement.ALL && completionCount == eventComponents.size())
+			setCompleted();
+		else if (requirement == CompletionRequirement.ANY && completionCount > 0)
 			setCompleted();
 	}
 

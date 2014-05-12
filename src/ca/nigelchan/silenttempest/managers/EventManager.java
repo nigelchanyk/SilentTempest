@@ -26,7 +26,7 @@ public class EventManager implements IUpdateHandler {
 		GameResource gameResource,
 		CommonResource commonResource
 	) {
-		globalEvent = new ConcurrentEvent(world, false);
+		globalEvent = new ConcurrentEvent(world, false, ConcurrentEvent.CompletionRequirement.ANY);
 		SequentialEvent mapDefinedEvent = new SequentialEvent(world, false);
 		for (IEventData eventData : eventsData.getAllEventData())
 			mapDefinedEvent.addEventComponent(eventData.toEvent(world, eventLayer, gameResource, commonResource));

@@ -7,7 +7,9 @@ import ca.nigelchan.silenttempest.objects.actors.Enemy;
 import ca.nigelchan.silenttempest.objects.actors.controllers.EnemyCore;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Sequence;
 import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.SequenceSet;
+import ca.nigelchan.silenttempest.objects.actors.enemystrategies.sequences.Wait;
 import ca.nigelchan.silenttempest.util.Coordinate;
+import ca.nigelchan.silenttempest.util.Vector2;
 
 public class Patrol extends EnemyStrategy {
 	
@@ -20,14 +22,23 @@ public class Patrol extends EnemyStrategy {
 
 	public Patrol(Actor actor, EnemyCore core, EnemyData data, boolean justSpawned) {
 		super(actor, core);
-		sequence = new Sequence[data.getSequenceList().size()];
-		int i = 0;
-		Coordinate pos = data.getInitialCoordinate();
-		for (SequenceData sequenceItem : data.getSequenceList().getSequence()) {
-			sequence[i] = sequenceItem.create(actor, pos.toCenterVector2());
-			sequenceSet.add(pos, i);
-			pos = pos.add(sequenceItem.getTranslation());
-			i++;
+		if (data.getSequenceList().size() > 0) {
+			sequence = new Sequence[data.getSequenceList().size()];
+			int i = 0;
+			Coordinate pos = data.getInitialCoordinate();
+			for (SequenceData sequenceItem : data.getSequenceList().getSequence()) {
+				sequence[i] = sequenceItem.create(actor, pos.toCenterVector2());
+				sequenceSet.add(pos, i);
+				pos = pos.add(sequenceItem.getTranslation());
+				i++;
+			}
+		}
+		else {
+			// Replace empty sequence with indefinite wait
+			sequence = new Sequence[1];
+			Vector2 pos = data.getInitialPosition();
+			sequence[0] = new Wait(actor, pos, 1);
+			sequenceSet.add(pos.toCoordinate(), 0);
 		}
 		if (justSpawned) {
 			current = 0;

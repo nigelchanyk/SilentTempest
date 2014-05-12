@@ -1,7 +1,7 @@
 package ca.nigelchan.silenttempest.objects.actors.controllers;
 
-import ca.nigelchan.silenttempest.objects.actors.Actor;
 import ca.nigelchan.silenttempest.objects.actors.Enemy;
+import ca.nigelchan.silenttempest.objects.actors.Player;
 import ca.nigelchan.silenttempest.util.MathHelper;
 import ca.nigelchan.silenttempest.util.Vector2;
 
@@ -11,16 +11,17 @@ public class PlayerController extends Controller {
 	private static final float INTERACT_PLAYER_ANGLE_THRESHOLD = MathHelper.THREE_PI_OVER_4;
 	private static final float INTERACT_DISTANCE_SQ_THRESHOLD = MathHelper.sq(1.5f);
 
-	private Enemy enemyDragged = null;
+	private Player player;
 	private float rotation;
 	private Vector2 unitVector;
 	
-	public PlayerController(Actor actor) {
+	public PlayerController(Player actor) {
 		super(actor);
+		this.player = actor;
 	}
 	
 	public void interact() {
-		if (enemyDragged != null) {
+		if (player.getEnemyDragging() != null) {
 			releaseEnemy();
 			return;
 		}
@@ -36,7 +37,7 @@ public class PlayerController extends Controller {
 		actor.setRadianRotation(rotation);
 		actor.move(unitVector.multiply(actor.getSpeed() * elapsedTime));
 		
-		if (enemyDragged != null)
+		if (player.getEnemyDragging() != null)
 			dragEnemy();
 	}
 	
@@ -47,7 +48,7 @@ public class PlayerController extends Controller {
 			if (actor.getPosition().distanceSquare(enemy.getPosition()) > INTERACT_DISTANCE_SQ_THRESHOLD)
 				continue;
 			
-			enemyDragged = enemy;
+			player.setEnemyDragging(enemy);
 			dragEnemy();
 			return true;
 		}
@@ -76,6 +77,7 @@ public class PlayerController extends Controller {
 	}
 	
 	private void dragEnemy() {
+		Enemy enemyDragged = player.getEnemyDragging();
 		float angle = MathHelper.getRotation(enemyDragged.getPosition(), actor.getPosition());
 		enemyDragged.setRadianRotation(MathHelper.wrapAngle(angle + MathHelper.PI));
 		float dist = enemyDragged.getPosition().distance(actor.getPosition());
@@ -86,7 +88,7 @@ public class PlayerController extends Controller {
 	}
 	
 	private void releaseEnemy() {
-		enemyDragged = null;
+		player.setEnemyDragging(null);
 	}
 
 	// Setters
