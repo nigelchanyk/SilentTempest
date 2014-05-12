@@ -84,7 +84,8 @@ public class WorldImporter {
 			Coordinate.fromJSONObject(json),
 			0,
 			actorConfiguration.getEnemySpeed(),
-			json.getInt("range")
+			json.getInt("range"),
+			json.optString("id")
 		);
 		parseSequenceDataList(json, data.getSequenceList());
 		return data;

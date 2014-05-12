@@ -1,6 +1,7 @@
 package ca.nigelchan.silenttempest.objects.layers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.andengine.entity.Entity;
 
@@ -19,6 +20,7 @@ import ca.nigelchan.silenttempest.util.Vector2;
 public class ActorLayer extends Layer {
 	
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	private HashMap<String, Enemy> enemyMapper = new HashMap<String, Enemy>();
 	private Entity enemyLayer = new Entity();
 	private Player player;
 	private Entity playerLayer = new Entity();
@@ -31,6 +33,11 @@ public class ActorLayer extends Layer {
 			Enemy enemy = new Enemy(enemyData, world, resource);
 			enemies.add(enemy);
 			enemyLayer.attachChild(enemy);
+			if (!enemyData.getID().isEmpty()) {
+				if (enemyMapper.containsKey(enemyData.getID()))
+					throw new DuplicateEnemyIDException(enemyData.getID());
+				enemyMapper.put(enemyData.getID(), enemy);
+			}
 		}
 		for (TrapData trapData : data.getTraps()) {
 			Trap trap = trapData.createTrap(world, resource);
@@ -61,6 +68,12 @@ public class ActorLayer extends Layer {
 	public Iterable<Enemy> getEnemies() {
 		return enemies;
 	}
+	
+	public Enemy getEnemy(String id) {
+		if (!enemyMapper.containsKey(id))
+			throw new IllegalArgumentException("Enemy " + id + " does not exist.");
+		return enemyMapper.get(id);
+	}
 
 	public Player getPlayer() {
 		return player;
@@ -81,4 +94,16 @@ public class ActorLayer extends Layer {
 		return true;
 	}
 
+	public static class DuplicateEnemyIDException extends RuntimeException {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6491762383531134871L;
+
+		public DuplicateEnemyIDException(String id) {
+			super("ID " + id + " is defined more than once.");
+		}
+
+	}
 }

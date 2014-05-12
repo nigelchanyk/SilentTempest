@@ -319,6 +319,10 @@ public class World extends Entity {
 		return actorLayer.getEnemies();
 	}
 	
+	public Enemy getEnemy(String id) {
+		return actorLayer.getEnemy(id);
+	}
+	
 	public int getHeight() {
 		return height;
 	}
