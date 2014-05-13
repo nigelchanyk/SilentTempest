@@ -68,7 +68,7 @@ public class ActSelectionMenu extends Subscene {
 		float size = mainMenuResource.getActButtons().getWidth(0);
 		float totalWidth = commonResource.getScreenWidth() * 0.9f - mainButtonsContainer.getX() - size;
 		for (int i = 0; i < 4; ++i) {
-			final int referenceSelection = i;
+			final int referenceSelection = i + 1;
 			Button button = new Button(
 				mainMenuResource.getActButtons(),
 				i * 2,

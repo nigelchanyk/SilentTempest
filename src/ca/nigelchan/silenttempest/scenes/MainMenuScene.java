@@ -1,5 +1,8 @@
 package ca.nigelchan.silenttempest.scenes;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.util.color.Color;
@@ -43,9 +46,16 @@ public class MainMenuScene extends BaseScene {
 		subsceneManager.onBackKeyPressed();
 	}
 	
-	public void startGame() {
+	public void startGame(String dataFilePath) {
+		try {
+			InputStream stream = activity.getAssets().open(dataFilePath);
+			stream.close();
+		} catch (IOException e) {
+			System.err.println(dataFilePath + " does not exist.");
+			return;
+		}
 		manager.popScene();
-		manager.pushScene(new GameScene(manager, commonResource, "levels/1_1.stl"));
+		manager.pushScene(new GameScene(manager, commonResource, dataFilePath));
 	}
 
 	@Override
@@ -57,7 +67,7 @@ public class MainMenuScene extends BaseScene {
 		subsceneManager = new SubsceneManager(uiLayer);
 		mainMenu = new MainMenu(this, commonResource);
 		actSelectionMenu = new ActSelectionMenu(this, resource, commonResource);
-		sceneSelectionMenu = new SceneSelectionMenu(this, resource, commonResource);
+		sceneSelectionMenu = new SceneSelectionMenu(this, resource, commonResource, actSelectionMenu);
 		
 		subsceneManager.add(mainMenu, actSelectionMenu, sceneSelectionMenu);
 		subsceneManager.load();

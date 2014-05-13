@@ -11,17 +11,23 @@ import ca.nigelchan.silenttempest.util.PositionHelper;
 
 public class SceneSelectionMenu extends Subscene {
 	
+	private ActSelectionMenu actSelectionMenu;
 	private CommonResource commonResource;
 	private Header header;
 	private Entity mainButtonsContainer;
 	private MainMenuResource mainMenuResource;
 	private MainMenuScene scene;
-	private int selection = 0;
 	
-	public SceneSelectionMenu(MainMenuScene scene, MainMenuResource mainMenuResource, CommonResource commonResource) {
+	public SceneSelectionMenu(
+		MainMenuScene scene,
+		MainMenuResource mainMenuResource,
+		CommonResource commonResource,
+		ActSelectionMenu actSelectionMenu
+	) {
 		this.scene = scene;
 		this.mainMenuResource = mainMenuResource;
 		this.commonResource = commonResource;
+		this.actSelectionMenu = actSelectionMenu;
 	}
 
 	@Override
@@ -67,7 +73,7 @@ public class SceneSelectionMenu extends Subscene {
 		float totalHeight = commonResource.getScreenHeight() * 0.9f - mainButtonsContainer.getY() - size;
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 3; ++x) {
-				final int referenceSelection = y * 3 + x;
+				final int referenceSelection = y * 3 + x + 1;
 				Button button = new Button(
 					mainMenuResource.getSceneButtons(),
 					(y * 3 + x) * 2,
@@ -78,8 +84,13 @@ public class SceneSelectionMenu extends Subscene {
 					
 					@Override
 					public void onClick() {
-						selection = referenceSelection;
-						scene.startGame();
+						scene.startGame(
+							String.format(
+								"levels/%d_%d.stl",
+								actSelectionMenu.getSelection(),
+								referenceSelection
+							)
+						);
 					}
 				};
 				button.setPosition(totalWidth * x / 2, totalHeight * y / 2);
@@ -91,11 +102,6 @@ public class SceneSelectionMenu extends Subscene {
 
 	@Override
 	protected void onUpdate(float elapsedTime) {
-	}
-
-	// Getters
-	public int getSelection() {
-		return selection;
 	}
 
 }
